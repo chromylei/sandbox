@@ -1,6 +1,7 @@
 
 group("sbox") {
   deps = [
+    "base:sbox_base"
     "mesh:sbox_mesh"
   ]
 }

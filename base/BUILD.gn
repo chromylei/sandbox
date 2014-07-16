@@ -1,0 +1,11 @@
+
+static_library("sbox_base") {
+  sources = [
+    "xfile_loader.cc"
+    "mesh.cc"
+  ]
+  deps = [
+    "//third_party/assimp:assimp"
+    "//azer:azer"
+  ]
+}

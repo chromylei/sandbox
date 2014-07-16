@@ -1,10 +1,8 @@
-
-
 import("//build/templates/afx.gni")
 
 afx("sbox_mesh_effect") {
-  source = "diffuse.afx"
-  filename = "diffuse"
+  source = "texture.afx"
+  filename = "texture"
 }
 
 executable("sbox_mesh") {
@@ -12,5 +10,7 @@ executable("sbox_mesh") {
   deps = [
     "//base:appinit"
     "//third_party/assimp:assimp"
+    "../base:sbox_base"
+    ":sbox_mesh_effect"
   ]
 }

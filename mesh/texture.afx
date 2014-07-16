@@ -1,0 +1,35 @@
+
+technique [
+    name = "texture"
+    ps_main="ps_main"
+    vs_main="vs_main"
+    class_name="TextureEffect"
+           ];
+
+[uniform_func="SetPVW"] uniform mat4 pvw;
+[uniform_func="SetDiffuseTex"] uniform Texture2D tex;
+
+
+exchange struct VsOutput {
+  [semantic="position" system="true"]
+  vec4 position;
+  vec2 coordtex;
+};
+
+exchange struct VSInput {
+  vec4 position;
+  vec2 coordtex;
+};
+
+VsOutput vs_main(VSInput input) {
+  VsOutput o;
+  o.position = pvw * input.position;
+  o.coordtex = input.coordtex;
+  return o;
+}
+
+[system="true" semantic="target"]
+vec4 ps_main(VsOutput o) {
+  return sample2D(tex, o.coordtex);
+}
+
