@@ -31,11 +31,3 @@ void Mesh::Init(azer::RenderSystem* rs) {
     rgroups_.push_back(rgroup);
   }
 }
-
-void Mesh::Render(azer::Effect* effect, azer::Renderer* renderer) {
-  for (uint32 i = 0; i < rgroups_.size(); ++i) {
-    azer::VertexBuffer* vb = rgroups_[i].vb.get();
-    azer::IndicesBuffer* ib = rgroups_[i].ib.get();
-    renderer->Render(vb, ib, azer::kTriangleList);
-  }
-}  // namespace azer

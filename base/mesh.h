@@ -29,20 +29,22 @@ class Mesh {
     int mtrl_idx;
   };
 
-  const std::vector<Group>& groups() const { return groups_;}
-  std::vector<Group>* mutable_groups() { return &groups_;}
-
-  const std::vector<Material>& materials() const { return materials_;}
-  std::vector<Material>* mutable_materials() { return &materials_;}
-
-  void Init(azer::RenderSystem* rs);
-  void Render(azer::Effect* effect, azer::Renderer* renderer);
- private:
   struct RenderGroup {
     azer::VertexBufferPtr vb;
     azer::IndicesBufferPtr ib;
     int mtrl_idx;
   };
+
+  const std::vector<Group>& groups() const { return groups_;}
+  std::vector<Group>* mutable_groups() { return &groups_;}
+
+  const std::vector<RenderGroup>& rgroups() const { return rgroups_;}
+
+  const std::vector<Material>& materials() const { return materials_;}
+  std::vector<Material>* mutable_materials() { return &materials_;}
+
+  void Init(azer::RenderSystem* rs);
+ private:
   std::vector<Group> groups_;
   std::vector<Material> materials_;
   std::vector<RenderGroup> rgroups_;
