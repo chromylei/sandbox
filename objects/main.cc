@@ -14,7 +14,7 @@
 using base::FilePath;
 
 #define kSphereMeshPath "sbox/res/sphere.3DS"
-#define kTeaportMeshPath "sbox/res/sphere.3DS"
+#define kTeaportMeshPath "sbox/res/teaport.3DS"
 #define kTorusMeshPath "sbox/res/torus.3DS"
 
 void Render(DiffuseEffect* effect, azer::Renderer* renderer, Mesh* mesh) {
@@ -56,7 +56,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     proj_ = std::move(
         PerspectiveRHD3D(azer::Degree(45.0f), 4.0f / 3.0f, 0.10f, 100.0f));
 
-    camera_.SetPosition(azer::Vector3(0.0f, 0.0f, 3.0f));
+    camera_.SetPosition(azer::Vector3(0.0f, 0.0f, 5.0f));
     LoadXFile(::base::FilePath(::base::UTF8ToWide(kSphereMeshPath)), &sphere_, rs);
     LoadXFile(::base::FilePath(::base::UTF8ToWide(kTorusMeshPath)), &torus_, rs);
     LoadXFile(::base::FilePath(::base::UTF8ToWide(kTeaportMeshPath)), &teaport_, rs);
@@ -80,17 +80,17 @@ class MainDelegate : public azer::WindowHost::Delegate {
     renderer->ClearDepthAndStencil();
 
     azer::Matrix4 pvw;
-    pvw = sphere_world_ * camera_.GetProjViewMatrix();
+    pvw = camera_.GetProjViewMatrix() * sphere_world_;
     effect_->SetPVW(pvw);
     effect_->SetWorld(sphere_world_);
     Render(effect_.get(), renderer, &sphere_);
 
-    pvw = teaport_world_ * camera_.GetProjViewMatrix();
+    pvw = camera_.GetProjViewMatrix() * teaport_world_;
     effect_->SetPVW(pvw);
     effect_->SetWorld(teaport_world_);
     Render(effect_.get(), renderer, &teaport_);
 
-    pvw = torus_world_ * camera_.GetProjViewMatrix();
+    pvw = camera_.GetProjViewMatrix() * torus_world_;
     effect_->SetPVW(pvw);
     effect_->SetWorld(torus_world_);
     Render(effect_.get(), renderer, &torus_);
