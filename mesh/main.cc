@@ -44,8 +44,9 @@ class MainDelegate : public azer::WindowHost::Delegate {
     renderer->SetViewport(azer::Renderer::Viewport(0, 0, 800, 600));
     CHECK(renderer->GetFrontFace() == azer::kCounterClockwise);
     CHECK(renderer->GetCullingMode() == azer::kCullBack);
-    renderer->SetCullingMode(azer::kCullNone);
-    renderer->SetFillMode(azer::kWireFrame);
+    // renderer->EnableDepthTest(true);
+    // renderer->SetCullingMode(azer::kCullNone);
+    // renderer->SetFillMode(azer::kWireFrame);
 
     azer::Vector3 eye(0.0f, 0.0f, 5.0f);
     azer::Vector3 dir(0.0f, 0.0f, -1.0f);
@@ -54,6 +55,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     proj_ = std::move(
         PerspectiveRHD3D(azer::Degree(45.0f), 4.0f / 3.0f, 0.10f, 100.0f));
 
+    camera_.SetPosition(azer::Vector3(0.0f, 2.0f, 3.0f));
     LoadXFile(::base::FilePath(::base::UTF8ToWide(kMeshPath)), &mesh_, rs);
   }
   virtual void OnUpdateScene(double time, float delta_time) {
