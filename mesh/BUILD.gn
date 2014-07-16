@@ -1,0 +1,16 @@
+
+
+import("//build/templates/afx.gni")
+
+afx("sbox_mesh_effect") {
+  source = "diffuse.afx"
+  filename = "diffuse"
+}
+
+executable("sbox_mesh") {
+  sources = ["main.cc"]
+  deps = [
+    "//base:appinit"
+    "//third_party/assimp:assimp"
+  ]
+}

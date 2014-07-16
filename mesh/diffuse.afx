@@ -1,0 +1,44 @@
+
+
+technique [
+    name = "diffuse"
+    ps_main="ps_main"
+    vs_main="vs_main"
+    class_name="DiffuseEffect"
+           ];
+
+[uniform_func="SetPVW"]
+uniform mat4 pvw;
+
+[uniform_func="SetWorld"]
+uniform mat4 world;
+
+[uniform_func="SetDiffuseTexture"]
+uniform Texture2D mtrl_diffuse_tex0;
+
+exchange struct VsOutput {
+  [semantic="position" system="true"]
+  vec4 position;
+  vec2 texcoord;
+  vec4 normal;
+};
+
+exchange struct VSInput {
+  vec3 position;
+  vec2 coordtex;
+  vec3 normal;
+};
+
+VsOutput vs_main(VSInput input) {
+  VsOutput o;
+  o.position = pvw * vec4(input.position, 1);
+  o.texcoord = input.coordtex;
+  o.normal = vec4(input.normal, 0) * world;
+  return o;
+}
+
+[system="true" semantic="target"]
+vec4 ps_main(VsOutput o) {
+  return sample2D(mtrl_diffuse_tex0, o.texcoord);
+}
+
