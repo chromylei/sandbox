@@ -20,6 +20,8 @@ void Render(TextureEffect* effect, azer::Renderer* renderer, Mesh* mesh) {
     Mesh::RenderGroup rg = mesh->rgroups()[i];
     azer::VertexBuffer* vb = rg.vb.get();
     azer::IndicesBuffer* ib = rg.ib.get();
+    Mesh::Material mtrl = mesh->materials()[rg.mtrl_idx];
+    effect->SetDiffuseTex(mtrl.tex);
     effect->Use(renderer);
     renderer->Render(vb, ib, azer::kTriangleList);
   }
