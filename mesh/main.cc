@@ -44,7 +44,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     renderer->SetViewport(azer::Renderer::Viewport(0, 0, 800, 600));
     CHECK(renderer->GetFrontFace() == azer::kCounterClockwise);
     CHECK(renderer->GetCullingMode() == azer::kCullBack);
-    // renderer->EnableDepthTest(true);
+    renderer->EnableDepthTest(true);
     // renderer->SetCullingMode(azer::kCullNone);
     // renderer->SetFillMode(azer::kWireFrame);
 
@@ -70,6 +70,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     renderer->SetCullingMode(azer::kCullNone);
     DCHECK(NULL != rs);
     renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+    renderer->ClearDepthAndStencil();
     effect_->SetPVW(camera_.GetProjViewMatrix());
     effect_->SetWorld(azer::Matrix4::kIdentity);
     Render(effect_.get(), renderer, &mesh_);
