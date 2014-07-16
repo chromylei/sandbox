@@ -4,17 +4,26 @@
 #include "base/base.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "sbox/base/mesh.h"
-#include "sbox/base/xfile_loader.h"
+#include "sbox/base/base.h"
 
 #include "texture.h"
 #include <tchar.h>
 
-#define EFFECT_GEN_DIR "out/dbg/gen/samples/basic/texture/"
+#define EFFECT_GEN_DIR "out/dbg/gen/sbox/mesh/"
 #define SHADER_NAME "texture"
 using base::FilePath;
 
 #define kMeshPath "sbox/mesh/res/soldier.X"
+
+void Render(TextureEffect* effect, azer::Renderer* renderer, Mesh* mesh) {
+  for (uint32 i = 0; i < mesh->rgroups().size(); ++i) {
+    Mesh::RenderGroup rg = mesh->rgroups()[i];
+    azer::VertexBuffer* vb = rg.vb.get();
+    azer::IndicesBuffer* ib = rg.ib.get();
+    effect->Use(renderer);
+    renderer->Render(vb, ib, azer::kTriangleList);
+  }
+}
 
 class MainDelegate : public azer::WindowHost::Delegate {
  public:
@@ -34,6 +43,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     CHECK(renderer->GetFrontFace() == azer::kCounterClockwise);
     CHECK(renderer->GetCullingMode() == azer::kCullBack);
     renderer->SetCullingMode(azer::kCullNone);
+    renderer->SetFillMode(azer::kWireFrame);
 
     azer::Vector3 eye(0.0f, 0.0f, 5.0f);
     azer::Vector3 dir(0.0f, 0.0f, -1.0f);
@@ -46,27 +56,26 @@ class MainDelegate : public azer::WindowHost::Delegate {
   }
   virtual void OnUpdateScene(double time, float delta_time) {
     float rspeed = 3.14f * 2.0f / 4.0f;
-    azer::Radians rotate_speed(azer::kPI / 2.0);
-    world_ = std::move(azer::RotateY(rotate_speed * time));
+    azer::Radians camera_speed(azer::kPI / 2.0f);
+    UpdatedownCamera(&camera_, camera_speed, delta_time);
   }
 
   virtual void OnRenderScene(double time, float delta_time) {
     azer::RenderSystem* rs = azer::RenderSystem::Current();
     azer::Renderer* renderer = rs->GetDefaultRenderer();
     renderer->SetCullingMode(azer::kCullNone);
-    azer::Matrix4 pvw = proj_ * view_ * world_;
     DCHECK(NULL != rs);
     renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-    effect_->SetPVW(pvw);
-    effect_->Use(renderer);
-    mesh_.Render(effect_.get(), renderer);
+    effect_->SetPVW(camera_.GetProjViewMatrix());
+    effect_->SetWorld(azer::Matrix4::kIdentity);
+    Render(effect_.get(), renderer, &mesh_);
   }
 
   virtual void OnQuit() {}
  private:
+  azer::Camera camera_;
   azer::Matrix4 proj_;
   azer::Matrix4 view_;
-  azer::Matrix4 world_;
   Mesh mesh_;
   std::unique_ptr<TextureEffect> effect_;
 };

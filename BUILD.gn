@@ -3,5 +3,6 @@ group("sbox") {
   deps = [
     "base:sbox_base"
     "mesh:sbox_mesh"
+    "heightmap:sbox_heightmap"
   ]
 }
