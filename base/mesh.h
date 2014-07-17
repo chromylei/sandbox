@@ -2,6 +2,7 @@
 
 #include "base/basictypes.h"
 #include "azer/render/render.h"
+#include "sbox/base/skeleton.h"
 #include <vector>
 
 class Mesh {
@@ -49,4 +50,24 @@ class Mesh {
   std::vector<Material> materials_;
   std::vector<RenderGroup> rgroups_;
   DISALLOW_COPY_AND_ASSIGN(Mesh);
+};
+
+struct BoneAttached {
+  int index;
+  float weight;
+
+  BoneAttached()
+      : index(-1)
+      , weight(0.0f) {
+  }
+};
+typedef std::vector<BoneAttached> BoneWeigthVec;
+
+class SkinnedMesh : public Mesh {
+ public:
+  SkinnedMesh() {}
+  bool Load(const ::base::FilePath& filepath, azer::RenderSystem* rs);
+ private:
+  std::vector<BoneWeigthVec> group_weights_;
+  DISALLOW_COPY_AND_ASSIGN(SkinnedMesh);
 };

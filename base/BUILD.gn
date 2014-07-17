@@ -11,6 +11,8 @@ static_library("sbox_base") {
     "heightmap.h"
     "camera_control.cc"
     "camera_control.h"
+    "skeleton.cc"
+    "skeleton.h"
   ]
   deps = [
     "//third_party/assimp:assimp"

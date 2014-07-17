@@ -1,11 +1,6 @@
 #include "sbox/base/loader.h"
 
-#include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
-#include "assimp/material.h"
-#include "assimp/mesh.h"
-#include "assimp/scene.h"
-#include "azer/base/string.h"
+#include "sbox/base/assimp.h"
 #include "base/logging.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,7 +30,6 @@ void LoadVertex(const aiMesh* paiMesh, Mesh::Group* group) {
 
   group->mtrl_idx = paiMesh->mMaterialIndex;
 }
-
 }  // namespace
 
 bool LoadMesh(const ::base::FilePath& filepath, Mesh* mesh, azer::RenderSystem* rs) {
@@ -76,3 +70,4 @@ bool LoadMesh(const ::base::FilePath& filepath, Mesh* mesh, azer::RenderSystem* 
   mesh->Init(rs);
   return true;
 }
+

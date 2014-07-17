@@ -5,4 +5,4 @@
 #include "sbox/base/mesh.h"
 
 bool LoadMesh(const ::base::FilePath& filepath, Mesh* mesh,
-                azer::RenderSystem* rs);
+              azer::RenderSystem* rs);
