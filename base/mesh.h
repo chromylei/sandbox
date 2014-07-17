@@ -67,6 +67,8 @@ class SkinnedMesh : public Mesh {
  public:
   SkinnedMesh() {}
   bool Load(const ::base::FilePath& filepath, azer::RenderSystem* rs);
+
+  const Skeleton& GetSkeleton() const { return skeleton_;}
  private:
   Skeleton skeleton_;
   std::vector<BoneWeigthVec> group_weights_;

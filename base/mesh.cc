@@ -98,5 +98,7 @@ bool SkinnedMesh::Load(const ::base::FilePath& filepath, azer::RenderSystem* rs)
   }
 
   Mesh::Init(rs);
+
+  skeleton_.Load(scene->mRootNode);
   return true;
 }

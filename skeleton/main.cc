@@ -13,7 +13,7 @@
 #define SHADER_NAME "texture"
 using base::FilePath;
 
-#define kMeshPath "sbox/mesh/res/soldier.X"
+#define kMeshPath "sbox/skeleton/res/soldier.X"
 
 void Render(TextureEffect* effect, azer::Renderer* renderer, Mesh* mesh) {
   for (uint32 i = 0; i < mesh->rgroups().size(); ++i) {
@@ -56,7 +56,8 @@ class MainDelegate : public azer::WindowHost::Delegate {
         PerspectiveRHD3D(azer::Degree(45.0f), 4.0f / 3.0f, 0.10f, 100.0f));
 
     camera_.SetPosition(azer::Vector3(0.0f, 1.0f, 3.0f));
-    LoadXFile(::base::FilePath(::base::UTF8ToWide(kMeshPath)), &mesh_, rs);
+    mesh_.Load(::base::FilePath(::base::UTF8ToWide(kMeshPath)), rs);
+    LOG(ERROR) << "\n" << mesh_.GetSkeleton().DumpHierarchy();
   }
   virtual void OnUpdateScene(double time, float delta_time) {
     float rspeed = 3.14f * 2.0f / 4.0f;
@@ -81,7 +82,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
   azer::Camera camera_;
   azer::Matrix4 proj_;
   azer::Matrix4 view_;
-  Mesh mesh_;
+  SkinnedMesh mesh_;
   std::unique_ptr<TextureEffect> effect_;
 };
 

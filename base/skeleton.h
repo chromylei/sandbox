@@ -27,16 +27,22 @@ class Bone : public azer::TreeNode<Bone> {
 
 class Skeleton {
  public:
-  Skeleton();
+  Skeleton() {}
   void Render(azer::Renderer* renderer);
 
   int GetBoneIndex(const std::string& name);
+  bool Load(aiNode* root);
+
+  std::string DumpHierarchy() const;
+
+  Bone* root();
+  Bone* root() const;
  private:
   void HierarchyBone(aiNode* node, Bone* bone);
+  Bone* InitBone(aiNode* node);
   void AddNewBone(Bone* bone);
   std::map<azer::StringType, int> bone_map_;
   std::vector<Bone*> bone_;
-
   friend class SkinnedMesh;
   DISALLOW_COPY_AND_ASSIGN(Skeleton);
 };
