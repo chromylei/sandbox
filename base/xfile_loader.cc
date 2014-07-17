@@ -38,8 +38,7 @@ void LoadVertex(const aiMesh* paiMesh, Mesh::Group* group) {
 
 }  // namespace
 
-bool LoadXFile(const ::base::FilePath& filepath, Mesh* mesh,
-               azer::RenderSystem* rs) {
+bool LoadMesh(const ::base::FilePath& filepath, Mesh* mesh, azer::RenderSystem* rs) {
   Assimp::Importer importer;
   const aiScene* scene = importer.ReadFile(
       ::base::WideToUTF8(filepath.value()),
