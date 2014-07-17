@@ -1,4 +1,4 @@
-#include "sbox/base/xfile_loader.h"
+#include "sbox/base/loader.h"
 
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"

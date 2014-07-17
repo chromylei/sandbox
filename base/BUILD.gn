@@ -1,7 +1,8 @@
 
 static_library("sbox_base") {
   sources = [
-    "xfile_loader.cc"
+    "loader.cc"
+    "loader.h"
     "mesh.cc"
     "mesh.h"
     "grid.cc"
