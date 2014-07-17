@@ -97,3 +97,6 @@ std::string Skeleton::DumpHierarchy() const {
   root()->traverse(&traverser);
   return traverser.str();
 }
+
+void Skeleton::Render(azer::Renderer* renderer) {
+}
