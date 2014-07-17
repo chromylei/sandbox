@@ -1,17 +1,50 @@
 #include "sbox/base/skeleton.h"
+
 #include "sbox/base/assimp.h"
+#include "sbox/base/loader.h"
+#include "sbox/base/mesh.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/logging.h"
+#include "azer/render/render.h"
+
+#include "skeleton_effect.h"
+
+#define EFFECT_GEN_DIR "out/dbg/gen/sbox/base/"
+#define SHADER_NAME "skeletion_effect"
 
 Bone::Bone(const std::string& name, Bone* parent)
     : TreeNode<Bone>(::base::UTF8ToWide(name), parent)
     , bone_name_(name) {
 }
 
-bool Skeleton::Load(aiNode* root) {
+Skeleton::Skeleton() {
+  sphere_ = new Mesh;
+}
+
+Skeleton::~Skeleton() {
+  if (sphere_) delete sphere_;
+}
+
+bool Skeleton::Load(aiNode* root, azer::RenderSystem* rs) {
   Bone* new_bone = InitBone(root);
   HierarchyBone(root, new_bone);
   return true;
+}
+
+namespace {
+#define kSphereMeshPath "sbox/res/sphere.3DS"
+const azer::VertexDesc::Desc kVertexDesc[] = {
+  {"POSITION", 0, azer::kVec3},
+};
+}
+
+void Skeleton::InitVertex(azer::RenderSystem* rs) {
+  /*
+  azer::VertexDescPtr vertex_desc_ptr(
+      new azer::VertexDesc(kVertexDesc, arraysize(kVertexDesc)));
+  azer::VertexDataPtr vdata(new azer::VertexData(vertex_desc_ptr, 2));
+  */
+  LoadMesh(::base::FilePath(::base::UTF8ToWide(kSphereMeshPath)), sphere_, rs);
 }
 
 Bone* Skeleton::InitBone(aiNode* node) {
@@ -98,5 +131,27 @@ std::string Skeleton::DumpHierarchy() const {
   return traverser.str();
 }
 
+namespace {
+void RenderSphere(SkeletonEffect* effect, azer::Renderer* renderer, Mesh* mesh) {
+  for (uint32 i = 0; i < mesh->rgroups().size(); ++i) {
+    Mesh::RenderGroup rg = mesh->rgroups()[i];
+    azer::VertexBuffer* vb = rg.vb.get();
+    azer::IndicesBuffer* ib = rg.ib.get();
+    effect->SetSkeletonDiffuse(azer::Vector4(0.8f, 0.7f, 0.6f, 1.0f));
+    effect->Use(renderer);
+    renderer->Render(vb, azer::kTriangleList);
+  }
+}
+}  // namespace
+
+void Skeleton::Render(Bone* node, azer::Renderer* renderer) {
+  Bone* cur = node->first_child();
+  for (; cur != NULL; cur = cur->next_sibling()) {
+    RenderSphere((SkeletonEffect*)effect_.get(), renderer, sphere_);
+    Render(cur, renderer);
+  }
+}
+
 void Skeleton::Render(azer::Renderer* renderer) {
+  Render(root(), renderer);
 }

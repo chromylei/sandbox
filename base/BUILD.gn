@@ -1,3 +1,9 @@
+import("//build/templates/afx.gni")
+
+afx("sbox_base_effect") {
+  source = "skeleton.afx"
+  filename = "skeleton_effect"
+}
 
 static_library("sbox_base") {
   sources = [
@@ -17,5 +23,6 @@ static_library("sbox_base") {
   deps = [
     "//third_party/assimp:assimp"
     "//azer:azer"
+    ":sbox_base_effect"
   ]
 }

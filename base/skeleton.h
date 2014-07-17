@@ -11,7 +11,7 @@
 #include "azer/render/render.h"
 
 struct aiNode;  // for assimp
-
+class Mesh;
 class Bone : public azer::TreeNode<Bone> {
  public:
   explicit Bone(const std::string& name, Bone* parent);
@@ -27,22 +27,31 @@ class Bone : public azer::TreeNode<Bone> {
 
 class Skeleton {
  public:
-  Skeleton() {}
+  Skeleton();
+  ~Skeleton();
   void Render(azer::Renderer* renderer);
 
   int GetBoneIndex(const std::string& name);
-  bool Load(aiNode* root);
+  bool Load(aiNode* root, azer::RenderSystem* rs);
 
   std::string DumpHierarchy() const;
 
   Bone* root();
   Bone* root() const;
  private:
+  void Render(Bone* parent, azer::Renderer* renderer);
   void HierarchyBone(aiNode* node, Bone* bone);
   Bone* InitBone(aiNode* node);
   void AddNewBone(Bone* bone);
+  void InitVertex(azer::RenderSystem* rs);
   std::map<azer::StringType, int> bone_map_;
   std::vector<Bone*> bone_;
+
+  // for render skeleton
+  Mesh* sphere_;
+  std::unique_ptr<azer::Effect> effect_;
+  azer::VertexBufferPtr vb_;
+  
   friend class SkinnedMesh;
   DISALLOW_COPY_AND_ASSIGN(Skeleton);
 };
