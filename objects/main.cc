@@ -57,9 +57,9 @@ class MainDelegate : public azer::WindowHost::Delegate {
         PerspectiveRHD3D(azer::Degree(45.0f), 4.0f / 3.0f, 0.10f, 100.0f));
 
     camera_.SetPosition(azer::Vector3(0.0f, 0.0f, 5.0f));
-    LoadXFile(::base::FilePath(::base::UTF8ToWide(kSphereMeshPath)), &sphere_, rs);
-    LoadXFile(::base::FilePath(::base::UTF8ToWide(kTorusMeshPath)), &torus_, rs);
-    LoadXFile(::base::FilePath(::base::UTF8ToWide(kTeaportMeshPath)), &teaport_, rs);
+    LoadMesh(::base::FilePath(::base::UTF8ToWide(kSphereMeshPath)), &sphere_, rs);
+    LoadMesh(::base::FilePath(::base::UTF8ToWide(kTorusMeshPath)), &torus_, rs);
+    LoadMesh(::base::FilePath(::base::UTF8ToWide(kTeaportMeshPath)), &teaport_, rs);
 
     sphere_world_ = azer::Translate(azer::Vector3(-3.0f, 0.0f, 0.0f));
     teaport_world_ = azer::Translate(azer::Vector3(3.0f, 0.0f, 0.0f));
