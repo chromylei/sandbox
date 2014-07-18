@@ -9,6 +9,7 @@
 #include "azer/base/tree_node.h"
 #include "azer/base/string.h"
 #include "azer/render/render.h"
+#include "sbox/base/util.h"
 
 struct aiNode;  // for assimp
 class Mesh;
@@ -16,10 +17,12 @@ class Bone : public azer::TreeNode<Bone> {
  public:
   explicit Bone(const std::string& name, Bone* parent);
   const std::string&  bone_name() const { return bone_name_;}
+
+  azer::Vector3 position() const;
  private:
   std::string bone_name_;
   azer::Matrix4 transform_;
-  azer::Matrix4 local_transform_;
+  azer::Matrix4 combined_transform_;
 
   friend class Skeleton;
   DISALLOW_COPY_AND_ASSIGN(Bone);
@@ -53,6 +56,7 @@ class Skeleton {
   Mesh* sphere_;
   std::unique_ptr<azer::Effect> effect_;
   azer::VertexBufferPtr vb_;
+  LineRenderer line;
   
   friend class SkinnedMesh;
   DISALLOW_COPY_AND_ASSIGN(Skeleton);

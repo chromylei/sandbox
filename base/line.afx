@@ -1,0 +1,38 @@
+
+technique [
+    name = "line"
+    ps_main="ps_main"
+    vs_main="vs_main"
+    class_name="LineEffect"
+           ];
+
+[uniform_func="SetPVW"] uniform mat4 pvw;
+[uniform_func="SetDiffuse"] uniform vec4 diffuse;
+[uniform_func="SetPoint1"] uniform vec3 pt1;
+[uniform_func="SetPoint2"] uniform vec3 pt2;
+
+
+exchange struct VsOutput {
+  [semantic="position" system="true"]
+  vec4 position;
+};
+
+exchange struct VSInput {
+  vec3 position;
+};
+
+VsOutput vs_main(VSInput input) {
+  VsOutput o;
+  if (input.position.x < 0.5) {
+    o.position = pvw * vec4(pt1, 1.0);
+  } else {
+    o.position = pvw * vec4(pt2, 1.0);
+  }
+  return o;
+}
+
+[system="true" semantic="target"]
+vec4 ps_main(VsOutput o) {
+  return diffuse;
+}
+

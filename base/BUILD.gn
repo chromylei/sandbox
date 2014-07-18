@@ -5,6 +5,11 @@ afx("sbox_base_effect") {
   filename = "skeleton_effect"
 }
 
+afx("sbox_base_line_effect") {
+  source = "line.afx"
+  filename = "line"
+}
+
 static_library("sbox_base") {
   sources = [
     "loader.cc"
@@ -19,10 +24,13 @@ static_library("sbox_base") {
     "camera_control.h"
     "skeleton.cc"
     "skeleton.h"
+    "util.cc"
+    "util.h"
   ]
   deps = [
     "//third_party/assimp:assimp"
     "//azer:azer"
     ":sbox_base_effect"
+    ":sbox_base_line_effect"
   ]
 }
