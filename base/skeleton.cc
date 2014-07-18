@@ -7,10 +7,10 @@
 #include "base/logging.h"
 #include "azer/render/render.h"
 
-#include "skeleton_effect.h"
+#include "skeleton_effect.afx.h"
 
 #define EFFECT_GEN_DIR "out/dbg/gen/sbox/base/"
-#define SHADER_NAME "skeletion_effect"
+#define SHADER_NAME "skeleton.afx"
 
 Bone::Bone(const std::string& name, Bone* parent)
     : TreeNode<Bone>(::base::UTF8ToWide(name), parent)
@@ -38,13 +38,18 @@ const azer::VertexDesc::Desc kVertexDesc[] = {
 };
 }
 
-void Skeleton::InitVertex(azer::RenderSystem* rs) {
+void Skeleton::PrepareRender(azer::RenderSystem* rs) {
   /*
   azer::VertexDescPtr vertex_desc_ptr(
       new azer::VertexDesc(kVertexDesc, arraysize(kVertexDesc)));
   azer::VertexDataPtr vdata(new azer::VertexData(vertex_desc_ptr, 2));
   */
   LoadMesh(::base::FilePath(::base::UTF8ToWide(kSphereMeshPath)), sphere_, rs);
+
+  azer::ShaderArray shaders;
+  CHECK(azer::LoadVertexShader(EFFECT_GEN_DIR SHADER_NAME ".vs", &shaders));
+  CHECK(azer::LoadPixelShader(EFFECT_GEN_DIR SHADER_NAME ".ps", &shaders));
+  effect_.reset(new SkeletonEffect(shaders.GetShaderVec(), rs));
 }
 
 Bone* Skeleton::InitBone(aiNode* node) {
@@ -65,7 +70,9 @@ Bone* Skeleton::InitBone(aiNode* node) {
                                        node->mTransformation[3][1],
                                        node->mTransformation[3][2],
                                        node->mTransformation[3][3]);
+  new_bone->transform_.Transpose();
   AddNewBone(new_bone);
+  
   return new_bone;
 }
 
@@ -144,14 +151,38 @@ void RenderSphere(SkeletonEffect* effect, azer::Renderer* renderer, Mesh* mesh) 
 }
 }  // namespace
 
-void Skeleton::Render(Bone* node, azer::Renderer* renderer) {
+void Skeleton::Render(Bone* node, azer::Renderer* renderer,
+                      const azer::Matrix4& pv) {
+
+  azer::Matrix4 scale = azer::Scale(0.1f, 0.1f, 0.1f);
+  SkeletonEffect* effect = (SkeletonEffect*)effect_.get();
   Bone* cur = node->first_child();
   for (; cur != NULL; cur = cur->next_sibling()) {
-    RenderSphere((SkeletonEffect*)effect_.get(), renderer, sphere_);
-    Render(cur, renderer);
+    azer::Matrix4 world = std::move(node->local_transform_ * scale);
+    azer::Matrix4 pvw = std::move(pv * world);
+    effect->SetWorld(world);
+    effect->SetPVW(pvw);
+    RenderSphere(effect, renderer, sphere_);
+    Render(cur, renderer, pv);
   }
 }
 
-void Skeleton::Render(azer::Renderer* renderer) {
-  Render(root(), renderer);
+void Skeleton::Render(azer::Renderer* renderer, const azer::Matrix4& pvw) {
+  Render(root(), renderer, pvw);
+}
+
+void Skeleton::UpdateHierarchy(const azer::Matrix4& world) {
+  UpdateHierarchy(root(), world);
+}
+
+void Skeleton::UpdateHierarchy(Bone* bone, const azer::Matrix4& pmat) {
+  DCHECK(bone);
+  bone->local_transform_ = bone->transform_ * pmat;
+  if (bone->next_sibling()) {
+    UpdateHierarchy(bone->next_sibling(), pmat);
+  }
+
+  if (bone->first_child()) {
+    UpdateHierarchy(bone->first_child(), bone->local_transform_);
+  }
 }

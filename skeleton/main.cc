@@ -6,15 +6,16 @@
 #include "base/files/file_path.h"
 #include "sbox/base/base.h"
 
-#include "texture.h"
+#include "texture.afx.h"
 #include <tchar.h>
 
 #define EFFECT_GEN_DIR "out/dbg/gen/sbox/mesh/"
-#define SHADER_NAME "texture"
+#define SHADER_NAME "texture.afx"
 using base::FilePath;
 
 #define kMeshPath "sbox/skeleton/res/soldier.X"
 
+/*
 void Render(TextureEffect* effect, azer::Renderer* renderer, Mesh* mesh) {
   for (uint32 i = 0; i < mesh->rgroups().size(); ++i) {
     Mesh::RenderGroup rg = mesh->rgroups()[i];
@@ -26,6 +27,7 @@ void Render(TextureEffect* effect, azer::Renderer* renderer, Mesh* mesh) {
     renderer->Render(vb, ib, azer::kTriangleList);
   }
 }
+*/
 
 class MainDelegate : public azer::WindowHost::Delegate {
  public:
@@ -35,12 +37,6 @@ class MainDelegate : public azer::WindowHost::Delegate {
     azer::RenderSystem* rs = azer::RenderSystem::Current();
     azer::Renderer* renderer = rs->GetDefaultRenderer();
     azer::ShaderArray shaders;
-    CHECK(azer::LoadVertexShader(EFFECT_GEN_DIR SHADER_NAME ".vs", &shaders));
-    CHECK(azer::LoadPixelShader(EFFECT_GEN_DIR SHADER_NAME ".ps", &shaders));
-
-    effect_.reset(new TextureEffect(shaders.GetShaderVec(),
-                                    azer::RenderSystem::Current()));
-
     renderer->SetViewport(azer::Renderer::Viewport(0, 0, 800, 600));
     CHECK(renderer->GetFrontFace() == azer::kCounterClockwise);
     CHECK(renderer->GetCullingMode() == azer::kCullBack);
@@ -58,6 +54,8 @@ class MainDelegate : public azer::WindowHost::Delegate {
     camera_.SetPosition(azer::Vector3(0.0f, 1.0f, 3.0f));
     mesh_.Load(::base::FilePath(::base::UTF8ToWide(kMeshPath)), rs);
     LOG(ERROR) << "\n" << mesh_.GetSkeleton().DumpHierarchy();
+
+    mesh_.GetSkeleton().PrepareRender(rs);
   }
   virtual void OnUpdateScene(double time, float delta_time) {
     float rspeed = 3.14f * 2.0f / 4.0f;
@@ -72,9 +70,13 @@ class MainDelegate : public azer::WindowHost::Delegate {
     DCHECK(NULL != rs);
     renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
     renderer->ClearDepthAndStencil();
+    /*
     effect_->SetPVW(camera_.GetProjViewMatrix());
     effect_->SetWorld(azer::Matrix4::kIdentity);
     Render(effect_.get(), renderer, &mesh_);
+    */
+
+    mesh_.GetSkeleton().Render(renderer, azer::Matrix4::kIdentity);
   }
 
   virtual void OnQuit() {}
@@ -83,7 +85,6 @@ class MainDelegate : public azer::WindowHost::Delegate {
   azer::Matrix4 proj_;
   azer::Matrix4 view_;
   SkinnedMesh mesh_;
-  std::unique_ptr<TextureEffect> effect_;
 };
 
 int main(int argc, char* argv[]) {

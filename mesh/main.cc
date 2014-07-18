@@ -6,11 +6,11 @@
 #include "base/files/file_path.h"
 #include "sbox/base/base.h"
 
-#include "texture.h"
+#include "texture.afx.h"
 #include <tchar.h>
 
 #define EFFECT_GEN_DIR "out/dbg/gen/sbox/mesh/"
-#define SHADER_NAME "texture"
+#define SHADER_NAME "texture.afx"
 using base::FilePath;
 
 #define kMeshPath "sbox/mesh/res/soldier.X"

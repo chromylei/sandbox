@@ -29,21 +29,23 @@ class Skeleton {
  public:
   Skeleton();
   ~Skeleton();
-  void Render(azer::Renderer* renderer);
+  void PrepareRender(azer::RenderSystem* rs);
+  void Render(azer::Renderer* renderer, const azer::Matrix4& pvw);
 
   int GetBoneIndex(const std::string& name);
   bool Load(aiNode* root, azer::RenderSystem* rs);
 
   std::string DumpHierarchy() const;
 
+  void UpdateHierarchy(const azer::Matrix4& world);
   Bone* root();
   Bone* root() const;
  private:
-  void Render(Bone* parent, azer::Renderer* renderer);
+  void UpdateHierarchy(Bone* bone, const azer::Matrix4& mat);
+  void Render(Bone* node, azer::Renderer* renderer, const azer::Matrix4& pvw);
   void HierarchyBone(aiNode* node, Bone* bone);
   Bone* InitBone(aiNode* node);
   void AddNewBone(Bone* bone);
-  void InitVertex(azer::RenderSystem* rs);
   std::map<azer::StringType, int> bone_map_;
   std::vector<Bone*> bone_;
 
