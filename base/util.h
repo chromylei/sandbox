@@ -13,6 +13,7 @@ class LineRenderer {
 
   static const azer::VertexDesc::Desc kVertexDesc[];
  private:
+  azer::Vector4 pos1_, pos2_;
   azer::VertexBufferPtr vb_;
   std::unique_ptr<azer::Effect> effect_;
   DISALLOW_COPY_AND_ASSIGN(LineRenderer);

@@ -56,7 +56,7 @@ class Skeleton {
   Mesh* sphere_;
   std::unique_ptr<azer::Effect> effect_;
   azer::VertexBufferPtr vb_;
-  LineRenderer line;
+  LineRenderer line_;
   
   friend class SkinnedMesh;
   DISALLOW_COPY_AND_ASSIGN(Skeleton);

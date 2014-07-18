@@ -47,7 +47,7 @@ void Skeleton::PrepareRender(azer::RenderSystem* rs) {
   CHECK(azer::LoadPixelShader(EFFECT_GEN_DIR SHADER_NAME ".ps", &shaders));
   effect_.reset(new SkeletonEffect(shaders.GetShaderVec(), rs));
 
-  line.Init(rs);
+  line_.Init(rs);
 }
 
 Bone* Skeleton::InitBone(aiNode* node) {
@@ -172,8 +172,8 @@ void Skeleton::Render(Bone* node, azer::Renderer* renderer,
     if (node->parent()) {
       azer::Vector3 p1 = node->parent()->position();
       azer::Vector3 p2 = node->position();
-      line.SetPosition(p1, p2);      
-      line.Render(renderer, pv);
+      line_.SetPosition(p1, p2);      
+      line_.Render(renderer, pv);
     }
   }
 }
