@@ -53,6 +53,10 @@ void Skeleton::PrepareRender(azer::RenderSystem* rs) {
 }
 
 Bone* Skeleton::InitBone(aiNode* node) {
+  if (strlen(node->mName.data) == 0) {
+    return NULL;
+  }
+
   Bone* new_bone = new Bone(node->mName.data, NULL);
   new_bone->transform_ = azer::Matrix4(node->mTransformation[0][0],
                                        node->mTransformation[0][1],
@@ -72,7 +76,7 @@ Bone* Skeleton::InitBone(aiNode* node) {
                                        node->mTransformation[3][3]);
   new_bone->transform_.Transpose();
   AddNewBone(new_bone);
-  
+
   return new_bone;
 }
 
@@ -80,14 +84,17 @@ void Skeleton::HierarchyBone(aiNode* pnode, Bone* bone) {
   for (uint32 i = 0; i < pnode->mNumChildren; ++i) {
     aiNode* cnode = pnode->mChildren[i];
     Bone* new_bone = InitBone(cnode);
-    bone->AddChild(new_bone);
+    if (new_bone) {
+      bone->AddChild(new_bone);
+      HierarchyBone(cnode, new_bone);
+    }
   }
 }
 
 void Skeleton::AddNewBone(Bone* bone) {
   bone_.push_back(bone);
   DCHECK(bone_map_.find(bone->node_name()) == bone_map_.end())
-      << "cannot find bone " << bone->node_name();
+      << "bone \"" << bone->node_name() << "\" has been exist";
   bone_map_[bone->node_name()] = bone_.size() - 1;
 }
 
@@ -144,7 +151,6 @@ void RenderSphere(SkeletonEffect* effect, azer::Renderer* renderer, Mesh* mesh) 
     Mesh::RenderGroup rg = mesh->rgroups()[i];
     azer::VertexBuffer* vb = rg.vb.get();
     azer::IndicesBuffer* ib = rg.ib.get();
-    effect->SetSkeletonDiffuse(azer::Vector4(0.8f, 0.7f, 0.6f, 1.0f));
     effect->Use(renderer);
     renderer->Render(vb, azer::kTriangleList);
   }
@@ -158,10 +164,11 @@ void Skeleton::Render(Bone* node, azer::Renderer* renderer,
   SkeletonEffect* effect = (SkeletonEffect*)effect_.get();
   Bone* cur = node->first_child();
   for (; cur != NULL; cur = cur->next_sibling()) {
-    azer::Matrix4 world = std::move(node->local_transform_ * scale);
+    azer::Matrix4 world = std::move(cur->local_transform_ * scale);
     azer::Matrix4 pvw = std::move(pv * world);
     effect->SetWorld(world);
     effect->SetPVW(pvw);
+    effect->SetSkeletonDiffuse(azer::Vector4(0.1f, 0.1f, 0.1f, 1.0f));
     RenderSphere(effect, renderer, sphere_);
     Render(cur, renderer, pv);
   }
