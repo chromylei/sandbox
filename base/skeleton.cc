@@ -74,7 +74,7 @@ Bone* Skeleton::InitBone(aiNode* node) {
                                        node->mTransformation[3][1],
                                        node->mTransformation[3][2],
                                        node->mTransformation[3][3]);
-  new_bone->transform_.Transpose();
+  // new_bone->transform_.Transpose();
   AddNewBone(new_bone);
 
   return new_bone;
@@ -160,7 +160,7 @@ void RenderSphere(SkeletonEffect* effect, azer::Renderer* renderer, Mesh* mesh) 
 void Skeleton::Render(Bone* node, azer::Renderer* renderer,
                       const azer::Matrix4& pv) {
 
-  azer::Matrix4 scale = azer::Scale(0.1f, 0.1f, 0.1f);
+  azer::Matrix4 scale = azer::Scale(0.02f, 0.02f, 0.02f);
   SkeletonEffect* effect = (SkeletonEffect*)effect_.get();
   Bone* cur = node->first_child();
   for (; cur != NULL; cur = cur->next_sibling()) {
@@ -184,7 +184,7 @@ void Skeleton::UpdateHierarchy(const azer::Matrix4& world) {
 
 void Skeleton::UpdateHierarchy(Bone* bone, const azer::Matrix4& pmat) {
   DCHECK(bone);
-  bone->local_transform_ = bone->transform_ * pmat;
+  bone->local_transform_ = pmat * bone->transform_;
   if (bone->next_sibling()) {
     UpdateHierarchy(bone->next_sibling(), pmat);
   }
