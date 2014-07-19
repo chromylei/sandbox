@@ -12,8 +12,6 @@ afx("sbox_base_line_effect") {
 
 static_library("sbox_base") {
   sources = [
-    "loader.cc"
-    "loader.h"
     "mesh.cc"
     "mesh.h"
     "grid.cc"
@@ -24,6 +22,8 @@ static_library("sbox_base") {
     "camera_control.h"
     "skeleton.cc"
     "skeleton.h"
+    "skinned_mesh.cc"
+    "skinned_mesh.h"
     "util.cc"
     "util.h"
   ]

@@ -1,6 +1,6 @@
 #pragma once
 
 #include "sbox/base/mesh.h"
-#include "sbox/base/loader.h"
+#include "sbox/base/skinned_mesh.h"
 #include "sbox/base/skeleton.h"
 #include "sbox/base/camera_control.h"

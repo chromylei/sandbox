@@ -1,7 +1,6 @@
 #include "sbox/base/skeleton.h"
 
 #include "sbox/base/assimp.h"
-#include "sbox/base/loader.h"
 #include "sbox/base/util.h"
 #include "sbox/base/mesh.h"
 #include "base/strings/utf_string_conversions.h"

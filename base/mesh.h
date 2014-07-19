@@ -1,9 +1,15 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include "base/basictypes.h"
+#include "base/files/file_path.h"
 #include "azer/render/render.h"
 #include "sbox/base/skeleton.h"
-#include <vector>
+
+
+struct aiMesh;
 
 class Mesh {
  public:
@@ -52,26 +58,6 @@ class Mesh {
   DISALLOW_COPY_AND_ASSIGN(Mesh);
 };
 
-struct BoneAttached {
-  int index;
-  float weight;
-
-  BoneAttached()
-      : index(-1)
-      , weight(0.0f) {
-  }
-};
-typedef std::vector<BoneAttached> BoneWeigthVec;
-
-class SkinnedMesh : public Mesh {
- public:
-  SkinnedMesh() {}
-  bool Load(const ::base::FilePath& filepath, azer::RenderSystem* rs);
-
-  const Skeleton& GetSkeleton() const { return skeleton_;}
-  Skeleton& GetSkeleton() { return skeleton_;}
- private:
-  Skeleton skeleton_;
-  std::vector<BoneWeigthVec> group_weights_;
-  DISALLOW_COPY_AND_ASSIGN(SkinnedMesh);
-};
+void LoadVertex(const aiMesh* paiMesh, Mesh::Group* group);
+bool LoadMesh(const ::base::FilePath& filepath, Mesh* mesh,
+              azer::RenderSystem* rs);

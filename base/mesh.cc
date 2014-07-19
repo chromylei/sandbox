@@ -9,9 +9,6 @@ const azer::VertexDesc::Desc kVertexDesc[] = {
   {"COORDTEX", 0, azer::kVec2},
   {"NORMAL", 0, azer::kVec3},
 };
-
-void LoadAttachedBone(const aiMesh* paiMesh, BoneWeigthVec* vec,
-                        Skeleton* skeleton) {
 }
 
 void LoadVertex(const aiMesh* paiMesh, Mesh::Group* group) {
@@ -37,7 +34,7 @@ void LoadVertex(const aiMesh* paiMesh, Mesh::Group* group) {
 
   group->mtrl_idx = paiMesh->mMaterialIndex;
 }
-}
+
 void Mesh::Init(azer::RenderSystem* rs) {
   azer::VertexDescPtr vertex_desc_ptr(
       new azer::VertexDesc(kVertexDesc, arraysize(kVertexDesc)));
@@ -61,8 +58,7 @@ void Mesh::Init(azer::RenderSystem* rs) {
   }
 }
 
-
-bool SkinnedMesh::Load(const ::base::FilePath& filepath, azer::RenderSystem* rs) {
+bool LoadMesh(const ::base::FilePath& filepath, Mesh* mesh, azer::RenderSystem* rs) {
   Assimp::Importer importer;
   const aiScene* scene = importer.ReadFile(
       ::base::WideToUTF8(filepath.value()),
@@ -75,7 +71,7 @@ bool SkinnedMesh::Load(const ::base::FilePath& filepath, azer::RenderSystem* rs)
   for (uint32 i = 0; i < scene->mNumMeshes; ++i) {
     Mesh::Group group;
     LoadVertex(scene->mMeshes[i], &group);
-    mutable_groups()->push_back(group);
+    mesh->mutable_groups()->push_back(group);
   }
 
   for (uint32 i = 0; i < scene->mNumMaterials; ++i) {
@@ -92,13 +88,11 @@ bool SkinnedMesh::Load(const ::base::FilePath& filepath, azer::RenderSystem* rs)
                                                           realpath));
         Mesh::Material mtrl;
         mtrl.tex = texptr;
-        mutable_materials()->push_back(mtrl);
+        mesh->mutable_materials()->push_back(mtrl);
       }
     }
   }
 
-  Mesh::Init(rs);
-
-  skeleton_.Load(scene->mRootNode, rs);
+  mesh->Init(rs);
   return true;
 }
