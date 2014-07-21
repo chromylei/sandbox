@@ -6,9 +6,8 @@ technique [
     class_name="TextureEffect"
            ];
 
-[uniform_func="SetPVW"] uniform mat4 pvw;
-[uniform_func="SetWorld"] uniform mat4 world;
 [uniform_func="SetDiffuseTex"] uniform Texture2D tex;
+[uniform_func="SetProjView"] uniform mat4 pv;
 
 
 exchange struct VsOutput {
@@ -19,16 +18,16 @@ exchange struct VsOutput {
 };
 
 exchange struct VSInput {
-  vec3 position;
+  vec4 position;
   vec2 coordtex;
-  vec3 normal;
+  vec4 normal;
 };
 
 VsOutput vs_main(VSInput input) {
   VsOutput o;
-  o.position = pvw * vec4(input.position, 1.0);
+  o.position = pv * input.position;
   o.coordtex = input.coordtex;
-  o.normal = world * vec4(input.normal, 0.0);
+  o.normal = input.normal;
   return o;
 }
 

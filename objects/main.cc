@@ -10,7 +10,7 @@
 #include <tchar.h>
 
 #define EFFECT_GEN_DIR "out/dbg/gen/sbox/objects/"
-#define SHADER_NAME "diffuse.afxc"
+#define SHADER_NAME "diffuse.afx"
 using base::FilePath;
 
 #define kSphereMeshPath "sbox/res/sphere.3DS"

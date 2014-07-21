@@ -20,10 +20,10 @@ class Mesh {
   };
 
   struct Vertex {
-    azer::Vector3 position;
+    azer::Vector4 position;
     azer::Vector2 coordtex;
-    azer::Vector3 normal;
-    Vertex(const azer::Vector3 p0, const azer::Vector2 p1, const azer::Vector3 p2)
+    azer::Vector4 normal;
+    Vertex(const azer::Vector4 p0, const azer::Vector2 p1, const azer::Vector4 p2)
       : position(p0)
       , coordtex(p1)
       , normal(p2)
@@ -51,7 +51,7 @@ class Mesh {
   std::vector<Material>* mutable_materials() { return &materials_;}
 
   void Init(azer::RenderSystem* rs);
- private:
+ protected:
   std::vector<Group> groups_;
   std::vector<Material> materials_;
   std::vector<RenderGroup> rgroups_;

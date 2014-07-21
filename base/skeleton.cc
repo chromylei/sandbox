@@ -89,15 +89,15 @@ void Skeleton::HierarchyBone(aiNode* pnode, Bone* bone) {
 }
 
 void Skeleton::AddNewBone(Bone* bone) {
-  bone_.push_back(bone);
   DCHECK(bone_map_.find(bone->node_name()) == bone_map_.end())
       << "bone \"" << bone->node_name() << "\" has been exist";
+  bone_.push_back(bone);
   bone_map_[bone->node_name()] = bone_.size() - 1;
 }
 
-int Skeleton::GetBoneIndex(const std::string& name) {
+int Skeleton::GetBoneIndex(const std::string& name) const {
   auto iter = bone_map_.find(::base::UTF8ToWide(name));
-  DCHECK(iter != bone_map_.end());
+  DCHECK(iter != bone_map_.end()) << "cannot find bone: \"" << name << "\"";
   return iter->second;
 }
 
@@ -114,11 +114,17 @@ Bone* Skeleton::root() const {
 namespace {
 class SkeletonHierarchyTraverser : public azer::TreeNode<Bone>::Traverser {
  public:
-  SkeletonHierarchyTraverser() : depth_(0) {}
+  SkeletonHierarchyTraverser(const Skeleton* skeleton)
+      : depth_(0)
+      , skeleton_(skeleton) {
+  }
+
   virtual bool OnVisitBegin(Bone* bone) {
     std::string ident(depth_ * 2, ' ');
     std::stringstream ss;
-    ss << ident << bone->bone_name() << "\n";
+    int index = skeleton_->GetBoneIndex(bone->bone_name());
+    ss << ident << bone->bone_name() << "(index: " << index
+       << ", position: " << bone->position() << ")\n";
     depth_++;
     dump_.append(ss.str());
     return true;
@@ -132,12 +138,13 @@ class SkeletonHierarchyTraverser : public azer::TreeNode<Bone>::Traverser {
  private:
   int depth_;
   std::string dump_;
+  const Skeleton* skeleton_;
   DISALLOW_COPY_AND_ASSIGN(SkeletonHierarchyTraverser);
 };
 }  // namespace
 
 std::string Skeleton::DumpHierarchy() const {
-  SkeletonHierarchyTraverser traverser;
+  SkeletonHierarchyTraverser traverser(this);
   root()->traverse(&traverser);
   return traverser.str();
 }

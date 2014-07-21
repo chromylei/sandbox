@@ -16,19 +16,30 @@ struct BoneAttached {
       : index(-1)
       , weight(0.0f) {
   }
+
+  BoneAttached(int idx, float w)
+      : index(idx)
+      , weight(w) {
+  }
 };
+
+
 typedef std::vector<BoneAttached> BoneWeights;
 typedef std::vector<BoneWeights> BoneWeightsVec;
 
-class SoftSkinnedMesh : Mesh {
+class SoftSkinnedMesh : public Mesh {
  public:
   SoftSkinnedMesh() {}
   bool Load(const ::base::FilePath& filepath, azer::RenderSystem* rs);
 
   const Skeleton& GetSkeleton() const { return skeleton_;}
   Skeleton& GetSkeleton() { return skeleton_;}
+
+  void UpdateVertex(const azer::Matrix4& world);
  private:
-  BoneWeightsVec group_weights_;
+  azer::Matrix4 CalcPosition(const azer::Matrix4& pv, const BoneWeights& weights);
+  void LoadBoneWeights(const aiMesh* paiMesh, BoneWeightsVec* vec);
+  std::vector<BoneWeightsVec> group_weights_;
   Skeleton skeleton_;
   DISALLOW_COPY_AND_ASSIGN(SoftSkinnedMesh);
 };

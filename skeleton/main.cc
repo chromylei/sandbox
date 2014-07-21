@@ -39,9 +39,10 @@ class MainDelegate : public azer::WindowHost::Delegate {
 
     camera_.SetPosition(azer::Vector3(0.0f, 1.0f, 3.0f));
     mesh_.Load(::base::FilePath(::base::UTF8ToWide(kMeshPath)), rs);
-    LOG(ERROR) << "\n" << mesh_.GetSkeleton().DumpHierarchy();
 
     mesh_.GetSkeleton().PrepareRender(rs);
+    mesh_.GetSkeleton().UpdateHierarchy(azer::Matrix4::kIdentity);
+    LOG(ERROR) << "\n" << mesh_.GetSkeleton().DumpHierarchy();
   }
   virtual void OnUpdateScene(double time, float delta_time) {
     float rspeed = 3.14f * 2.0f / 4.0f;

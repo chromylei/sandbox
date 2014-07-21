@@ -5,9 +5,9 @@
 
 namespace {
 const azer::VertexDesc::Desc kVertexDesc[] = {
-  {"POSITION", 0, azer::kVec3},
+  {"POSITION", 0, azer::kVec4},
   {"COORDTEX", 0, azer::kVec2},
-  {"NORMAL", 0, azer::kVec3},
+  {"NORMAL", 0, azer::kVec4},
 };
 }
 
@@ -19,9 +19,9 @@ void LoadVertex(const aiMesh* paiMesh, Mesh::Group* group) {
     const aiVector3D& texcoord =
         paiMesh->HasTextureCoords(0) ? (paiMesh->mTextureCoords[0][i]) : zero3d;
 
-    Mesh::Vertex vertex(azer::Vector3(pos.x, pos.y, pos.z),
+    Mesh::Vertex vertex(azer::Vector4(pos.x, pos.y, pos.z, 1.0),
                         azer::Vector2(texcoord.x, texcoord.y),
-                        azer::Vector3(normal.x, normal.y, normal.z));
+                        azer::Vector4(normal.x, normal.y, normal.z, 0.0));
     group->vertices.push_back(vertex);
   }
 
@@ -36,6 +36,9 @@ void LoadVertex(const aiMesh* paiMesh, Mesh::Group* group) {
 }
 
 void Mesh::Init(azer::RenderSystem* rs) {
+  azer::VertexBuffer::Options vbopt;
+  vbopt.usage = azer::GraphicBuffer::kDynamic;
+  vbopt.cpu_access = azer::kCPUWrite;
   azer::VertexDescPtr vertex_desc_ptr(
       new azer::VertexDesc(kVertexDesc, arraysize(kVertexDesc)));
   for (uint32 i = 0; i < groups_.size(); ++i) {
@@ -44,7 +47,7 @@ void Mesh::Init(azer::RenderSystem* rs) {
     azer::VertexDataPtr vdata(new azer::VertexData(vertex_desc_ptr, vertex_num)); 
     memcpy(vdata->pointer(), (uint8*)&(groups_[i].vertices[0]),
            sizeof(Mesh::Vertex) * vertex_num);
-    rgroup.vb.reset(rs->CreateVertexBuffer(azer::VertexBuffer::Options(), vdata));
+    rgroup.vb.reset(rs->CreateVertexBuffer(vbopt, vdata));
 
     azer::IndicesDataPtr idata_ptr(
         new azer::IndicesData(vertex_num, azer::IndicesData::kUint32,

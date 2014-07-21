@@ -56,7 +56,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
         PerspectiveRHD3D(azer::Degree(45.0f), 4.0f / 3.0f, 0.10f, 100.0f));
 
     camera_.SetPosition(azer::Vector3(0.0f, 2.0f, 3.0f));
-    LoadXFile(::base::FilePath(::base::UTF8ToWide(kMeshPath)), &mesh_, rs);
+    LoadMesh(::base::FilePath(::base::UTF8ToWide(kMeshPath)), &mesh_, rs);
   }
   virtual void OnUpdateScene(double time, float delta_time) {
     float rspeed = 3.14f * 2.0f / 4.0f;

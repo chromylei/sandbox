@@ -19,6 +19,7 @@ class Bone : public azer::TreeNode<Bone> {
   const std::string&  bone_name() const { return bone_name_;}
 
   azer::Vector3 position() const;
+  const azer::Matrix4& combined() const { return combined_transform_;}
  private:
   std::string bone_name_;
   azer::Matrix4 transform_;
@@ -34,8 +35,9 @@ class Skeleton {
   ~Skeleton();
   void PrepareRender(azer::RenderSystem* rs);
   void Render(azer::Renderer* renderer, const azer::Matrix4& pvw);
-
-  int GetBoneIndex(const std::string& name);
+  
+  int GetBoneIndex(const std::string& name) const;
+  Bone* GetBone(int idx) { return bone_[idx];}
   bool Load(aiNode* root, azer::RenderSystem* rs);
 
   std::string DumpHierarchy() const;
