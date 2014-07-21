@@ -4,6 +4,7 @@
 #include "sbox/base/util.h"
 #include "sbox/base/mesh.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/logging.h"
 #include "azer/render/render.h"
 
@@ -50,27 +51,31 @@ void Skeleton::PrepareRender(azer::RenderSystem* rs) {
 }
 
 Bone* Skeleton::InitBone(aiNode* node) {
-  if (strlen(node->mName.data) == 0) {
-    return NULL;
+  std::string name;
+  if (strlen(node->mName.data) > 0) {
+    name = std::string(node->mName.data);
+  } else {
+    name = ::base::StringPrintf("__anonymous__%d", empty_skeleton_++);
   }
 
-  Bone* new_bone = new Bone(node->mName.data, NULL);
-  new_bone->transform_ = azer::Matrix4(node->mTransformation[0][0],
-                                       node->mTransformation[0][1],
-                                       node->mTransformation[0][2],
-                                       node->mTransformation[0][3],
-                                       node->mTransformation[1][0],
-                                       node->mTransformation[1][1],
-                                       node->mTransformation[1][2],
-                                       node->mTransformation[1][3],
-                                       node->mTransformation[2][0],
-                                       node->mTransformation[2][1],
-                                       node->mTransformation[2][2],
-                                       node->mTransformation[2][3],
-                                       node->mTransformation[3][0],
-                                       node->mTransformation[3][1],
-                                       node->mTransformation[3][2],
-                                       node->mTransformation[3][3]);
+  Bone* new_bone = new Bone(name, NULL);
+  aiMatrix4x4 aimat = node->mTransformation.Inverse();
+  new_bone->transform_ = azer::Matrix4(aimat[0][0],
+                                       aimat[0][1],
+                                       aimat[0][2],
+                                       aimat[0][3],
+                                       aimat[1][0],
+                                       aimat[1][1],
+                                       aimat[1][2],
+                                       aimat[1][3],
+                                       aimat[2][0],
+                                       aimat[2][1],
+                                       aimat[2][2],
+                                       aimat[2][3],
+                                       aimat[3][0],
+                                       aimat[3][1],
+                                       aimat[3][2],
+                                       aimat[3][3]);
   // new_bone->transform_.Transpose();
   AddNewBone(new_bone);
 
@@ -124,7 +129,23 @@ class SkeletonHierarchyTraverser : public azer::TreeNode<Bone>::Traverser {
     std::stringstream ss;
     int index = skeleton_->GetBoneIndex(bone->bone_name());
     ss << ident << bone->bone_name() << "(index: " << index
-       << ", position: " << bone->position() << ")\n";
+       << ", position: " << bone->position() << ")";
+
+    ss << "\n" << ident << ident << "Combined\n";
+    for (int i = 0; i < 4; ++i) {
+      ss << "\n" << ident << ident;
+      for (int j = 0; j < 4; ++j) {        
+        ss << bone->combined()[i][j] << "\t\t";
+      }
+    }
+    ss << "\n" << ident << ident << "LocalTransform\n";
+    for (int i = 0; i < 4; ++i) {
+      ss << "\n" << ident << ident;
+      for (int j = 0; j < 4; ++j) {        
+        ss << bone->local()[i][j] << "\t\t";
+      }
+    }
+    ss << "\n";
     depth_++;
     dump_.append(ss.str());
     return true;
@@ -178,7 +199,7 @@ void Skeleton::Render(Bone* node, azer::Renderer* renderer,
     if (node->parent()) {
       azer::Vector3 p1 = node->parent()->position();
       azer::Vector3 p2 = node->position();
-      line_.SetPosition(p1, p2);      
+      line_.SetPosition(p1, p2);
       line_.Render(renderer, pv);
     }
   }

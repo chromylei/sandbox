@@ -14,10 +14,11 @@
 using base::FilePath;
 
 #define kMeshPath "sbox/skinned_mesh1/res/soldier.X"
+// #define kMeshPath "sbox/res/d3d/tiny.X"
 
 void Render(TextureEffect* effect, azer::Renderer* renderer,
             const azer::Matrix4& pv, SoftSkinnedMesh* mesh) {
-  for (uint32 i = 1; i < mesh->rgroups().size(); ++i) {
+  for (uint32 i = 0; i < mesh->rgroups().size(); ++i) {
     Mesh::RenderGroup rg = mesh->rgroups()[i];
     azer::VertexBuffer* vb = rg.vb.get();
     azer::IndicesBuffer* ib = rg.ib.get();
@@ -26,7 +27,6 @@ void Render(TextureEffect* effect, azer::Renderer* renderer,
     effect->Use(renderer);
     effect->SetProjView(pv);
     renderer->Render(vb, ib, azer::kTriangleList);
-    break;
   }
 }
 

@@ -20,6 +20,7 @@ class Bone : public azer::TreeNode<Bone> {
 
   azer::Vector3 position() const;
   const azer::Matrix4& combined() const { return combined_transform_;}
+  const azer::Matrix4& local() const { return transform_;}
  private:
   std::string bone_name_;
   azer::Matrix4 transform_;
@@ -59,6 +60,7 @@ class Skeleton {
   std::unique_ptr<azer::Effect> effect_;
   azer::VertexBufferPtr vb_;
   LineRenderer line_;
+  int empty_skeleton_;
   
   friend class SkinnedMesh;
   DISALLOW_COPY_AND_ASSIGN(Skeleton);
