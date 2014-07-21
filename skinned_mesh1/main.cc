@@ -58,6 +58,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
         PerspectiveRHD3D(azer::Degree(45.0f), 4.0f / 3.0f, 0.10f, 100.0f));
 
     camera_.SetPosition(azer::Vector3(0.0f, 1.0f, 3.0f));
+    // camera_.SetPosition(azer::Vector3(0.0f, 1.0f, 800.0f));
     mesh_.Load(::base::FilePath(::base::UTF8ToWide(kMeshPath)), rs);
     mesh_.GetSkeleton().PrepareRender(rs);
     mesh_.GetSkeleton().UpdateHierarchy(azer::Matrix4::kIdentity);
@@ -68,7 +69,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     float rspeed = 3.14f * 2.0f / 4.0f;
     azer::Radians camera_speed(azer::kPI / 2.0f);
     UpdatedownCamera(&camera_, camera_speed, delta_time);
-    azer::Matrix4 world = azer::Matrix4::kIdentity;
+    azer::Matrix4 world = azer::RotateY(camera_speed * time);
     mesh_.UpdateVertex(world);
   }
 

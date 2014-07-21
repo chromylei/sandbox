@@ -21,12 +21,15 @@ class Bone : public azer::TreeNode<Bone> {
   azer::Vector3 position() const;
   const azer::Matrix4& combined() const { return combined_transform_;}
   const azer::Matrix4& local() const { return transform_;}
+  const azer::Matrix4& offset() const { return offset_;}
  private:
   std::string bone_name_;
   azer::Matrix4 transform_;
   azer::Matrix4 combined_transform_;
+  azer::Matrix4 offset_;
 
   friend class Skeleton;
+  friend class SoftSkinnedMesh;
   DISALLOW_COPY_AND_ASSIGN(Bone);
 };
 
@@ -61,7 +64,8 @@ class Skeleton {
   azer::VertexBufferPtr vb_;
   LineRenderer line_;
   int empty_skeleton_;
-  
+
+  azer::Matrix4 global_inverse_;
   friend class SkinnedMesh;
   DISALLOW_COPY_AND_ASSIGN(Skeleton);
 };

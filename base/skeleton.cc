@@ -16,7 +16,8 @@
 
 Bone::Bone(const std::string& name, Bone* parent)
     : TreeNode<Bone>(::base::UTF8ToWide(name), parent)
-    , bone_name_(name) {
+    , bone_name_(name)
+    , offset_(azer::Matrix4::kIdentity) {
 }
 
 azer::Vector3 Bone::position() const {
@@ -34,6 +35,12 @@ Skeleton::~Skeleton() {
 }
 
 bool Skeleton::Load(aiNode* root, azer::RenderSystem* rs) {
+  aiMatrix4x4 mat = root->mTransformation;
+  mat.Inverse();
+  global_inverse_ = azer::Matrix4(mat[0][0], mat[0][1], mat[0][2], mat[0][3],
+                                  mat[1][0], mat[1][1], mat[1][2], mat[1][3],
+                                  mat[2][0], mat[2][1], mat[2][2], mat[2][3],
+                                  mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
   Bone* new_bone = InitBone(root);
   HierarchyBone(root, new_bone);
   return true;
@@ -56,27 +63,17 @@ Bone* Skeleton::InitBone(aiNode* node) {
     name = std::string(node->mName.data);
   } else {
     name = ::base::StringPrintf("__anonymous__%d", empty_skeleton_++);
+    return NULL;
   }
 
   Bone* new_bone = new Bone(name, NULL);
-  aiMatrix4x4 aimat = node->mTransformation.Inverse();
-  new_bone->transform_ = azer::Matrix4(aimat[0][0],
-                                       aimat[0][1],
-                                       aimat[0][2],
-                                       aimat[0][3],
-                                       aimat[1][0],
-                                       aimat[1][1],
-                                       aimat[1][2],
-                                       aimat[1][3],
-                                       aimat[2][0],
-                                       aimat[2][1],
-                                       aimat[2][2],
-                                       aimat[2][3],
-                                       aimat[3][0],
-                                       aimat[3][1],
-                                       aimat[3][2],
-                                       aimat[3][3]);
-  // new_bone->transform_.Transpose();
+  aiMatrix4x4 mat = node->mTransformation;
+  // mat.Inverse();
+  new_bone->transform_ = azer::Matrix4(mat[0][0], mat[0][1], mat[0][2], mat[0][3],
+                                       mat[1][0], mat[1][1], mat[1][2], mat[1][3],
+                                       mat[2][0], mat[2][1], mat[2][2], mat[2][3],
+                                       mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
+    // new_bone->transform_.Transpose();
   AddNewBone(new_bone);
 
   return new_bone;
@@ -131,20 +128,29 @@ class SkeletonHierarchyTraverser : public azer::TreeNode<Bone>::Traverser {
     ss << ident << bone->bone_name() << "(index: " << index
        << ", position: " << bone->position() << ")";
 
-    ss << "\n" << ident << ident << "Combined\n";
+    /*
+    ss << "\n" << ident << ident << "Combined";
     for (int i = 0; i < 4; ++i) {
       ss << "\n" << ident << ident;
       for (int j = 0; j < 4; ++j) {        
         ss << bone->combined()[i][j] << "\t\t";
       }
     }
-    ss << "\n" << ident << ident << "LocalTransform\n";
+    ss << "\n" << ident << ident << "LocalTransform";
     for (int i = 0; i < 4; ++i) {
       ss << "\n" << ident << ident;
       for (int j = 0; j < 4; ++j) {        
         ss << bone->local()[i][j] << "\t\t";
       }
     }
+    ss << "\n" << ident << ident << "Local";
+    for (int i = 0; i < 4; ++i) {
+      ss << "\n" << ident << ident;
+      for (int j = 0; j < 4; ++j) {        
+        ss << bone->offset()[i][j] << "\t\t";
+      }
+    }
+    */
     ss << "\n";
     depth_++;
     dump_.append(ss.str());
@@ -215,10 +221,11 @@ void Skeleton::UpdateHierarchy(const azer::Matrix4& world) {
 
 void Skeleton::UpdateHierarchy(Bone* bone, const azer::Matrix4& pmat) {
   DCHECK(bone);
-  bone->combined_transform_ = pmat * bone->transform_;
+  const azer::Matrix4& trans = pmat * bone->transform_;
+  bone->combined_transform_ = trans * bone->offset_;
   Bone* child = bone->first_child();
   while (child) {
-    UpdateHierarchy(child, bone->combined_transform_);
+    UpdateHierarchy(child, trans);
     child = child->next_sibling();
   }
 }

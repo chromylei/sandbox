@@ -6,6 +6,13 @@ void SoftSkinnedMesh::LoadBoneWeights(const aiMesh* paiMesh, BoneWeightsVec* vec
   for (uint32 i = 0; i < paiMesh->mNumBones; ++i) {
     std::string bone_name = paiMesh->mBones[i]->mName.data;
     int bone_index = skeleton_.GetBoneIndex(bone_name);
+    Bone* bone = skeleton_.GetBone(bone_index);
+    aiMatrix4x4 mat = paiMesh->mBones[i]->mOffsetMatrix;
+    bone->offset_ = azer::Matrix4(mat[0][0], mat[0][1], mat[0][2], mat[0][3],
+                                  mat[1][0], mat[1][1], mat[1][2], mat[1][3],
+                                  mat[2][0], mat[2][1], mat[2][2], mat[2][3],
+                                  mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
+    LOG(ERROR) << bone_index;
     for (int j = 0; j < paiMesh->mBones[i]->mNumWeights; ++j) {
       int vertex_id = paiMesh->mBones[i]->mWeights[j].mVertexId;
       float weight = paiMesh->mBones[i]->mWeights[j].mWeight;
@@ -80,7 +87,6 @@ void SoftSkinnedMesh::UpdateVertex(const azer::Matrix4& world) {
     for (int j = 0; j < group.vertices.size(); ++j) {
       azer::Matrix4 new_world = std::move(CalcPosition(world, weights[j]));
       vertex[j].position =  std::move(new_world* group.vertices[j].position);
-      // vertex[j].position =  std::move(azer::Matrix4::kIdentity * group.vertices[j].position);
       vertex[j].coordtex = group.vertices[j].coordtex;
       vertex[j].normal = new_world * group.vertices[j].normal;
     }
