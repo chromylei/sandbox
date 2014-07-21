@@ -20,9 +20,9 @@ struct BoneAttached {
 typedef std::vector<BoneAttached> BoneWeights;
 typedef std::vector<BoneWeights> BoneWeightsVec;
 
-class SkinnedMesh : public Mesh {
+class SoftSkinnedMesh : Mesh {
  public:
-  SkinnedMesh() {}
+  SoftSkinnedMesh() {}
   bool Load(const ::base::FilePath& filepath, azer::RenderSystem* rs);
 
   const Skeleton& GetSkeleton() const { return skeleton_;}
@@ -30,5 +30,5 @@ class SkinnedMesh : public Mesh {
  private:
   BoneWeightsVec group_weights_;
   Skeleton skeleton_;
-  DISALLOW_COPY_AND_ASSIGN(SkinnedMesh);
+  DISALLOW_COPY_AND_ASSIGN(SoftSkinnedMesh);
 };

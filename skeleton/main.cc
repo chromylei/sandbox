@@ -65,7 +65,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
   azer::Camera camera_;
   azer::Matrix4 proj_;
   azer::Matrix4 view_;
-  SkinnedMesh mesh_;
+  SoftSkinnedMesh mesh_;
 };
 
 int main(int argc, char* argv[]) {

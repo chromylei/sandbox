@@ -8,7 +8,8 @@ void LoadBoneWeights(const aiMesh* paiMesh, BoneWeights* vec) {
   }
 }
 
-bool SkinnedMesh::Load(const ::base::FilePath& filepath, azer::RenderSystem* rs) {
+bool SoftSkinnedMesh::Load(const ::base::FilePath& filepath,
+                           azer::RenderSystem* rs) {
   Assimp::Importer importer;
   const aiScene* scene = importer.ReadFile(
       ::base::WideToUTF8(filepath.value()),
