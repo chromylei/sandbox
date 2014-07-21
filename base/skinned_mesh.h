@@ -43,3 +43,4 @@ class SoftSkinnedMesh : public Mesh {
   Skeleton skeleton_;
   DISALLOW_COPY_AND_ASSIGN(SoftSkinnedMesh);
 };
+

@@ -6,6 +6,7 @@ group("sbox") {
     "mesh:sbox_mesh"
     "skeleton:sbox_skeleton"
     "skinned_mesh1:sbox_soft_skinned_mesh"
+    "skinned_mesh2:sbox_hard_skinned_mesh"
     "heightmap:sbox_heightmap"
   ]
 }

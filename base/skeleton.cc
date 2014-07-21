@@ -195,11 +195,9 @@ void Skeleton::UpdateHierarchy(const azer::Matrix4& world) {
 void Skeleton::UpdateHierarchy(Bone* bone, const azer::Matrix4& pmat) {
   DCHECK(bone);
   bone->combined_transform_ = pmat * bone->transform_;
-  if (bone->next_sibling()) {
-    UpdateHierarchy(bone->next_sibling(), pmat);
-  }
-
-  if (bone->first_child()) {
-    UpdateHierarchy(bone->first_child(), bone->combined_transform_);
+  Bone* child = bone->first_child();
+  while (child) {
+    UpdateHierarchy(child, bone->combined_transform_);
+    child = child->next_sibling();
   }
 }

@@ -80,6 +80,7 @@ void SoftSkinnedMesh::UpdateVertex(const azer::Matrix4& world) {
     for (int j = 0; j < group.vertices.size(); ++j) {
       azer::Matrix4 new_world = std::move(CalcPosition(world, weights[j]));
       vertex[j].position =  std::move(new_world* group.vertices[j].position);
+      // vertex[j].position =  std::move(azer::Matrix4::kIdentity * group.vertices[j].position);
       vertex[j].coordtex = group.vertices[j].coordtex;
       vertex[j].normal = new_world * group.vertices[j].normal;
     }
