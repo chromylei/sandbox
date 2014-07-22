@@ -31,7 +31,7 @@ class SoftSkinnedMesh : public Mesh {
  public:
   SoftSkinnedMesh() {}
   bool Load(const ::base::FilePath& filepath, azer::RenderSystem* rs);
-
+  
   const Skeleton& GetSkeleton() const { return skeleton_;}
   Skeleton& GetSkeleton() { return skeleton_;}
 

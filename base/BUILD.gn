@@ -24,6 +24,8 @@ static_library("sbox_base") {
     "skeleton.h"
     "skinned_mesh.cc"
     "skinned_mesh.h"
+    "hardware_skinned_mesh.cc"
+    "hardware_skinned_mesh.h"
     "util.cc"
     "util.h"
   ]
