@@ -8,9 +8,9 @@ afx("sbox_skeleton_effect") {
 executable("sbox_skeleton") {
   sources = ["main.cc"]
   deps = [
-    "//base:appinit"
-    "//third_party/assimp:assimp"
-    "../base:sbox_base"
-    ":sbox_skeleton_effect"
+    "//base:appinit",
+    "//third_party/assimp:assimp",
+    "../base:sbox_base",
+    ":sbox_skeleton_effect",
   ]
 }

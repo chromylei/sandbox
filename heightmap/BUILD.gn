@@ -8,10 +8,10 @@ afx("sbox_heightmap_effect") {
 executable("sbox_heightmap") {
   sources = ["main.cc"]
   deps = [
-    "//base:appinit"
-    "//azer:azer"
-    "//ui/gfx:gfx"
-    "../base:sbox_base"
-    ":sbox_heightmap_effect"
+    "//base:appinit",
+    "//azer:azer",
+    "//ui/gfx:gfx",
+    "../base:sbox_base",
+    ":sbox_heightmap_effect",
   ]
 }

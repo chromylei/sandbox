@@ -1,0 +1,46 @@
+
+technique [
+    name = "haredware_skinned"
+    ps_main="ps_main"
+    vs_main="vs_main"
+    class_name="HaredwareSkinnedMesh"
+           ];
+
+[uniform_func="SetBones"] uniform mat4 bone[100];
+[uniform_func="SetProjView"] uniform mat4 pv;
+[uniform_func="SetWorld"] uniform mat4 world;
+
+
+exchange struct VsOutput {
+  [semantic="position" system="true"]
+  vec4 position;
+  vec2 coordtex;
+  vec4 normal;
+};
+
+exchange struct VSInput {
+  vec4 position;
+  vec2 coordtex;
+  vec4 normal;
+  ivec4 index;
+  vec4 weights;
+};
+
+VsOutput vs_main(VSInput input) {
+  VsOutput o;
+  mat4 bone_trans = bone[input.index[0]] * input.weights[0]
+      + bone[input.index[1]] * input.weights[1]
+      + bone[input.index[2]] * input.weights[2]
+      + bone[input.index[3]] * input.weights[3];
+  mat4 world_trans = world * bone_trans
+  o.position = pv * world_trans * input.position;
+  o.coordtex = input.coordtex;
+  o.normal = world_trans * input.normal;
+  return o;
+}
+
+[system="true" semantic="target"]
+vec4 ps_main(VsOutput o) {
+  return sample2D(tex, o.coordtex);
+}
+

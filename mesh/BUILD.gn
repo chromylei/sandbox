@@ -8,9 +8,9 @@ afx("sbox_mesh_effect") {
 executable("sbox_mesh") {
   sources = ["main.cc"]
   deps = [
-    "//base:appinit"
-    "//third_party/assimp:assimp"
-    "../base:sbox_base"
-    ":sbox_mesh_effect"
+    "//base:appinit",
+    "//third_party/assimp:assimp",
+    "../base:sbox_base",
+    ":sbox_mesh_effect",
   ]
 }
