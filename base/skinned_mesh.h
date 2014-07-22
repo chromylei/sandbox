@@ -37,9 +37,21 @@ class SoftSkinnedMesh : public Mesh {
 
   void UpdateVertex(const azer::Matrix4& world);
  private:
-  azer::Matrix4 CalcPosition(const azer::Matrix4& pv, const BoneWeights& weights);
-  void LoadBoneWeights(const aiMesh* paiMesh, BoneWeightsVec* vec);
+  struct BoneWeight {
+  };
+  struct BonedMesh {
+    azer::Matrix4* boneOffset;
+    std::vector<Bone*> bone;
+    std::vector<float> weight;
+  };
+
+  typedef std::vector<azer::Matrix4* > MeshOffsetMat;
+  azer::Matrix4 CalcPosition(const azer::Matrix4& pv, const BoneWeights& weights,
+                             const MeshOffsetMat& offsets);
+  void LoadBoneWeights(const aiMesh* paiMesh, BoneWeightsVec* vec,
+                       MeshOffsetMat* offset);
   std::vector<BoneWeightsVec> group_weights_;
+  std::vector<MeshOffsetMat> group_offset_;
   Skeleton skeleton_;
   DISALLOW_COPY_AND_ASSIGN(SoftSkinnedMesh);
 };

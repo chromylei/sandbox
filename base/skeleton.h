@@ -21,12 +21,10 @@ class Bone : public azer::TreeNode<Bone> {
   azer::Vector3 position() const;
   const azer::Matrix4& combined() const { return combined_transform_;}
   const azer::Matrix4& local() const { return transform_;}
-  const azer::Matrix4& offset() const { return offset_;}
  private:
   std::string bone_name_;
   azer::Matrix4 transform_;
   azer::Matrix4 combined_transform_;
-  azer::Matrix4 offset_;
 
   friend class Skeleton;
   friend class SoftSkinnedMesh;
@@ -43,6 +41,7 @@ class Skeleton {
   int GetBoneIndex(const std::string& name) const;
   Bone* GetBone(int idx) { return bone_[idx];}
   bool Load(aiNode* root, azer::RenderSystem* rs);
+  int GetBoneNum() const { return bone_.size();}
 
   std::string DumpHierarchy() const;
 

@@ -16,8 +16,7 @@
 
 Bone::Bone(const std::string& name, Bone* parent)
     : TreeNode<Bone>(::base::UTF8ToWide(name), parent)
-    , bone_name_(name)
-    , offset_(azer::Matrix4::kIdentity) {
+    , bone_name_(name) {
 }
 
 azer::Vector3 Bone::position() const {
@@ -222,7 +221,7 @@ void Skeleton::UpdateHierarchy(const azer::Matrix4& world) {
 void Skeleton::UpdateHierarchy(Bone* bone, const azer::Matrix4& pmat) {
   DCHECK(bone);
   const azer::Matrix4& trans = pmat * bone->transform_;
-  bone->combined_transform_ = trans * bone->offset_;
+  bone->combined_transform_ = trans;
   Bone* child = bone->first_child();
   while (child) {
     UpdateHierarchy(child, trans);
