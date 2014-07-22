@@ -3,7 +3,7 @@ technique [
     name = "haredware_skinned"
     ps_main="ps_main"
     vs_main="vs_main"
-    class_name="HaredwareSkinnedMesh"
+    class_name="HaredwareSkinnedMeshEffect"
            ];
 
 [uniform_func="SetBones"] uniform mat4 bone[100];
@@ -27,12 +27,14 @@ exchange struct VSInput {
 };
 
 VsOutput vs_main(VSInput input) {
-  VsOutput o;
-  mat4 bone_trans = bone[input.index[0]] * input.weights[0]
+  mat4 bone_trans = bone[input.index[0]] * input.weights[0];
+  /*
       + bone[input.index[1]] * input.weights[1]
       + bone[input.index[2]] * input.weights[2]
       + bone[input.index[3]] * input.weights[3];
-  mat4 world_trans = world * bone_trans
+      */
+  mat4 world_trans = world * bone_trans;
+  VsOutput o;
   o.position = pv * world_trans * input.position;
   o.coordtex = input.coordtex;
   o.normal = world_trans * input.normal;
