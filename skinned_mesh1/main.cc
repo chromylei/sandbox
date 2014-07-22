@@ -81,7 +81,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     renderer->Clear(azer::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     // renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
     renderer->ClearDepthAndStencil();
-    mesh_.GetSkeleton().Render(renderer, camera_.GetProjViewMatrix());
+    // mesh_.GetSkeleton().Render(renderer, camera_.GetProjViewMatrix());
 
     Render(effect_.get(), renderer, camera_.GetProjViewMatrix(), &mesh_);
   }
