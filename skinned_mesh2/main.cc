@@ -15,21 +15,6 @@ using base::FilePath;
 
 #define kMeshPath "sbox/skinned_mesh2/res/soldier.X"
 
-void Render(HaredwareSkinnedMeshEffect* effect, azer::Renderer* renderer,
-            const azer::Matrix4& pv, SoftSkinnedMesh* mesh) {
-  for (uint32 i = 1; i < mesh->rgroups().size(); ++i) {
-    Mesh::RenderGroup rg = mesh->rgroups()[i];
-    azer::VertexBuffer* vb = rg.vb.get();
-    azer::IndicesBuffer* ib = rg.ib.get();
-    Mesh::Material mtrl = mesh->materials()[rg.mtrl_idx];
-    effect->SetDiffuseTex(mtrl.tex);
-    effect->Use(renderer);
-    effect->SetProjView(pv);
-    renderer->Render(vb, ib, azer::kTriangleList);
-    break;
-  }
-}
-
 class MainDelegate : public azer::WindowHost::Delegate {
  public:
   virtual void OnCreate() {}
@@ -62,14 +47,13 @@ class MainDelegate : public azer::WindowHost::Delegate {
     mesh_.GetSkeleton().PrepareRender(rs);
     mesh_.GetSkeleton().UpdateHierarchy(azer::Matrix4::kIdentity);
 
+    bone_mat_.resize(mesh_.GetSkeleton().GetBoneNum());
     LOG(ERROR) << "\n" << mesh_.GetSkeleton().DumpHierarchy();
   }
   virtual void OnUpdateScene(double time, float delta_time) {
     float rspeed = 3.14f * 2.0f / 4.0f;
     azer::Radians camera_speed(azer::kPI / 2.0f);
     UpdatedownCamera(&camera_, camera_speed, delta_time);
-    azer::Matrix4 world = azer::Matrix4::kIdentity;
-    mesh_.UpdateVertex(world);
   }
 
   virtual void OnRenderScene(double time, float delta_time) {
@@ -80,18 +64,23 @@ class MainDelegate : public azer::WindowHost::Delegate {
     renderer->Clear(azer::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     // renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
     renderer->ClearDepthAndStencil();
-    mesh_.GetSkeleton().Render(renderer, camera_.GetProjViewMatrix());
+    // mesh_.GetSkeleton().Render(renderer, camera_.GetProjViewMatrix());
 
-    Render(effect_.get(), renderer, camera_.GetProjViewMatrix(), &mesh_);
+    Render(effect_.get(), renderer, camera_.GetProjViewMatrix(),
+           azer::Matrix4::kIdentity, &mesh_);
   }
 
+  void Render(HaredwareSkinnedMeshEffect* effect, azer::Renderer* renderer,
+              const azer::Matrix4& pv, const azer::Matrix4& world,
+              HardwareSkinnedMesh* mesh);
   virtual void OnQuit() {}
  private:
   azer::Camera camera_;
   azer::Matrix4 proj_;
   azer::Matrix4 view_;
+  std::vector<azer::Matrix4> bone_mat_;
   std::unique_ptr<HaredwareSkinnedMeshEffect> effect_;
-  SoftSkinnedMesh mesh_;
+  HardwareSkinnedMesh mesh_;
 };
 
 int main(int argc, char* argv[]) {
@@ -108,4 +97,29 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
-
+void MainDelegate::Render(HaredwareSkinnedMeshEffect* effect,
+                          azer::Renderer* renderer,
+                          const azer::Matrix4& pv, const azer::Matrix4& world,
+                          HardwareSkinnedMesh* mesh) {
+  for (uint32 i = 0; i < mesh->rgroups().size(); ++i) {
+    const HardwareSkinnedMesh::RenderGroup& rg = mesh->rgroups()[i];
+    const HardwareSkinnedMesh::Group& group = mesh->groups()[i];
+    azer::VertexBuffer* vb = rg.vb.get();
+    azer::IndicesBuffer* ib = rg.ib.get();
+    HardwareSkinnedMesh::Material mtrl = mesh->materials()[rg.mtrl_idx];
+    
+    memcpy(&bone_mat_[0], &(mesh->GetSkeleton().GetBoneMat()[0]),
+           sizeof(azer::Matrix4) * bone_mat_.size());
+    for (auto iter = group.offset.begin(); iter != group.offset.end(); ++iter) {
+      bone_mat_[iter->first] = mesh->GetSkeleton().GetBoneMat()[iter->first]
+          * iter->second;
+    }
+    
+    effect->SetBones((azer::Matrix4*)(&bone_mat_[0]), bone_mat_.size());
+    effect->SetProjView(pv);
+    effect->SetWorld(world);
+    effect->SetDiffuseTex(mtrl.tex);
+    effect->Use(renderer);
+    renderer->Render(vb, ib, azer::kTriangleList);
+  }
+}

@@ -34,7 +34,6 @@ class SoftSkinnedMesh : public Mesh {
   
   const Skeleton& GetSkeleton() const { return skeleton_;}
   Skeleton& GetSkeleton() { return skeleton_;}
-
   void UpdateVertex(const azer::Matrix4& world);
  private:
   struct BoneWeight {

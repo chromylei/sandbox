@@ -46,8 +46,8 @@ class Skeleton {
   const std::vector<Bone*>& GetBoneVec() const { return bone_;}
 
   std::string DumpHierarchy() const;
-
   void UpdateHierarchy(const azer::Matrix4& world);
+  const std::vector<azer::Matrix4>& GetBoneMat() const { return bone_mat_;}
   Bone* root();
   Bone* root() const;
  private:
@@ -58,6 +58,7 @@ class Skeleton {
   void AddNewBone(Bone* bone);
   std::map<azer::StringType, int> bone_map_;
   std::vector<Bone*> bone_;
+  std::vector<azer::Matrix4> bone_mat_;
 
   // for render skeleton
   Mesh* sphere_;

@@ -33,10 +33,11 @@ class HardwareSkinnedMesh {
     }
   };
 
+  typedef std::vector<std::pair<int, azer::Matrix4> > OffsetType;
   struct Group {
     std::vector<Vertex> vertices;
     std::vector<int32> indices;
-    std::vector<azer::Matrix4> offset;
+    OffsetType offset;
     int mtrl_idx;
   };
 
@@ -48,10 +49,20 @@ class HardwareSkinnedMesh {
 
   void Init(azer::RenderSystem* rs);
   bool Load(const ::base::FilePath& filepath, azer::RenderSystem* rs);
+
+  Skeleton& GetSkeleton() { return skeleton_;}
+
+  const std::vector<Group>& groups() const { return groups_;}
+  std::vector<Group>* mutable_groups() { return &groups_;}
+
+  const std::vector<RenderGroup>& rgroups() const { return rgroups_;}
+
+  const std::vector<Material>& materials() const { return materials_;}
+  std::vector<Material>* mutable_materials() { return &materials_;}
  private:
   void LoadVertex(const aiMesh* paiMesh, Group* group);
   void LoadBoneWeights(const aiMesh* paiMesh, std::vector<Vertex>* vertex,
-                       std::vector<azer::Matrix4>* offsets);
+                       OffsetType* offsets);
   std::vector<Group> groups_;
   std::vector<Material> materials_;
   std::vector<RenderGroup> rgroups_;

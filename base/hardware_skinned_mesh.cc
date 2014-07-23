@@ -40,16 +40,17 @@ void HardwareSkinnedMesh::LoadVertex(const aiMesh* paiMesh, Group* group) {
 
 void HardwareSkinnedMesh::LoadBoneWeights(const aiMesh* paiMesh,
                                           std::vector<Vertex>* vertices,
-                                          std::vector<azer::Matrix4>* offsets) {
+                                          OffsetType* offsets) {
   for (uint32 i = 0; i < paiMesh->mNumBones; ++i) {
     std::string bone_name = paiMesh->mBones[i]->mName.data;
     int bone_index = skeleton_.GetBoneIndex(bone_name);
     Bone* bone = skeleton_.GetBone(bone_index);
     aiMatrix4x4 mat = paiMesh->mBones[i]->mOffsetMatrix;
-    (*offsets)[bone_index] = azer::Matrix4(mat[0][0], mat[0][1], mat[0][2], mat[0][3],
-                                        mat[1][0], mat[1][1], mat[1][2], mat[1][3],
-                                        mat[2][0], mat[2][1], mat[2][2], mat[2][3],
-                                        mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
+    azer::Matrix4 offset = azer::Matrix4(mat[0][0], mat[0][1], mat[0][2], mat[0][3],
+                                         mat[1][0], mat[1][1], mat[1][2], mat[1][3],
+                                         mat[2][0], mat[2][1], mat[2][2], mat[2][3],
+                                         mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
+    offsets->push_back(std::make_pair(bone_index, offset));
     for (int j = 0; j < paiMesh->mBones[i]->mNumWeights; ++j) {
       int vertex_id = paiMesh->mBones[i]->mWeights[j].mVertexId;
       float weight = paiMesh->mBones[i]->mWeights[j].mWeight;
@@ -74,13 +75,15 @@ bool HardwareSkinnedMesh::Load(const ::base::FilePath& filepath,
   }
 
   skeleton_.Load(scene->mRootNode, rs);
+  groups_.resize(scene->mNumMeshes);
   for (uint32 i = 0; i < scene->mNumMeshes; ++i) {
     Group group;
     LoadVertex(scene->mMeshes[i], &group);
-    groups_.push_back(group);
-
-    group.offset.assign(group.vertices.size(), azer::Matrix4::kIdentity);
     LoadBoneWeights(scene->mMeshes[i], &group.vertices, &group.offset);
+    groups_[i].vertices.swap(group.vertices);
+    groups_[i].indices.swap(group.indices);
+    groups_[i].offset.swap(group.offset);
+    groups_[i].mtrl_idx = group.mtrl_idx;
   }
 
   for (uint32 i = 0; i < scene->mNumMaterials; ++i) {

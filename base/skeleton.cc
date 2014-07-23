@@ -216,6 +216,10 @@ void Skeleton::Render(azer::Renderer* renderer, const azer::Matrix4& pvw) {
 
 void Skeleton::UpdateHierarchy(const azer::Matrix4& world) {
   UpdateHierarchy(root(), world);
+  bone_mat_.resize(bone_.size());
+  for (size_t i = 0; i < bone_mat_.size(); ++i) {
+    bone_mat_[i] = bone_[i]->combined();
+  }
 }
 
 void Skeleton::UpdateHierarchy(Bone* bone, const azer::Matrix4& pmat) {

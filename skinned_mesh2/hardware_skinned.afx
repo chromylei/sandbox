@@ -23,16 +23,26 @@ exchange struct VSInput {
   vec4 position;
   vec2 coordtex;
   vec4 normal;
-  ivec4 index;
   vec4 weights;
+  ivec4 index;
 };
 
 VsOutput vs_main(VSInput input) {
   VsOutput o;
-  mat4 bone_trans = bone[input.index[0]] * input.weights[0]
-      + bone[input.index[1]] * input.weights[1]
-      + bone[input.index[2]] * input.weights[2]
-      + bone[input.index[3]] * input.weights[3];
+  mat4 bone_trans = bone[0];
+  if (input.index[0] >= 0) {
+    bone_trans = bone[input.index[0]] * input.weights[0];
+  }
+  if (input.index[1] >= 0) {
+    bone_trans += bone[input.index[1]] * input.weights[1];
+  }
+  if (input.index[2] >= 0) {
+    bone_trans += bone[input.index[2]] * input.weights[2];
+  }
+  if (input.index[3] >= 0) {
+    bone_trans += bone[input.index[3]] * input.weights[3];
+  }
+
   mat4 world_trans = world * bone_trans;
   o.position = pv * world_trans * input.position;
   o.coordtex = input.coordtex;
