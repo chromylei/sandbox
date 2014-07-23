@@ -41,6 +41,9 @@ class HardwareSkinnedMesh {
     OffsetType offset;
     int mtrl_idx;
     Bone* bone;
+
+    Group() : bone(NULL) {
+    }
   };
 
   struct RenderGroup {
@@ -68,6 +71,7 @@ class HardwareSkinnedMesh {
   void LoadMaterial(const ::base::FilePath& filepath, azer::RenderSystem* rs,
                     const aiScene* scene);
   void LoadScene(const aiScene* scene);
+  void LoadNode(const aiNode* node);
   std::vector<Group> groups_;
   std::vector<Material> materials_;
   std::vector<RenderGroup> rgroups_;

@@ -93,6 +93,21 @@ void HardwareSkinnedMesh::LoadScene(const aiScene* scene) {
     LoadBoneWeights(scene->mMeshes[i], &group.vertices, &group.offset);
     groups_.push_back(group);
   }
+
+  LoadNode(scene->mRootNode);
+}
+
+void HardwareSkinnedMesh::LoadNode(const aiNode* node) {
+  for (uint32 i = 0; i < node->mNumMeshes; ++i) {
+    int index = node->mMeshes[i];
+    std::string node_name(node->mName.data);
+    int bone_index = skeleton_.GetBoneIndex(node_name);
+    DCHECK(bone_index != -1);
+    groups_[index].bone = skeleton_.GetBone(bone_index);
+  }
+  for (uint32 i = 0; i < node->mNumChildren; ++i) {
+    LoadNode(node->mChildren[i]);
+  }
 }
 
 bool HardwareSkinnedMesh::Load(const ::base::FilePath& filepath,

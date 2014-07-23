@@ -104,9 +104,11 @@ void MainDelegate::Render(HaredwareSkinnedMeshEffect* effect,
   for (uint32 i = 0; i < mesh->rgroups().size(); ++i) {
     const HardwareSkinnedMesh::RenderGroup& rg = mesh->rgroups()[i];
     const HardwareSkinnedMesh::Group& group = mesh->groups()[i];
+    DCHECK(group.bone != NULL);
     azer::VertexBuffer* vb = rg.vb.get();
     azer::IndicesBuffer* ib = rg.ib.get();
     HardwareSkinnedMesh::Material mtrl = mesh->materials()[rg.mtrl_idx];
+    azer::Matrix4 w = std::move(world * group.bone->combined());
     
     memcpy(&bone_mat_[0], &(mesh->GetSkeleton().GetBoneMat()[0]),
            sizeof(azer::Matrix4) * bone_mat_.size());
@@ -117,7 +119,7 @@ void MainDelegate::Render(HaredwareSkinnedMeshEffect* effect,
     
     effect->SetBones((azer::Matrix4*)(&bone_mat_[0]), bone_mat_.size());
     effect->SetProjView(pv);
-    effect->SetWorld(world);
+    effect->SetWorld(w);
     effect->SetDiffuseTex(mtrl.tex);
     effect->Use(renderer);
     renderer->Render(vb, ib, azer::kTriangleList);
