@@ -6,7 +6,7 @@
 #include "base/files/file_path.h"
 #include "sbox/base/base.h"
 
-#include "hardared_skinned.afx.h"
+#include "hardware_skinned.afx.h"
 #include <tchar.h>
 
 #define EFFECT_GEN_DIR "out/dbg/gen/sbox/skinned_mesh2/"
