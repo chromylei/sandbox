@@ -1,0 +1,17 @@
+import("//build/templates/afx.gni")
+
+
+afx("sbox_skinned_effect") {
+  source = "hardware_skinned.afx"
+  filename = "hardware_skinned"
+}
+
+executable("sbox_skinned_mesh") {
+  sources = ["main.cc"]
+  deps = [
+    "//base:appinit",
+    "//third_party/assimp:assimp",
+    "../base:sbox_base",
+    ":sbox_skinned_effect",
+  ]
+}

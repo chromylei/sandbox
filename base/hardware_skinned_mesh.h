@@ -9,6 +9,7 @@
 #include "sbox/base/mesh.h"
 
 struct aiMesh;
+struct aiScene;
 
 class HardwareSkinnedMesh {
  public:
@@ -39,6 +40,7 @@ class HardwareSkinnedMesh {
     std::vector<int32> indices;
     OffsetType offset;
     int mtrl_idx;
+    Bone* bone;
   };
 
   struct RenderGroup {
@@ -63,6 +65,9 @@ class HardwareSkinnedMesh {
   void LoadVertex(const aiMesh* paiMesh, Group* group);
   void LoadBoneWeights(const aiMesh* paiMesh, std::vector<Vertex>* vertex,
                        OffsetType* offsets);
+  void LoadMaterial(const ::base::FilePath& filepath, azer::RenderSystem* rs,
+                    const aiScene* scene);
+  void LoadScene(const aiScene* scene);
   std::vector<Group> groups_;
   std::vector<Material> materials_;
   std::vector<RenderGroup> rgroups_;

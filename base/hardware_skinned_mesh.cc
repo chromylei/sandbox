@@ -63,29 +63,9 @@ void HardwareSkinnedMesh::LoadBoneWeights(const aiMesh* paiMesh,
   }
 }
 
-bool HardwareSkinnedMesh::Load(const ::base::FilePath& filepath,
-                           azer::RenderSystem* rs) {
-  Assimp::Importer importer;
-  const aiScene* scene = importer.ReadFile(
-      ::base::WideToUTF8(filepath.value()),
-      aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
-  if (scene == NULL) {
-    LOG(ERROR) << "Failed to load file: " << filepath.value();
-    return false;
-  }
-
-  skeleton_.Load(scene->mRootNode, rs);
-  groups_.resize(scene->mNumMeshes);
-  for (uint32 i = 0; i < scene->mNumMeshes; ++i) {
-    Group group;
-    LoadVertex(scene->mMeshes[i], &group);
-    LoadBoneWeights(scene->mMeshes[i], &group.vertices, &group.offset);
-    groups_[i].vertices.swap(group.vertices);
-    groups_[i].indices.swap(group.indices);
-    groups_[i].offset.swap(group.offset);
-    groups_[i].mtrl_idx = group.mtrl_idx;
-  }
-
+void HardwareSkinnedMesh::LoadMaterial(const ::base::FilePath& filepath,
+                                       azer::RenderSystem* rs,
+                                       const aiScene* scene) {
   for (uint32 i = 0; i < scene->mNumMaterials; ++i) {
     const aiMaterial* material = scene->mMaterials[i];
     if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
@@ -104,8 +84,32 @@ bool HardwareSkinnedMesh::Load(const ::base::FilePath& filepath,
       }
     }
   }
+}
 
+void HardwareSkinnedMesh::LoadScene(const aiScene* scene) {
+  for (uint32 i = 0; i < scene->mNumMeshes; ++i) {
+    Group group;
+    LoadVertex(scene->mMeshes[i], &group);
+    LoadBoneWeights(scene->mMeshes[i], &group.vertices, &group.offset);
+    groups_.push_back(group);
+  }
+}
+
+bool HardwareSkinnedMesh::Load(const ::base::FilePath& filepath,
+                               azer::RenderSystem* rs) {
+  Assimp::Importer importer;
+  const aiScene* scene = importer.ReadFile(
+      ::base::WideToUTF8(filepath.value()),
+      aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
+  if (scene == NULL) {
+    LOG(ERROR) << "Failed to load file: " << filepath.value();
+    return false;
+  }
+
+  skeleton_.Load(scene->mRootNode, rs);
+  LoadScene(scene);
   Init(rs);
+  LoadMaterial(filepath, rs, scene);
   return true;
 }
 
