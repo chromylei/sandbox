@@ -42,6 +42,8 @@ class Skeleton {
   Bone* GetBone(int idx) { return bone_[idx];}
   bool Load(aiNode* root, azer::RenderSystem* rs);
   int GetBoneNum() const { return bone_.size();}
+  std::vector<Bone*>& GetBoneVec() { return bone_;}
+  const std::vector<Bone*>& GetBoneVec() const { return bone_;}
 
   std::string DumpHierarchy() const;
 

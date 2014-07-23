@@ -6,16 +6,16 @@
 #include "base/files/file_path.h"
 #include "sbox/base/base.h"
 
-#include "texture.afx.h"
+#include "hardared_skinned.afx.h"
 #include <tchar.h>
 
-#define EFFECT_GEN_DIR "out/dbg/gen/sbox/skinned_mesh1/"
-#define SHADER_NAME "texture.afx"
+#define EFFECT_GEN_DIR "out/dbg/gen/sbox/skinned_mesh2/"
+#define SHADER_NAME "haredware_skinned.afx"
 using base::FilePath;
 
-#define kMeshPath "sbox/skinned_mesh1/res/soldier.X"
+#define kMeshPath "sbox/skinned_mesh2/res/soldier.X"
 
-void Render(TextureEffect* effect, azer::Renderer* renderer,
+void Render(HaredwareSkinnedMeshEffect* effect, azer::Renderer* renderer,
             const azer::Matrix4& pv, SoftSkinnedMesh* mesh) {
   for (uint32 i = 1; i < mesh->rgroups().size(); ++i) {
     Mesh::RenderGroup rg = mesh->rgroups()[i];
@@ -40,7 +40,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     azer::ShaderArray shaders;
     CHECK(azer::LoadVertexShader(EFFECT_GEN_DIR SHADER_NAME ".vs", &shaders));
     CHECK(azer::LoadPixelShader(EFFECT_GEN_DIR SHADER_NAME ".ps", &shaders));
-    effect_.reset(new TextureEffect(shaders.GetShaderVec(),
+    effect_.reset(new HaredwareSkinnedMeshEffect(shaders.GetShaderVec(),
                                     azer::RenderSystem::Current()));
 
     renderer->SetViewport(azer::Renderer::Viewport(0, 0, 800, 600));
@@ -90,7 +90,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
   azer::Camera camera_;
   azer::Matrix4 proj_;
   azer::Matrix4 view_;
-  std::unique_ptr<TextureEffect> effect_;
+  std::unique_ptr<HaredwareSkinnedMeshEffect> effect_;
   SoftSkinnedMesh mesh_;
 };
 

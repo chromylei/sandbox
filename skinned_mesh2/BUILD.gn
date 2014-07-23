@@ -1,9 +1,5 @@
 import("//build/templates/afx.gni")
 
-afx("sbox_hard_skinned_mesh_effect") {
-  source = "texture.afx"
-  filename = "texture"
-}
 
 afx("sbox_hardware_skinned_effect") {
   source = "hardware_skinned.afx"
@@ -16,6 +12,6 @@ executable("sbox_hard_skinned_mesh") {
     "//base:appinit",
     "//third_party/assimp:assimp",
     "../base:sbox_base",
-    ":sbox_hard_skinned_mesh_effect",
+    ":sbox_hardware_skinned_effect",
   ]
 }
