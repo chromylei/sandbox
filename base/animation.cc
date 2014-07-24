@@ -23,6 +23,10 @@ void AnimationNode::Load(const aiNodeAnim* anim_node) {
   }
 }
 
+azer::Matrix4 AnimationNode::transform(double t) const {
+  return azer::Matrix4::kIdentity;
+}
+
 void Animation::Load(const aiAnimation* anim) {
   for (uint32 i = 0; i < anim->mNumChannels; ++i) {
     aiNodeAnim* anim_node = anim->mChannels[i];
@@ -35,6 +39,13 @@ void Animation::Load(const aiAnimation* anim) {
   }
 }
 
+void Animation::CalcBone(double t, std::vector<azer::Matrix4>* mat) {
+  for (auto iter = nodes_.begin(); iter != nodes_.end(); ++iter) {
+    AnimationNode annode = (*iter);
+    azer::Matrix4 mat = std::move(annode->transform());
+    mat[annode->bone()->index()] = mat;
+  }
+}
 
 void AnimationSet::Load(const aiScene* scene) {
   for (uint32 i = 0; i < scene->mNumAnimations; ++i) {

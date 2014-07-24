@@ -25,20 +25,10 @@ class AnimationData {
     duration_ += duration_;
     data_.push_back(t);
   }
- private:
-  int FindIndex(double t) const {
-    while (t > duration_) {
-      t -= duration_;
-    }
 
-    for (size_t i = 0; i < time_.size(); ++i) {
-      if (t > *iter) {
-        return i;
-      }
-    }
-    NOTREACHED();
-    return -1;
-  }
+  azer::Matrix4 Interpolate(double t);
+  int FindIndex(double t, double* left) const;
+ private:
   std::vector<double> time_;
   std::vector<T> data_;
   double duration_;
@@ -62,6 +52,7 @@ class AnimationNode {
   void Load(const aiNodeAnim* animnode);
 
   const std::string& name() const { return name_;}
+  azer::Matrix4 transform(double t) const;
  private:
   double duration_;
   std::string name_;
@@ -79,6 +70,8 @@ class Animation {
       , skeleton_(skeleton) {
   }
   void Load(const aiAnimation* anim);
+
+  void CalcBone(double t, std::vector<azer::Matrix4>* mat);
  private:
   std::string name_;
   Skeleton* skeleton_;
@@ -96,3 +89,45 @@ class AnimationSet {
   std::map<std::string, std::shared_ptr<Animation> > animations_;
   DISALLOW_COPY_AND_ASSIGN(AnimationSet);
 };
+
+
+template<>
+azer::Matrix4 AnimationData<azer::Quaternion>::Interpolate(double t) {
+  int index = FindIndex(t);
+  double interp = 0.0f;
+  const azer::Quaternion& quat1 = data(index, &interp);
+  const azer::Quaternion& quat2 = data(NextIndex(index));
+  return std::move(azer::Queratonion((float)interp, quat1, quat2));
+}
+
+template<>
+azer::Matrix4 AnimationData<azer::Vector4>::Interpolate(double t) {
+  int index = FindIndex(t);
+  double interp = 0.0f;
+  const azer::Quaternion& quat1 = data(index, &interp);
+  const azer::Quaternion& quat2 = data(NextIndex(index));
+  return std::move(azer::Queratonion((float)interp, quat1, quat2));
+  return azer::Matrix4::kIdentity;
+}
+
+template<class T>
+int AnimationData<T>::FindIndex(double t, double left) const {
+  int num = (int)(t / duration_);
+  t -= num * duration_;
+
+  double sum = 0.0;
+  for (size_t i = 0; i < time_.size(); ++i) {
+    if (t > *iter) {
+      *left = t - sum;
+      return i;
+    }
+
+    sum += *iter;
+  }
+  NOTREACHED();
+  return -1;
+}
+
+int AnimationData<T>::NextIndex(int index) const {
+  return (index + 1) % time_.size();
+}
