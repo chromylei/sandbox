@@ -57,3 +57,13 @@ void AnimationSet::Load(const aiScene* scene) {
     animations_.insert(std::make_pair(name, anim));
   }
 }
+
+
+const Animation* AnimationSet::GetAnimation(const std::string& name) const {
+  auto iter = animations_.find(name);
+  if (iter != animations_.end()) {
+    return iter->second.get();
+  } else {
+    return NULL;
+  }
+}

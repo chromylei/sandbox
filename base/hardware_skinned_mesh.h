@@ -68,6 +68,8 @@ class HardwareSkinnedMesh {
 
   const std::vector<Material>& materials() const { return materials_;}
   std::vector<Material>* mutable_materials() { return &materials_;}
+
+  const AnimationSet& GetAnimationSet() const { return anim_set_;}
  private:
   void LoadVertex(const aiMesh* paiMesh, Group* group);
   void LoadBoneWeights(const aiMesh* paiMesh, std::vector<Vertex>* vertex,
