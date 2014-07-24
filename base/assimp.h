@@ -5,3 +5,4 @@
 #include "assimp/material.h"
 #include "assimp/mesh.h"
 #include "assimp/scene.h"
+#include "assimp/anim.h"

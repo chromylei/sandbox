@@ -12,6 +12,8 @@ afx("sbox_base_line_effect") {
 
 static_library("sbox_base") {
   sources = [
+    "animation.cc"
+    "animation.h"
     "mesh.cc",
     "mesh.h",
     "grid.cc",
