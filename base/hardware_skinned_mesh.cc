@@ -123,8 +123,9 @@ bool HardwareSkinnedMesh::Load(const ::base::FilePath& filepath,
 
   skeleton_.Load(scene->mRootNode, rs);
   LoadScene(scene);
-  Init(rs);
+  anim_set_.Load(scene);
   LoadMaterial(filepath, rs, scene);
+  Init(rs);
   return true;
 }
 

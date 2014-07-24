@@ -6,6 +6,7 @@
 #include "base/basictypes.h"
 #include "azer/render/render.h"
 #include "sbox/base/skeleton.h"
+#include "sbox/base/animation.h"
 #include "sbox/base/mesh.h"
 
 struct aiMesh;
@@ -13,7 +14,10 @@ struct aiScene;
 
 class HardwareSkinnedMesh {
  public:
-  HardwareSkinnedMesh() {}
+  HardwareSkinnedMesh()
+      : anim_set_(&skeleton_) {
+  }
+
   struct Material {
     azer::TexturePtr tex;
   };
@@ -76,5 +80,6 @@ class HardwareSkinnedMesh {
   std::vector<Material> materials_;
   std::vector<RenderGroup> rgroups_;
   Skeleton skeleton_;
+  AnimationSet anim_set_;
   DISALLOW_COPY_AND_ASSIGN(HardwareSkinnedMesh);
 };
