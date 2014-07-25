@@ -32,6 +32,8 @@ struct BoneAttached {
 typedef std::vector<BoneAttached> BoneWeights;
 typedef std::vector<BoneWeights> BoneWeightsVec;
 
+
+typedef std::vector<azer::Matrix4> MeshOffsetMat;
 class SoftwareSkinnedMesh {
  public:
   SoftwareSkinnedMesh(sbox::SkinnedMesh* skinned)
@@ -50,8 +52,9 @@ class SoftwareSkinnedMesh {
   void Render(azer::Renderer* renderer, const azer::Matrix4& world,
               const azer::Matrix4& pv);
  private:
-  std::vector<Vertex> InitVertex(const sbox::SkinnedMesh::VertexVec& vec);
   sbox::SkinnedMesh* mesh_;
+  std::vector<BoneWeightsVec> group_weights_;
+  std::vector<MeshOffsetMat> group_offset_;
   std::vector<azer::Matrix4> bone_mat_;
   std::vector<azer::Matrix4> temp_mat_;
   std::vector<RenderGroup> rgroups_;

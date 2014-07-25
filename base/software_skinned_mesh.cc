@@ -7,32 +7,14 @@
 
 #include "software_skinned.afx.h"
 #define EFFECT_GEN_DIR "out/dbg/gen/sbox/base/"
-#define SHADER_NAME "haredware_skinned.afx"
+#define SHADER_NAME "softdware_skinned.afx"
 
-SoftwareSkinnedMesh::Vertex::Vertex(const azer::Vector4 p0, const azer::Vector2 p1,
-                                    const azer::Vector4 p2,
-                                    const std::vector<int>& p3,
-                                    const std::vector<float>& p4)
-    : position(p0)
-    , coordtex(p1)
-    , normal(p2) {
-  DCHECK_EQ(p3.size(), p4.size());
-  for (int i = 0; i < 4; ++i) {
-    if (i < p3.size()) {
-      index[i] = p3[i];
-      weights[i] = p4[i];
-    } else {
-      index[i] = -1;
-      weights[i] = 0.0f;
-    }
-  }
-}
 
 void SoftwareSkinnedMesh::Init(azer::RenderSystem* rs) {
   azer::ShaderArray shaders;
   CHECK(azer::LoadVertexShader(EFFECT_GEN_DIR SHADER_NAME ".vs", &shaders));
   CHECK(azer::LoadPixelShader(EFFECT_GEN_DIR SHADER_NAME ".ps", &shaders));
-  HaredwareSkinnedMeshEffect* effect = new HaredwareSkinnedMeshEffect(
+  SoftwareSkinnedEffect* effect = new SoftwareSkinnedEffect(
       shaders.GetShaderVec(), azer::RenderSystem::Current());
   effect_.reset(effect);
 
@@ -40,6 +22,8 @@ void SoftwareSkinnedMesh::Init(azer::RenderSystem* rs) {
   vbopt.usage = azer::GraphicBuffer::kDynamic;
   vbopt.cpu_access = azer::kCPUWrite;
   azer::VertexDescPtr vertex_desc_ptr = effect->GetVertexDesc();
+
+  using SoftwareSkinnedEffect::Vertex;
   for (uint32 i = 0; i < mesh_->groups().size(); ++i) {
     RenderGroup rgroup;
     const sbox::SkinnedMesh::Group& group = mesh_->groups()[i];
@@ -62,6 +46,21 @@ void SoftwareSkinnedMesh::Init(azer::RenderSystem* rs) {
     rgroups_.push_back(rgroup);
   }
 
+
+  for (uint32 i = 0; i < mesh_->groups().size(); ++i) {
+    BoneWeightsVec weights;
+    MeshOffsetMat offsets;
+
+    offsets.resize(mesh_->GetSkeleton().GetBoneNum());
+    const sbox::SkinnedMesh::Group& group = mesh_->groups()[i];
+    for (auto iter = group.offset.begin(); iter != group.offset.end(); ++iter) {
+      offsets[iter->first] = iter->second;
+    }
+
+    group_weights_.push_back(weights);
+    group_offset_.push_back(offsets);
+  }
+
   mesh_->GetSkeleton().PrepareRender(rs);
   mesh_->GetSkeleton().UpdateHierarchy(azer::Matrix4::kIdentity);
   bone_mat_.resize(mesh_->GetSkeleton().GetBoneNum());
@@ -75,9 +74,7 @@ std::vector<SoftwareSkinnedMesh::Vertex> SoftwareSkinnedMesh::InitVertex(
   for (auto iter = vec.begin(); iter != vec.end(); ++iter) {
     vertex.push_back(std::move(Vertex(iter->position,
                                       iter->coordtex,
-                                      iter->normal,
-                                      iter->index,
-                                      iter->weights)));
+                                      iter->normal)));
   }
   return vertex;
 }
@@ -132,7 +129,7 @@ void SoftwareSkinnedMesh::Update(double t) {
 void SoftwareSkinnedMesh::Render(azer::Renderer* renderer,
                                  const azer::Matrix4& world,
                                  const azer::Matrix4& pv) {
-  HaredwareSkinnedMeshEffect* effect = (HaredwareSkinnedMeshEffect*)effect_.get();
+  SoftwareSkinnedEffect* effect = (SoftwareSkinnedEffect*)effect_.get();
   for (uint32 i = 0; i < rgroups_.size(); ++i) {
     const RenderGroup& rg = rgroups_[i];
     const sbox::SkinnedMesh::Group& group = mesh_->groups()[i];

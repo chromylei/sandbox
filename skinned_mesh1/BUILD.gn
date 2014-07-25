@@ -11,6 +11,6 @@ executable("sbox_soft_skinned_mesh") {
     "//base:appinit",
     "//third_party/assimp:assimp",
     "../base:sbox_base",
-    ":sbox_soft_skinned_mesh_effect",
+    "../base:sbox_software_meshlib",
   ]
 }

@@ -3,7 +3,7 @@ technique [
     name = "texture"
     ps_main="ps_main"
     vs_main="vs_main"
-    class_name="TextureEffect"
+    class_name="SoftwareSkinnedEffect"
            ];
 
 [uniform_func="SetDiffuseTex"] uniform Texture2D tex;
