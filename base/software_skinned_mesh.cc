@@ -82,6 +82,40 @@ std::vector<SoftwareSkinnedMesh::Vertex> SoftwareSkinnedMesh::InitVertex(
   return vertex;
 }
 
+azer::Matrix4 SoftSkinnedMesh::CalcPosition(const azer::Matrix4& world,
+                                            const BoneWeights& weights,
+                                            const MeshOffsetMat& offsets) {
+  azer::Matrix4 matrix = azer::Matrix4::kZero;
+  for (auto iter = weights.begin(); iter != weights.end(); ++iter) {
+    Bone* bone = skeleton_.GetBone(iter->index);
+    const azer::Matrix4* offset = offsets[iter->index];
+    if (offset == NULL) {
+      matrix += bone->combined() * iter->weight;
+    } else {
+      matrix += std::move(bone->combined() * *offset) * iter->weight;
+    }
+  }
+  azer::Matrix4 ret = std::move(world * matrix);
+  return ret;
+}
+
+void SoftSkinnedMesh::UpdateVertex(const azer::Matrix4& world) {
+  for (size_t i = 0; i < rgroups_.size(); ++i) {
+    azer::LockDataPtr dataptr(rgroups_[i].vb->map(azer::kWriteDiscard));
+    Vertex* vertex = (Vertex*)dataptr->data_ptr();
+    sbos::SkinnedMesh& Group& group = mesh_->groups_[i];
+    BoneWeightsVec weights = group_weights_[i];
+    for (int j = 0; j < group.vertices.size(); ++j) {
+      azer::Matrix4 new_world = std::move(CalcPosition(world, weights[j],
+                                                       group_offset_[i]));
+      vertex[j].position =  std::move(new_world* group.vertices[j].position);
+      vertex[j].coordtex = group.vertices[j].coordtex;
+      vertex[j].normal = new_world * group.vertices[j].normal;
+    }
+    rgroups_[i].vb->unmap();
+  }
+}
+
 void SoftwareSkinnedMesh::Update(const std::string& anname, double t) {
   const Animation* anim = mesh_->GetAnimationSet().GetAnimation(anname);
   mesh_->GetSkeleton().UpdateHierarchy(t, *anim, azer::Matrix4::kIdentity);
@@ -106,16 +140,8 @@ void SoftwareSkinnedMesh::Render(azer::Renderer* renderer,
     azer::VertexBuffer* vb = rg.vb.get();
     azer::IndicesBuffer* ib = rg.ib.get();
     sbox::SkinnedMesh::Material mtrl = mesh_->materials()[rg.mtrl_idx];
-    azer::Matrix4 w = std::move(world * group.bone->combined());
-    
-    memcpy(&temp_mat_[0], &(bone_mat_[0]), sizeof(azer::Matrix4) * bone_mat_.size());
-    for (auto iter = group.offset.begin(); iter != group.offset.end(); ++iter) {
-      temp_mat_[iter->first] = bone_mat_[iter->first] * iter->second;
-    }
-
-    effect->SetBones((azer::Matrix4*)(&temp_mat_[0]), temp_mat_.size());
     effect->SetProjView(pv);
-    effect->SetWorld(w);
+    effect->SetWorld(world);
     effect->SetDiffuseTex(mtrl.tex);
     effect->Use(renderer);
     renderer->Render(vb, ib, azer::kTriangleList);

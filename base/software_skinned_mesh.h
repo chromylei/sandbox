@@ -13,6 +13,25 @@
 struct aiMesh;
 struct aiScene;
 
+struct BoneAttached {
+  int index;
+  float weight;
+
+  BoneAttached()
+      : index(-1)
+      , weight(0.0f) {
+  }
+
+  BoneAttached(int idx, float w)
+      : index(idx)
+      , weight(w) {
+  }
+};
+
+
+typedef std::vector<BoneAttached> BoneWeights;
+typedef std::vector<BoneWeights> BoneWeightsVec;
+
 class SoftwareSkinnedMesh {
  public:
   SoftwareSkinnedMesh(sbox::SkinnedMesh* skinned)
