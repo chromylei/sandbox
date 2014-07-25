@@ -4,54 +4,72 @@
 #include <vector>
 
 #include "base/basictypes.h"
+#include "sbox/base/skeleton.h"
+#include "sbox/base/animation.h"
 
+struct aiMesh;
 struct aiScene;
 
-class ModelLoader {
+namespace sbox {
+class SkinnedMesh {
  public:
-  struct BaseVertex {
-    azer::Vector4 position;
-    azer::Vector2 texcoord;    
-    azer::Vector4 normal;
+  SkinnedMesh() : anim_set_(&skeleton_) {}
 
-    BaseVertex(const Vertex4& p1, const Vertex2& p2, const Vertex4& p3)
-        : position(p1)
-        , texcoord(p2)
-        , normal(p3) {
+  struct Material {
+    azer::TexturePtr tex;
+  };
+
+  struct Vertex {
+    azer::Vector4 position;
+    azer::Vector2 coordtex;
+    azer::Vector4 normal;
+    std::vector<int> index;
+    std::vector<float> weights;
+    Vertex(const azer::Vector4 p0, const azer::Vector2 p1, const azer::Vector4 p2)
+      : position(p0)
+      , coordtex(p1)
+      , normal(p2) {
     }
   };
 
-  struct Material {
+  typedef std::vector<Vertex> VertexVec;
+
+  typedef std::vector<std::pair<int, azer::Matrix4> > OffsetType;
+  struct Group {
+    VertexVec vertices;
+    std::vector<int32> indices;
+    OffsetType offset;
+    int mtrl_idx;
+    Bone* bone;
+
+    Group() : bone(NULL) {
+    }
   };
 
-  struct Bone {
-    azer::Matrix4 offset;
-    std::vector<double> weight;
-    std::vector<int> index;
-  };
+  bool Load(const ::base::FilePath& filepath, azer::RenderSystem* rs);
 
-  class Delegate {
-   public:
-    virtual ~Delegate() {}
-    virtual void OnMesh(int meshid, int vertex_num, int indices_num) = 0;
-    virtual void OnVertex(int meshid, int vid, const BaseVertex& vertex,
-                          const Bone& bone) = 0;
-    virtual void OnIndices(int meshid, int faceid, int p1, int p2, int p3) = 0;
-    virtual void OnMaterial(int material, Material* material) = 0;
-    virtual void OnMeshEnd(int meshid) = 0;
-  };
+  Skeleton& GetSkeleton() { return skeleton_;}
 
-  ModelLoader(Delegate* delegate, RenderSystem* rs)
-      : delegate_(delegate)
-      , scene_(NULL)
-      , render_system_(rs) {
-  }
+  const std::vector<Group>& groups() const { return groups_;}
+  std::vector<Group>* mutable_groups() { return &groups_;}
 
-  bool Load(const std::string& path);
-  const aiScene* GetScene() { return scene_;}
+  const std::vector<Material>& materials() const { return materials_;}
+  std::vector<Material>* mutable_materials() { return &materials_;}
+
+  const AnimationSet& GetAnimationSet() const { return anim_set_;}
  private:
-  Delegate* delegate_;
-  const aiScene* scene_;
-  RenderSystem* render_system_;
-  DISALLOW_COPY_AND_ASSIGN(ModelLoader);
+  void LoadVertex(const aiMesh* paiMesh, Group* group);
+  void LoadBoneWeights(const aiMesh* paiMesh, std::vector<Vertex>* vertex,
+                       OffsetType* offsets);
+  void LoadMaterial(const ::base::FilePath& filepath, azer::RenderSystem* rs,
+                    const aiScene* scene);
+  void LoadScene(const aiScene* scene);
+  void LoadNode(const aiNode* node);
+  std::vector<Group> groups_;
+  std::vector<Material> materials_;
+  Skeleton skeleton_;
+  AnimationSet anim_set_;
+  DISALLOW_COPY_AND_ASSIGN(SkinnedMesh);
 };
+
+}  // namespace sbox

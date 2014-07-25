@@ -2,164 +2,122 @@
 
 #include "sbox/base/assimp.h"
 #include "sbox/base/mesh.h"
+#include "base/logging.h"
 #include "azer/render/render.h"
 
-int GetNextIndex(const HardwareSkinnedMesh::Vertex& vertex) {
+#include "hardware_skinned.afx.h"
+#define EFFECT_GEN_DIR "out/dbg/gen/sbox/base/"
+#define SHADER_NAME "haredware_skinned.afx"
+
+HardwareSkinnedMesh::Vertex::Vertex(const azer::Vector4 p0, const azer::Vector2 p1,
+                                    const azer::Vector4 p2,
+                                    const std::vector<int>& p3,
+                                    const std::vector<float>& p4)
+    : position(p0)
+    , coordtex(p1)
+    , normal(p2) {
+  DCHECK_EQ(p3.size(), p4.size());
   for (int i = 0; i < 4; ++i) {
-    if (vertex.index[i] == -1) {
-      return i;
-    }
-  }
-
-  return -1;
-}
-
-void HardwareSkinnedMesh::LoadVertex(const aiMesh* paiMesh, Group* group) {
-  const aiVector3D zero3d(0.0f, 0.0f, 0.0f);
-  for (uint32 i = 0; i < paiMesh->mNumVertices; ++i) {
-    const aiVector3D& pos = paiMesh->mVertices[i];
-    const aiVector3D& normal = paiMesh->mNormals[i];
-    const aiVector3D& texcoord =
-        paiMesh->HasTextureCoords(0) ? (paiMesh->mTextureCoords[0][i]) : zero3d;
-
-    Vertex vertex(azer::Vector4(pos.x, pos.y, pos.z, 1.0),
-                  azer::Vector2(texcoord.x, texcoord.y),
-                  azer::Vector4(normal.x, normal.y, normal.z, 0.0));
-    group->vertices.push_back(vertex);
-  }
-
-  for (uint32 i = 0; i < paiMesh->mNumFaces; ++i) {
-    const aiFace& face = paiMesh->mFaces[i];
-    group->indices.push_back(face.mIndices[0]);
-    group->indices.push_back(face.mIndices[1]);
-    group->indices.push_back(face.mIndices[2]);
-  }
-
-  group->mtrl_idx = paiMesh->mMaterialIndex;
-}
-
-void HardwareSkinnedMesh::LoadBoneWeights(const aiMesh* paiMesh,
-                                          std::vector<Vertex>* vertices,
-                                          OffsetType* offsets) {
-  for (uint32 i = 0; i < paiMesh->mNumBones; ++i) {
-    std::string bone_name = paiMesh->mBones[i]->mName.data;
-    int bone_index = skeleton_.GetBoneIndex(bone_name);
-    Bone* bone = skeleton_.GetBone(bone_index);
-    aiMatrix4x4 mat = paiMesh->mBones[i]->mOffsetMatrix;
-    azer::Matrix4 offset = azer::Matrix4(mat[0][0], mat[0][1], mat[0][2], mat[0][3],
-                                         mat[1][0], mat[1][1], mat[1][2], mat[1][3],
-                                         mat[2][0], mat[2][1], mat[2][2], mat[2][3],
-                                         mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
-    offsets->push_back(std::make_pair(bone_index, offset));
-    for (int j = 0; j < paiMesh->mBones[i]->mNumWeights; ++j) {
-      int vertex_id = paiMesh->mBones[i]->mWeights[j].mVertexId;
-      float weight = paiMesh->mBones[i]->mWeights[j].mWeight;
-      Vertex& vertex = (*vertices)[vertex_id];
-      int index = GetNextIndex(vertex);
-      DCHECK_GE(index, 0);
-      vertex.weights[index] = weight;
-      vertex.index[index] = bone_index;
+    if (i < p3.size()) {
+      index[i] = p3[i];
+      weights[i] = p4[i];
+    } else {
+      index[i] = -1;
+      weights[i] = 0.0f;
     }
   }
 }
 
-void HardwareSkinnedMesh::LoadMaterial(const ::base::FilePath& filepath,
-                                       azer::RenderSystem* rs,
-                                       const aiScene* scene) {
-  for (uint32 i = 0; i < scene->mNumMaterials; ++i) {
-    const aiMaterial* material = scene->mMaterials[i];
-    if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
-      aiString path;
-      if (material->GetTexture(aiTextureType_DIFFUSE, 0, &path,
-                               NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
-        ::base::FilePath texpath(::base::UTF8ToWide(path.C_Str()));
-        ::base::FilePath realpath;
-        realpath = filepath.DirName();
-        realpath = realpath.Append(texpath.BaseName());
-        azer::TexturePtr texptr(rs->CreateTextureFromFile(azer::Texture::k2D,
-                                                          realpath));
-        Material mtrl;
-        mtrl.tex = texptr;
-        materials_.push_back(mtrl);
-      }
-    }
-  }
-}
-
-void HardwareSkinnedMesh::LoadScene(const aiScene* scene) {
-  for (uint32 i = 0; i < scene->mNumMeshes; ++i) {
-    Group group;
-    LoadVertex(scene->mMeshes[i], &group);
-    LoadBoneWeights(scene->mMeshes[i], &group.vertices, &group.offset);
-    groups_.push_back(group);
-  }
-
-  LoadNode(scene->mRootNode);
-}
-
-void HardwareSkinnedMesh::LoadNode(const aiNode* node) {
-  for (uint32 i = 0; i < node->mNumMeshes; ++i) {
-    int index = node->mMeshes[i];
-    std::string node_name(node->mName.data);
-    int bone_index = skeleton_.GetBoneIndex(node_name);
-    DCHECK(bone_index != -1);
-    groups_[index].bone = skeleton_.GetBone(bone_index);
-  }
-  for (uint32 i = 0; i < node->mNumChildren; ++i) {
-    LoadNode(node->mChildren[i]);
-  }
-}
-
-bool HardwareSkinnedMesh::Load(const ::base::FilePath& filepath,
-                               azer::RenderSystem* rs) {
-  Assimp::Importer importer;
-  const aiScene* scene = importer.ReadFile(
-      ::base::WideToUTF8(filepath.value()),
-      aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
-  if (scene == NULL) {
-    LOG(ERROR) << "Failed to load file: " << filepath.value();
-    return false;
-  }
-
-  skeleton_.Load(scene->mRootNode, rs);
-  LoadScene(scene);
-  anim_set_.Load(scene);
-  LoadMaterial(filepath, rs, scene);
-  Init(rs);
-  return true;
-}
-
-namespace {
-const azer::VertexDesc::Desc kVertexDesc[] = {
-  {"POSITION", 0, azer::kVec4},
-  {"COORDTEX", 0, azer::kVec2},
-  {"NORMAL", 0, azer::kVec4},
-  {"WEIGHTS", 0, azer::kVec4},
-  {"INDEX", 0, azer::kIntVec4},
-};
-}
 void HardwareSkinnedMesh::Init(azer::RenderSystem* rs) {
+  azer::ShaderArray shaders;
+  CHECK(azer::LoadVertexShader(EFFECT_GEN_DIR SHADER_NAME ".vs", &shaders));
+  CHECK(azer::LoadPixelShader(EFFECT_GEN_DIR SHADER_NAME ".ps", &shaders));
+  HaredwareSkinnedMeshEffect* effect = new HaredwareSkinnedMeshEffect(
+      shaders.GetShaderVec(), azer::RenderSystem::Current());
+  effect_.reset(effect);
+
   azer::VertexBuffer::Options vbopt;
   vbopt.usage = azer::GraphicBuffer::kDynamic;
   vbopt.cpu_access = azer::kCPUWrite;
-  azer::VertexDescPtr vertex_desc_ptr(
-      new azer::VertexDesc(kVertexDesc, arraysize(kVertexDesc)));
-  for (uint32 i = 0; i < groups_.size(); ++i) {
+  azer::VertexDescPtr vertex_desc_ptr = effect->GetVertexDesc();
+  for (uint32 i = 0; i < mesh_->groups().size(); ++i) {
     RenderGroup rgroup;
-    const int vertex_num = groups_[i].vertices.size();
+    const sbox::SkinnedMesh::Group& group = mesh_->groups()[i];
+
+    std::vector<Vertex> v = std::move(InitVertex(group.vertices));
+    
+    const int vertex_num = group.vertices.size();
     azer::VertexDataPtr vdata(new azer::VertexData(vertex_desc_ptr, vertex_num)); 
-    memcpy(vdata->pointer(), (uint8*)&(groups_[i].vertices[0]),
-           sizeof(Vertex) * vertex_num);
+    memcpy(vdata->pointer(), (uint8*)&(v[0]), sizeof(Vertex) * v.size());
     rgroup.vb.reset(rs->CreateVertexBuffer(vbopt, vdata));
 
     azer::IndicesDataPtr idata_ptr(
         new azer::IndicesData(vertex_num, azer::IndicesData::kUint32,
                               azer::IndicesData::kMainMemory));
-    memcpy(idata_ptr->pointer(), &(groups_[i].indices[0]),
-           groups_[i].indices.size() * sizeof(uint32));
+    memcpy(idata_ptr->pointer(), &(group.indices[0]),
+           group.indices.size() * sizeof(uint32));
     rgroup.ib.reset(
         rs->CreateIndicesBuffer(azer::IndicesBuffer::Options(), idata_ptr));
-    rgroup.mtrl_idx = groups_[i].mtrl_idx;
+    rgroup.mtrl_idx = group.mtrl_idx;
     rgroups_.push_back(rgroup);
+  }
+
+  mesh_->GetSkeleton().PrepareRender(rs);
+  mesh_->GetSkeleton().UpdateHierarchy(azer::Matrix4::kIdentity);
+  bone_mat_.resize(mesh_->GetSkeleton().GetBoneNum());
+  temp_mat_.resize(mesh_->GetSkeleton().GetBoneNum());
+}
+
+
+std::vector<HardwareSkinnedMesh::Vertex> HardwareSkinnedMesh::InitVertex(
+    const sbox::SkinnedMesh::VertexVec& vec) {
+  std::vector<Vertex> vertex;
+  for (auto iter = vec.begin(); iter != vec.end(); ++iter) {
+    vertex.push_back(std::move(Vertex(iter->position,
+                                      iter->coordtex,
+                                      iter->normal,
+                                      iter->index,
+                                      iter->weights)));
+  }
+  return vertex;
+}
+
+void HardwareSkinnedMesh::Update(const std::string& anname, double t) {
+  const Animation* anim = mesh_->GetAnimationSet().GetAnimation(anname);
+  mesh_->GetSkeleton().UpdateHierarchy(t, *anim, azer::Matrix4::kIdentity);
+  memcpy(&bone_mat_[0], &(mesh_->GetSkeleton().GetBoneMat()[0]),
+         sizeof(azer::Matrix4) * bone_mat_.size());
+}
+
+void HardwareSkinnedMesh::Update(double t) {
+  mesh_->GetSkeleton().UpdateHierarchy(azer::Matrix4::kIdentity);
+  memcpy(&bone_mat_[0], &(mesh_->GetSkeleton().GetBoneMat()[0]),
+         sizeof(azer::Matrix4) * bone_mat_.size());
+}
+
+void HardwareSkinnedMesh::Render(azer::Renderer* renderer,
+                                 const azer::Matrix4& world,
+                                 const azer::Matrix4& pv) {
+  HaredwareSkinnedMeshEffect* effect = (HaredwareSkinnedMeshEffect*)effect_.get();
+  for (uint32 i = 0; i < rgroups_.size(); ++i) {
+    const RenderGroup& rg = rgroups_[i];
+    const sbox::SkinnedMesh::Group& group = mesh_->groups()[i];
+    DCHECK(group.bone != NULL);
+    azer::VertexBuffer* vb = rg.vb.get();
+    azer::IndicesBuffer* ib = rg.ib.get();
+    sbox::SkinnedMesh::Material mtrl = mesh_->materials()[rg.mtrl_idx];
+    azer::Matrix4 w = std::move(world * group.bone->combined());
+    
+    memcpy(&temp_mat_[0], &(bone_mat_[0]), sizeof(azer::Matrix4) * bone_mat_.size());
+    for (auto iter = group.offset.begin(); iter != group.offset.end(); ++iter) {
+      temp_mat_[iter->first] = bone_mat_[iter->first] * iter->second;
+    }
+
+    effect->SetBones((azer::Matrix4*)(&temp_mat_[0]), temp_mat_.size());
+    effect->SetProjView(pv);
+    effect->SetWorld(w);
+    effect->SetDiffuseTex(mtrl.tex);
+    effect->Use(renderer);
+    renderer->Render(vb, ib, azer::kTriangleList);
   }
 }
