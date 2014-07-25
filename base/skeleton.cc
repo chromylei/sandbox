@@ -1,6 +1,7 @@
 #include "sbox/base/skeleton.h"
 
 #include "sbox/base/assimp.h"
+#include "sbox/base/animation.h"
 #include "sbox/base/util.h"
 #include "sbox/base/mesh.h"
 #include "base/strings/utf_string_conversions.h"
@@ -91,7 +92,8 @@ void Skeleton::AddNewBone(Bone* bone) {
   DCHECK(bone_map_.find(bone->node_name()) == bone_map_.end())
       << "bone \"" << bone->node_name() << "\" has been exist";
   bone_.push_back(bone);
-  bone_map_[bone->node_name()] = bone_.size() - 1;
+  bone->index_ = bone_.size() - 1;
+  bone_map_[bone->node_name()] = bone->index_;
 }
 
 int Skeleton::GetBoneIndex(const std::string& name) const {
@@ -122,7 +124,7 @@ class SkeletonHierarchyTraverser : public azer::TreeNode<Bone>::Traverser {
     std::string ident(depth_ * 2, ' ');
     std::stringstream ss;
     int index = skeleton_->GetBoneIndex(bone->bone_name());
-    ss << ident << bone->bone_name() << "(index: " << index
+    ss << ident << bone->bone_name() << "(index: " << index << " " << bone->index()
        << ", position: " << bone->position() << ")";
 
     /*
@@ -227,6 +229,28 @@ void Skeleton::UpdateHierarchy(Bone* bone, const azer::Matrix4& pmat) {
   Bone* child = bone->first_child();
   while (child) {
     UpdateHierarchy(child, trans);
+    child = child->next_sibling();
+  }
+}
+
+void Skeleton::UpdateHierarchy(double t, const Animation& animation,
+                               const azer::Matrix4& world) {
+  UpdateHierarchy(t, root(), animation, world);
+  bone_mat_.resize(bone_.size());
+  for (size_t i = 0; i < bone_mat_.size(); ++i) {
+    bone_mat_[i] = bone_[i]->combined();
+  }
+}
+
+void Skeleton::UpdateHierarchy(double t, Bone* bone, const Animation& animation,
+                               const azer::Matrix4& pmat) {
+  DCHECK(bone);
+  azer::Matrix4 anim_mat = std::move(animation.CalcBone(t, bone->index()));
+  const azer::Matrix4& trans = pmat * anim_mat;
+  bone->combined_transform_ = trans;
+  Bone* child = bone->first_child();
+  while (child) {
+    UpdateHierarchy(t, child, animation, trans);
     child = child->next_sibling();
   }
 }

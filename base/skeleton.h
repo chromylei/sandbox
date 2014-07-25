@@ -13,6 +13,7 @@
 
 struct aiNode;  // for assimp
 class Mesh;
+class Animation;
 class Bone : public azer::TreeNode<Bone> {
  public:
   explicit Bone(const std::string& name, Bone* parent);
@@ -21,7 +22,9 @@ class Bone : public azer::TreeNode<Bone> {
   azer::Vector3 position() const;
   const azer::Matrix4& combined() const { return combined_transform_;}
   const azer::Matrix4& local() const { return transform_;}
+  int index() const { return index_;}
  private:
+  int index_;
   std::string bone_name_;
   azer::Matrix4 transform_;
   azer::Matrix4 combined_transform_;
@@ -47,11 +50,15 @@ class Skeleton {
 
   std::string DumpHierarchy() const;
   void UpdateHierarchy(const azer::Matrix4& world);
+  void UpdateHierarchy(double t, const Animation& animation,
+                       const azer::Matrix4& world);
   const std::vector<azer::Matrix4>& GetBoneMat() const { return bone_mat_;}
   Bone* root();
   Bone* root() const;
  private:
   void UpdateHierarchy(Bone* bone, const azer::Matrix4& mat);
+  void UpdateHierarchy(double t, Bone* bone, const Animation& animation,
+                       const azer::Matrix4& world);
   void Render(Bone* node, azer::Renderer* renderer, const azer::Matrix4& pvw);
   void HierarchyBone(aiNode* node, Bone* bone);
   Bone* InitBone(aiNode* node);

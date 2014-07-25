@@ -7,43 +7,56 @@ void AnimationNode::Load(const aiNodeAnim* anim_node) {
   for (int j = 0; j < anim_node->mNumPositionKeys;  ++j) {
     aiVectorKey& key = anim_node->mPositionKeys[j];
     positions_.Add(azer::Vector4(
-        key.mValue.x, key.mValue.y, key.mValue.z, 1.0), key.mTime);
+        key.mValue.x, key.mValue.y, key.mValue.z, 1.0), key.mTime / 1000.0f);
   }
 
   for (int j = 0; j < anim_node->mNumScalingKeys;  ++j) {
     aiVectorKey& key = anim_node->mScalingKeys[j];
     scales_.Add(azer::Vector4(
-        key.mValue.x, key.mValue.y, key.mValue.z, 1.0), key.mTime);
+        key.mValue.x, key.mValue.y, key.mValue.z, 1.0), key.mTime / 1000.0f);
   }
 
   for (int j = 0; j < anim_node->mNumRotationKeys;  ++j) {
     aiQuatKey& key = anim_node->mRotationKeys[j];
     rotate_.Add(azer::Quaternion(
-        key.mValue.w, key.mValue.x, key.mValue.y, key.mValue.z), key.mTime);
+        key.mValue.w, key.mValue.x, key.mValue.y, key.mValue.z), key.mTime / 1000.0f);
   }
 }
 
 azer::Matrix4 AnimationNode::transform(double t) const {
-  return azer::Matrix4::kIdentity;
+  azer::Matrix4 mat = azer::Matrix4::kIdentity;
+  if (positions_.has_data()) {
+    azer::Matrix4 trans = std::move(positions_.Interpolate(t));
+    mat = std::move(mat * trans);
+  }
+
+  if (rotate_.has_data()) {
+    azer::Matrix4 rotate = std::move(rotate_.Interpolate(t));
+    mat = std::move(mat * rotate);
+  }
+  return mat;
 }
 
 void Animation::Load(const aiAnimation* anim) {
+  nodes_.resize(skeleton_->GetBoneNum());
   for (uint32 i = 0; i < anim->mNumChannels; ++i) {
     aiNodeAnim* anim_node = anim->mChannels[i];
     std::string name(anim_node->mNodeName.data);
     int bone_index = skeleton_->GetBoneIndex(name);
-    Bone* bone = skeleton_->GetBone(bone_index);
-    std::shared_ptr<AnimationNode> node(new AnimationNode(bone));
+    DCHECK_GE(bone_index, 0u);
+    std::shared_ptr<AnimationNode> node(new AnimationNode(bone_index, name));
     node->Load(anim_node);
-    nodes_.push_back(node);
+    nodes_[bone_index] = node;
   }
 }
 
-void Animation::CalcBone(double t, std::vector<azer::Matrix4>* mat) {
-  for (auto iter = nodes_.begin(); iter != nodes_.end(); ++iter) {
-    AnimationNode annode = (*iter);
-    azer::Matrix4 mat = std::move(annode->transform());
-    mat[annode->bone()->index()] = mat;
+azer::Matrix4 Animation::CalcBone(double t, int index) const {
+  DCHECK_LT(index, nodes_.size());
+  std::shared_ptr<AnimationNode> annode = nodes_[index];
+  if (annode.get()) {
+    return std::move(annode->transform(t));
+  } else {
+    return azer::Matrix4::kIdentity;
   }
 }
 

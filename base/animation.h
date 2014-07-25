@@ -3,31 +3,30 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "base/basictypes.h"
-#include "sbox/base/skeleton.h"
 #include "azer/math/math.h"
 #include "base/logging.h"
 
+class Skeleton;
 
 template <class T>
 class AnimationData {
  public:
   AnimationData() : duration_(0) {}
-  double duration() const { return duration_; }
-  const T& data(double t) const {
-    CHECK(data_.size() > 0);
-    CHECK(duration_ > 0);
-    return data_[FindIndex(t)];
+  double duration() const {
+    DCHECK_GT(time_.size(), 0u);
+    return time_.back();
   }
-
   void Add(const T& t, double duration) {
-    duration_ += duration_;
+    time_.push_back(duration);
     data_.push_back(t);
   }
 
-  azer::Matrix4 Interpolate(double t);
+  azer::Matrix4 Interpolate(double t) const;
   int FindIndex(double t, double* left) const;
+  bool has_data() const { return time_.size() != 0u;}
  private:
   int NextIndex(int index) const;
   std::vector<double> time_;
@@ -46,21 +45,22 @@ struct aiNodeAnim;
 
 class AnimationNode {
  public:
-  explicit AnimationNode(Bone* bone)
-      : bone_(bone) {
+  explicit AnimationNode(int bone_index, const std::string& name)
+      : name_(name)
+      , bone_index_(bone_index) {
   }
 
   void Load(const aiNodeAnim* animnode);
 
   const std::string& name() const { return name_;}
   azer::Matrix4 transform(double t) const;
+  int bone_index() const { return bone_index_;}
  private:
-  double duration_;
   std::string name_;
+  int bone_index_;
   AnimationData<azer::Vector4> positions_;
   AnimationData<azer::Vector4> scales_;
   AnimationData<azer::Quaternion> rotate_;
-  Bone* bone_;
   DISALLOW_COPY_AND_ASSIGN(AnimationNode);
 };
 
@@ -72,7 +72,7 @@ class Animation {
   }
   void Load(const aiAnimation* anim);
 
-  void CalcBone(double t, std::vector<azer::Matrix4>* mat);
+  azer::Matrix4 CalcBone(double t, int index) const;
  private:
   std::string name_;
   Skeleton* skeleton_;
@@ -95,38 +95,41 @@ class AnimationSet {
 
 
 template<>
-azer::Matrix4 AnimationData<azer::Quaternion>::Interpolate(double t) {
+inline azer::Matrix4 AnimationData<azer::Quaternion>::Interpolate(double t)  const {
   double interp = 0.0f;
   int index = FindIndex(t, &interp);
-  const azer::Quaternion& quat1 = data(index);
-  const azer::Quaternion& quat2 = data(NextIndex(index));
-  return std::move(azer::Quaternion::Slerp((float)interp, quat1, quat2).ToMatrix());
+  int next_index = NextIndex(index);
+  const azer::Quaternion& quat1 = data_[index];
+  const azer::Quaternion& quat2 = data_[next_index];
+  const azer::Quaternion rot =
+      std::move(azer::Quaternion::nlerp((float)interp, quat1, quat2));
+  return rot.ToMatrix();
 }
 
 template<>
-azer::Matrix4 AnimationData<azer::Vector4>::Interpolate(double t) {
+inline azer::Matrix4 AnimationData<azer::Vector4>::Interpolate(double t) const {
   double interp = 0.0f;
   int index = FindIndex(t, &interp);
-  const azer::Vector4& v1 = data(index);
-  const azer::Vector4& v2 = data(NextIndex(index));
-  azer::Vector4 pos = std::move(v1 * interp + v2 * (1 - interp));
-  return std::move(azer::Transpose(pos));
+  int next_index = NextIndex(index);
+  const azer::Vector4& v1 = data_[index];
+  const azer::Vector4& v2 = data_[next_index];
+  azer::Vector4 pos = std::move(v1 * interp + v2 * (1.0f - interp));
+  return std::move(azer::Translate(pos));
 }
 
 template<class T>
 int AnimationData<T>::FindIndex(double t, double* left) const {
-  int num = (int)(t / duration_);
-  t -= num * duration_;
+  DCHECK_GT(time_.size(), 0u);
+  const double duration = time_.back();
+  int num = (int)(t / duration);
+  t -= num * duration;
 
-  double sum = 0.0;
-  for (size_t i = 0; i < time_.size(); ++i) {
-    if (t > sum + *iter) {
-      *left = (t - sum + *iter) / *iter;
-      
+  for (size_t i = 0; i < time_.size() - 1; ++i) {
+    if (t < time_[i + 1]) {
+      double span = time_[i+1] - time_[i];
+      *left = (t - time_[i]) / span;
       return i;
     }
-
-    sum += *iter;
   }
   NOTREACHED();
   return -1;

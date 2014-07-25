@@ -48,12 +48,19 @@ class MainDelegate : public azer::WindowHost::Delegate {
     mesh_.GetSkeleton().UpdateHierarchy(azer::Matrix4::kIdentity);
 
     bone_mat_.resize(mesh_.GetSkeleton().GetBoneNum());
+    temp_mat_.resize(mesh_.GetSkeleton().GetBoneNum());
     LOG(ERROR) << "\n" << mesh_.GetSkeleton().DumpHierarchy();
   }
   virtual void OnUpdateScene(double time, float delta_time) {
     float rspeed = 3.14f * 2.0f / 4.0f;
     azer::Radians camera_speed(azer::kPI / 2.0f);
     UpdatedownCamera(&camera_, camera_speed, delta_time);
+
+    const Animation* anim = mesh_.GetAnimationSet().GetAnimation("Walk");
+    DCHECK(anim);
+    mesh_.GetSkeleton().UpdateHierarchy(time, *anim, azer::Matrix4::kIdentity);
+    memcpy(&bone_mat_[0], &(mesh_.GetSkeleton().GetBoneMat()[0]),
+           sizeof(azer::Matrix4) * bone_mat_.size());
   }
 
   virtual void OnRenderScene(double time, float delta_time) {
@@ -79,6 +86,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
   azer::Matrix4 proj_;
   azer::Matrix4 view_;
   std::vector<azer::Matrix4> bone_mat_;
+  std::vector<azer::Matrix4> temp_mat_;
   std::unique_ptr<HaredwareSkinnedMeshEffect> effect_;
   HardwareSkinnedMesh mesh_;
 };
@@ -110,14 +118,12 @@ void MainDelegate::Render(HaredwareSkinnedMeshEffect* effect,
     HardwareSkinnedMesh::Material mtrl = mesh->materials()[rg.mtrl_idx];
     azer::Matrix4 w = std::move(world * group.bone->combined());
     
-    memcpy(&bone_mat_[0], &(mesh->GetSkeleton().GetBoneMat()[0]),
-           sizeof(azer::Matrix4) * bone_mat_.size());
+    memcpy(&temp_mat_[0], &(bone_mat_[0]), sizeof(azer::Matrix4) * bone_mat_.size());
     for (auto iter = group.offset.begin(); iter != group.offset.end(); ++iter) {
-      bone_mat_[iter->first] = mesh->GetSkeleton().GetBoneMat()[iter->first]
-          * iter->second;
+      temp_mat_[iter->first] = bone_mat_[iter->first] * iter->second;
     }
-    
-    effect->SetBones((azer::Matrix4*)(&bone_mat_[0]), bone_mat_.size());
+
+    effect->SetBones((azer::Matrix4*)(&temp_mat_[0]), temp_mat_.size());
     effect->SetProjView(pv);
     effect->SetWorld(w);
     effect->SetDiffuseTex(mtrl.tex);
