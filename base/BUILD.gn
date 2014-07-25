@@ -26,8 +26,6 @@ static_library("sbox_base") {
     "camera_control.h",
     "skeleton.cc",
     "skeleton.h",
-    "skinned_mesh.cc",
-    "skinned_mesh.h",
     "util.cc",
     "util.h",
   ]
@@ -52,6 +50,23 @@ static_library("sbox_hardware_meshlib") {
   deps = [
     ":sbox_base",
     ":sbox_hardware_skinned_effect"
+    "//third_party/assimp:assimp",
+  ]       
+}
+
+afx("sbox_software_skinned_effect") {
+  source = "software_skinned.afx"
+  filename = "software_skinned"
+}
+
+static_library("sbox_software_meshlib") {
+  sources = [
+    "software_skinned_mesh.cc",
+    "software_skinned_mesh.h",
+  ]
+  deps = [
+    ":sbox_base",
+    ":sbox_software_skinned_effect"
     "//third_party/assimp:assimp",
   ]       
 }

@@ -8,25 +8,6 @@
 #include "sbox/base/skeleton.h"
 #include "sbox/base/mesh.h"
 
-struct BoneAttached {
-  int index;
-  float weight;
-
-  BoneAttached()
-      : index(-1)
-      , weight(0.0f) {
-  }
-
-  BoneAttached(int idx, float w)
-      : index(idx)
-      , weight(w) {
-  }
-};
-
-
-typedef std::vector<BoneAttached> BoneWeights;
-typedef std::vector<BoneWeights> BoneWeightsVec;
-
 class SoftSkinnedMesh : public Mesh {
  public:
   SoftSkinnedMesh() {}
