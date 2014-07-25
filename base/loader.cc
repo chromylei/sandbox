@@ -35,7 +35,7 @@ Assimp::Importer importer;
       const aiVector3D& pos = mesh->mVertices[i]; 
       const aiVector3D& normal = mesh->mNormals[i];
       const aiVector3D& texcoord =
-          paiMesh->HasTextureCoords(0) ? (mesh->mTextureCoords[0][i]) : zero3d;
+          mesh->HasTextureCoords(0) ? (mesh->mTextureCoords[0][i]) : zero3d;
       BaseVertex vertex(azer::Vector4(pos.x, pos.y, pos.z, 1.0),
                         azer::Vector2(texcoord.x, texcoord.y),
                         azer::Vector4(normal.x, normal.y, normal.z, 0.0));
@@ -43,9 +43,27 @@ Assimp::Importer importer;
     }
 
     for (int j = 0; j < mesh->mNumFaces; ++j) {
-      const aiFace& face = paiMesh->mFaces[j];
+      const aiFace& face = mesh->mFaces[j];
       delegate_->OnIndices(i, j, face.mIndices[0], face.mIndices[1],
                            face.mIndices[2]);
+    }
+
+    for (uint32 j = 0; j < mesh->mNumBones; ++j) {
+      const aiMatrix4x4& mat = mesh->mBones[j]->mOffsetMatrix;
+      azer::Matrix4 offset = azer::Matrix4(
+          mat[0][0], mat[0][1], mat[0][2], mat[0][3],
+          mat[1][0], mat[1][1], mat[1][2], mat[1][3],
+          mat[2][0], mat[2][1], mat[2][2], mat[2][3],
+          mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
+      for (int k = 0; k < mesh->mBones[i]->mNumWeights; ++k) {
+        int vertex_id = mesh->mBones[j]->mWeights[k].mVertexId;
+        float weight = mesh->mBones[j]->mWeights[k].mWeight;
+        Vertex& vertex = (*vertices)[vertex_id];
+        int index = GetNextIndex(vertex);
+        DCHECK_GE(index, 0);
+        vertex.weights[index] = weight;
+        vertex.index[index] = bone_index;
+      }
     }
   }
 }
