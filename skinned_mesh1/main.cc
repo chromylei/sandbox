@@ -37,7 +37,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     proj_ = std::move(
         PerspectiveRHD3D(azer::Degree(45.0f), 4.0f / 3.0f, 0.10f, 100.0f));
 
-    camera_.SetPosition(azer::Vector3(0.0f, 1.0f, 3.0f));
+    camera_.SetPosition(azer::Vector3(0.0f, 1.0f, 5.0f));
     meshdata_.Load(::base::FilePath(::base::UTF8ToWide(kMeshPath)), rs);
     mesh_.Init(rs);
   }
@@ -46,7 +46,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     azer::Radians camera_speed(azer::kPI / 2.0f);
     UpdatedownCamera(&camera_, camera_speed, delta_time);
     azer::Matrix4 world = azer::RotateY(camera_speed * time);
-    mesh_.Update(time);
+    mesh_.UpdateVertex(azer::Matrix4::kIdentity);
   }
 
   virtual void OnRenderScene(double time, float delta_time) {
@@ -57,7 +57,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     // renderer->Clear(azer::Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
     renderer->ClearDepthAndStencil();
-    mesh_.Render(renderer, camera_.GetProjViewMatrix(), azer::Matrix4::kIdentity);
+    mesh_.Render(renderer, azer::Matrix4::kIdentity, camera_.GetProjViewMatrix());
   }
 
   virtual void OnQuit() {}

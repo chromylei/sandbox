@@ -1,6 +1,6 @@
 
 technique [
-    name = "texture"
+    name = "software_skinned"
     ps_main="ps_main"
     vs_main="vs_main"
     class_name="SoftwareSkinnedEffect"

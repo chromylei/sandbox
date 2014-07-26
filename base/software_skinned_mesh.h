@@ -47,11 +47,12 @@ class SoftwareSkinnedMesh {
   };
 
   void Init(azer::RenderSystem* rs);
-  void Update(const std::string& name, double t);
-  void Update(double t);
+  void UpdateVertex(const azer::Matrix4& world);
   void Render(azer::Renderer* renderer, const azer::Matrix4& world,
               const azer::Matrix4& pv);
  private:
+  azer::Matrix4 CalcPosition(const azer::Matrix4& world, const BoneWeights& weights,
+                             const MeshOffsetMat& offsets);
   sbox::SkinnedMesh* mesh_;
   std::vector<BoneWeightsVec> group_weights_;
   std::vector<MeshOffsetMat> group_offset_;
