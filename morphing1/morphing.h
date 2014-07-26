@@ -1,8 +1,12 @@
 #pragma once
 
-class SoftwareSkinnedMesh {
+#include "base/basictypes.h"
+#include "sbox/base/base.h"
+
+
+class MorphingMesh {
  public:
-  SoftwareSkinnedMesh(sbox::SkinnedMesh* skinned)
+  MorphingMesh(sbox::SkinnedMesh* skinned)
       : mesh_(skinned) {
   }
 
@@ -19,5 +23,5 @@ class SoftwareSkinnedMesh {
   sbox::SkinnedMesh* mesh_;
   std::vector<RenderGroup> rgroups_;
   std::shared_ptr<azer::Effect> effect_;
-  DISALLOW_COPY_AND_ASSIGN(SoftwareSkinnedMesh);
+  DISALLOW_COPY_AND_ASSIGN(MorphingMesh);
 };

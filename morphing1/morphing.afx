@@ -1,9 +1,9 @@
 
 technique [
-    name = "texture"
+    name = "morphing"
     ps_main="ps_main"
     vs_main="vs_main"
-    class_name="TextureEffect"
+    class_name="MorphingEffect"
            ];
 
 [uniform_func="SetPVW"] uniform mat4 pvw;
@@ -34,6 +34,7 @@ VsOutput vs_main(VSInput input) {
 
 [system="true" semantic="target"]
 vec4 ps_main(VsOutput o) {
-  return sample2D(tex, o.coordtex);
+  vec4 v1 = sample2D(tex, o.coordtex)
+  return vec4(0.4, 0.4, 0.4, 1.0);
 }
 

@@ -23,7 +23,7 @@ std::vector<MorphingEffect::Vertex> InitVertex(
 }  // namespace
 
 
-void Morphing::Init(azer::RenderSystem* rs) {
+void MorphingMesh::Init(azer::RenderSystem* rs) {
   azer::ShaderArray shaders;
   CHECK(azer::LoadVertexShader(EFFECT_GEN_DIR SHADER_NAME ".vs", &shaders));
   CHECK(azer::LoadPixelShader(EFFECT_GEN_DIR SHADER_NAME ".ps", &shaders));
@@ -60,7 +60,7 @@ void Morphing::Init(azer::RenderSystem* rs) {
   }
 }
 
-void Morphing::Render(azer::Renderer* renderer,
+void MorphingMesh::Render(azer::Renderer* renderer,
                       const azer::Matrix4& world,
                       const azer::Matrix4& pv) {
   MorphingEffect* effect = (MorphingEffect*)effect_.get();
@@ -71,7 +71,9 @@ void Morphing::Render(azer::Renderer* renderer,
     azer::VertexBuffer* vb = rg.vb.get();
     azer::IndicesBuffer* ib = rg.ib.get();
     sbox::SkinnedMesh::Material mtrl = mesh_->materials()[rg.mtrl_idx];
-    effect->SetProjView(pv);
+    azer::Matrix4 pvw = std::move(pv * world);
+    effect->SetPVW(world);
+    effect->SetWorld(pvw);
     effect->SetDiffuseTex(mtrl.tex);
     effect->Use(renderer);
     renderer->Render(vb, ib, azer::kTriangleList);
