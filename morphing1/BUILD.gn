@@ -1,12 +1,16 @@
 import("//build/templates/afx.gni")
 
 afx("sbox_morphing1_effect") {
-  source = "texture.afx"
-  filename = "texture"
+  source = "morphing.afx"
+  filename = "morphing"
 }
 
 executable("sbox_morphing1") {
-  sources = ["main.cc"]
+  sources = [
+    "main.cc"
+    "morphing.cc",
+    "morphing.h",
+  ]
   deps = [
     "//base:appinit",
     "//third_party/assimp:assimp",
