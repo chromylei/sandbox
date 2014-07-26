@@ -8,7 +8,7 @@
 #include "sbox/base/skeleton.h"
 #include "sbox/base/animation.h"
 #include "sbox/base/mesh.h"
-#include "sbox/base/loader.h"
+#include "sbox/base/skinned_mesh.h"
 
 struct aiMesh;
 struct aiScene;

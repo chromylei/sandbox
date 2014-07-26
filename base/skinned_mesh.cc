@@ -1,4 +1,4 @@
-#include "sbox/base/loader.h"
+#include "sbox/base/skinned_mesh.h"
 
 #include "sbox/base/assimp.h"
 #include "sbox/base/mesh.h"
