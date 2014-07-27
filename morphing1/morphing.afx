@@ -34,7 +34,7 @@ VsOutput vs_main(VSInput input) {
 
 [system="true" semantic="target"]
 vec4 ps_main(VsOutput o) {
-  vec4 v1 = sample2D(tex, o.coordtex)
+  vec4 v1 = sample2D(tex, o.coordtex);
   return vec4(0.4, 0.4, 0.4, 1.0);
 }
 

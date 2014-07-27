@@ -71,9 +71,9 @@ void MorphingMesh::Render(azer::Renderer* renderer,
     azer::VertexBuffer* vb = rg.vb.get();
     azer::IndicesBuffer* ib = rg.ib.get();
     sbox::SkinnedMesh::Material mtrl = mesh_->materials()[rg.mtrl_idx];
-    azer::Matrix4 pvw = std::move(pv * world);
-    effect->SetPVW(world);
-    effect->SetWorld(pvw);
+    azer::Matrix4 pvw = pv;
+    effect->SetPVW(pv);
+    effect->SetWorld(world);
     effect->SetDiffuseTex(mtrl.tex);
     effect->Use(renderer);
     renderer->Render(vb, ib, azer::kTriangleList);

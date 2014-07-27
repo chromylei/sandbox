@@ -28,14 +28,12 @@ class MainDelegate : public azer::WindowHost::Delegate {
     renderer->SetCullingMode(azer::kCullNone);
     // renderer->SetFillMode(azer::kWireFrame);
 
-    azer::Vector3 eye(0.0f, 0.0f, 5.0f);
-    azer::Vector3 dir(0.0f, 0.0f, -1.0f);
+    azer::Vector3 eye(0.0f, 0.0f, 0.0f);
+    azer::Vector3 lookat(0.0f, 0.0f, -0.8f);
     azer::Vector3 up(0.0f, 1.0f, 0.0f);
-    view_ = std::move(LookDirRH(eye, dir, up));
+    view_ = std::move(LookAtRH(eye, lookat, up));
     proj_ = std::move(
         PerspectiveRHD3D(azer::Degree(45.0f), 4.0f / 3.0f, 0.10f, 100.0f));
-
-    camera_.SetPosition(azer::Vector3(0.0f, 2.0f, 3.0f));
 
     meshdata_.Load(::base::FilePath(::base::UTF8ToWide(kMeshPath)), rs);
     mesh_.Init(rs);
@@ -53,8 +51,8 @@ class MainDelegate : public azer::WindowHost::Delegate {
     DCHECK(NULL != rs);
     renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
     renderer->ClearDepthAndStencil();
-
-    mesh_.Render(renderer, azer::Matrix4::kIdentity, camera_.GetProjViewMatrix());
+    // mesh_.Render(renderer, azer::Matrix4::kIdentity, camera_.GetProjViewMatrix());
+    mesh_.Render(renderer, azer::Matrix4::kIdentity, view_);
   }
 
   virtual void OnQuit() {}
