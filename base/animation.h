@@ -24,7 +24,7 @@ class AnimationData {
     data_.push_back(t);
   }
 
-  azer::Matrix4 Interpolate(double t) const;
+  T Interpolate(double t) const;
   int FindIndex(double t, double* left) const;
   bool has_data() const { return time_.size() != 0u;}
  private:
@@ -95,7 +95,8 @@ class AnimationSet {
 
 
 template<>
-inline azer::Matrix4 AnimationData<azer::Quaternion>::Interpolate(double t)  const {
+inline azer::Quaternion AnimationData<azer::Quaternion>::Interpolate(double t)
+    const {
   double interp = 0.0f;
   int index = FindIndex(t, &interp);
   int next_index = NextIndex(index);
@@ -103,18 +104,18 @@ inline azer::Matrix4 AnimationData<azer::Quaternion>::Interpolate(double t)  con
   const azer::Quaternion& quat2 = data_[next_index];
   const azer::Quaternion rot =
       std::move(azer::Quaternion::nlerp((float)interp, quat1, quat2));
-  return rot.ToMatrix();
+  return rot;
 }
 
 template<>
-inline azer::Matrix4 AnimationData<azer::Vector4>::Interpolate(double t) const {
+inline azer::Vector4 AnimationData<azer::Vector4>::Interpolate(double t) const {
   double interp = 0.0f;
   int index = FindIndex(t, &interp);
   int next_index = NextIndex(index);
   const azer::Vector4& v1 = data_[index];
   const azer::Vector4& v2 = data_[next_index];
   azer::Vector4 pos = std::move(v1 * interp + v2 * (1.0f - interp));
-  return std::move(azer::Translate(pos));
+  return pos;
 }
 
 template<class T>

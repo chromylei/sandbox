@@ -26,13 +26,20 @@ void AnimationNode::Load(const aiNodeAnim* anim_node) {
 azer::Matrix4 AnimationNode::transform(double t) const {
   azer::Matrix4 mat = azer::Matrix4::kIdentity;
   if (positions_.has_data()) {
-    azer::Matrix4 trans = std::move(positions_.Interpolate(t));
+    azer::Vector4 pos = std::move(positions_.Interpolate(t));
+    azer::Matrix4 trans = std::move(azer::Translate(pos));
     mat = std::move(mat * trans);
   }
 
   if (rotate_.has_data()) {
-    azer::Matrix4 rotate = std::move(rotate_.Interpolate(t));
-    mat = std::move(mat * rotate);
+    azer::Quaternion quat = std::move(rotate_.Interpolate(t));
+    mat = std::move(mat * std::move(quat.ToMatrix()));
+  }
+
+  if (scales_.has_data()) {
+    azer::Vector4 scale = std::move(scales_.Interpolate(t));
+    azer::Matrix4 smat = std::move(azer::Scale(scale));
+    mat = std::move(mat * smat);
   }
   return mat;
 }
