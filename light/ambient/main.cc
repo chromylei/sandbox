@@ -45,7 +45,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     renderer->SetViewport(azer::Renderer::Viewport(0, 0, 800, 600));
     CHECK(renderer->GetFrontFace() == azer::kCounterClockwise);
     CHECK(renderer->GetCullingMode() == azer::kCullBack);
-    // renderer->EnableDepthTest(true);
+    renderer->EnableDepthTest(true);
     // renderer->SetCullingMode(azer::kCullNone);
     // renderer->SetFillMode(azer::kWireFrame);
 
@@ -64,6 +64,9 @@ class MainDelegate : public azer::WindowHost::Delegate {
     sphere_world_ = azer::Translate(azer::Vector3(-3.0f, 0.0f, 0.0f));
     teaport_world_ = azer::Translate(azer::Vector3(3.0f, 0.0f, 0.0f));
     torus_world_ = azer::Translate(azer::Vector3(0.0f, 0.0f, -3.0f));
+
+    light_.direction = azer::Vector4(0.5f, 0.5f, 0.5f, 1.0f);
+    light_.diffuse = azer::Vector4(0.1f, 1.0f, 1.0f, 1.0f);
   }
   virtual void OnUpdateScene(double time, float delta_time) {
     float rspeed = 3.14f * 2.0f / 4.0f;
@@ -93,6 +96,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     pvw = camera_.GetProjViewMatrix() * torus_world_;
     effect_->SetPVW(pvw);
     effect_->SetWorld(torus_world_);
+    effect_->SetPointLight(light_);
     Render(effect_.get(), renderer, &torus_);
   }
 
@@ -108,6 +112,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
   Mesh torus_;
   Mesh sphere_;
   std::unique_ptr<AmbientEffect> effect_;
+  AmbientEffect::PointLight light_;
 };
 
 int main(int argc, char* argv[]) {

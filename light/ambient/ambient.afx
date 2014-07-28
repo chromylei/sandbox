@@ -6,10 +6,15 @@ technique [
     class_name="AmbientEffect"
            ];
 
+struct PointLight {
+  vec4 direction;
+  vec4 diffuse;
+};
+
 [uniform_func="SetPVW"] uniform mat4 pvw;
 [uniform_func="SetWorld"] uniform mat4 world;
 [uniform_func="SetDiffuse"] uniform vec4 diffuse;
-
+[uniform_func="SetPointLight"] uniform PointLight light;
 
 exchange struct VsOutput {
   [semantic="position" system="true"]
@@ -34,6 +39,7 @@ VsOutput vs_main(VSInput input) {
 
 [system="true" semantic="target"]
 vec4 ps_main(VsOutput o) {
-  return diffuse;
+  float diffuse_factor = dot(normalize(o.normal.xyz), -light.direction.xyz);
+  return vec4(diffuse.xyz * diffuse_factor, 1.0);
 }
 
