@@ -91,8 +91,7 @@ void SkinnedMesh::LoadNode(const aiNode* node) {
     int index = node->mMeshes[i];
     std::string node_name(node->mName.data);
     int bone_index = skeleton_.GetBoneIndex(node_name);
-    DCHECK(bone_index != -1);
-    groups_[index].bone = skeleton_.GetBone(bone_index);
+    groups_[index].bone_index = bone_index;
   }
   for (uint32 i = 0; i < node->mNumChildren; ++i) {
     LoadNode(node->mChildren[i]);

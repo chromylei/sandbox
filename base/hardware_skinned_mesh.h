@@ -37,6 +37,15 @@ class HardwareSkinnedMesh {
 
   void Init(azer::RenderSystem* rs);
   void Update(const std::string& name, double t);
+  struct AnimBlending {
+    std::string name;
+    double factor;
+
+    AnimBlending(const std::string& n, double f)
+        : name(n), factor(f) {
+    }
+  };
+  void Update(const std::vector<AnimBlending>& name, double time);
   void Update(double t);
   void Render(azer::Renderer* renderer, const azer::Matrix4& world,
               const azer::Matrix4& pv);

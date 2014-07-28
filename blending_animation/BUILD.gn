@@ -1,0 +1,11 @@
+import("//build/templates/afx.gni")
+
+executable("sbox_blending_animation") {
+  sources = ["main.cc"]
+  deps = [
+    "//base:appinit",
+    "//third_party/assimp:assimp",
+    "../base:sbox_base",
+    "../base:sbox_hardware_meshlib",
+  ]
+}

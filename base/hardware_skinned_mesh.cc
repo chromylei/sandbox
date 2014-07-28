@@ -89,6 +89,22 @@ void HardwareSkinnedMesh::Update(const std::string& anname, double t) {
          sizeof(azer::Matrix4) * bone_mat_.size());
 }
 
+
+void HardwareSkinnedMesh::Update(const std::vector<AnimBlending>& blending,
+                                 double time) {
+  memset(&bone_mat_[0], 0, sizeof(azer::Matrix4) * bone_mat_.size());
+  for (size_t i = 0; i < blending.size(); ++i) {
+    const std::string& name = blending[i].name;
+    double factor = blending[i].factor;
+    const Animation* anim = mesh_->GetAnimationSet().GetAnimation(name);
+    mesh_->GetSkeleton().UpdateHierarchy(time, *anim, azer::Matrix4::kIdentity);
+
+    for (size_t j = 0; j < bone_mat_.size(); ++j) {
+      bone_mat_[j] += mesh_->GetSkeleton().GetBoneMat()[j] * factor;
+    }
+  }
+}
+
 void HardwareSkinnedMesh::Update(double t) {
   mesh_->GetSkeleton().UpdateHierarchy(azer::Matrix4::kIdentity);
   memcpy(&bone_mat_[0], &(mesh_->GetSkeleton().GetBoneMat()[0]),
@@ -102,11 +118,12 @@ void HardwareSkinnedMesh::Render(azer::Renderer* renderer,
   for (uint32 i = 0; i < rgroups_.size(); ++i) {
     const RenderGroup& rg = rgroups_[i];
     const sbox::SkinnedMesh::Group& group = mesh_->groups()[i];
-    DCHECK(group.bone != NULL);
     azer::VertexBuffer* vb = rg.vb.get();
     azer::IndicesBuffer* ib = rg.ib.get();
     sbox::SkinnedMesh::Material mtrl = mesh_->materials()[rg.mtrl_idx];
-    azer::Matrix4 w = std::move(world * group.bone->combined());
+    int index = group.bone_index;
+    DCHECK(index != -1);
+    azer::Matrix4 w = std::move(world * bone_mat_[index]);
     
     memcpy(&temp_mat_[0], &(bone_mat_[0]), sizeof(azer::Matrix4) * bone_mat_.size());
     for (auto iter = group.offset.begin(); iter != group.offset.end(); ++iter) {

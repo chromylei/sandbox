@@ -40,9 +40,9 @@ class SkinnedMesh {
     std::vector<int32> indices;
     OffsetType offset;
     int mtrl_idx;
-    Bone* bone;
+    int bone_index;
 
-    Group() : bone(NULL) {
+    Group() : bone_index(-1) {
     }
   };
 
