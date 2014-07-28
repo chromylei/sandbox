@@ -12,5 +12,6 @@ group("sbox") {
     "animation:sbox_animation",
     "blending_animation:sbox_blending_animation",
     "heightmap:sbox_heightmap",
+    "light:sbox_lights",
   ]
 }

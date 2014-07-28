@@ -1,0 +1,16 @@
+import("//build/templates/afx.gni")
+
+afx("sbox_lights_ambient_effect") {
+  source = "ambient.afx"
+  filename = "ambient"
+}
+
+executable("sbox_lights_ambient") {
+  sources = ["main.cc"]
+  deps = [
+    "//base:appinit",
+    "//third_party/assimp:assimp",
+    "//sbox/base:sbox_base",
+    ":sbox_lights_ambient_effect",
+  ]
+}
