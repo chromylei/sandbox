@@ -9,6 +9,7 @@ technique [
 struct PointLight {
   vec4 direction;
   vec4 diffuse;
+  vec4 ambient;
 };
 
 [uniform_func="SetPVW"] uniform mat4 pvw;
@@ -40,6 +41,6 @@ VsOutput vs_main(VSInput input) {
 [system="true" semantic="target"]
 vec4 ps_main(VsOutput o) {
   float diffuse_factor = dot(normalize(o.normal.xyz), -light.direction.xyz);
-  return vec4(diffuse.xyz * diffuse_factor, 1.0);
+  return vec4(light.ambient.xyz + diffuse.xyz * diffuse_factor, 1.0);
 }
 
