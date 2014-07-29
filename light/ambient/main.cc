@@ -60,15 +60,19 @@ class MainDelegate : public azer::WindowHost::Delegate {
     camera_.SetPosition(azer::Vector3(0.0f, 0.0f, 5.0f));
     LoadMesh(::base::FilePath(::base::UTF8ToWide(kTeaportMeshPath)), &teaport_, rs);
 
-    teaport_world_ = azer::Translate(azer::Vector3(0.0f, 0.0f, 0.0f))
-        * azer::Scale(azer::Vector3(0.5f, 0.5f, 0.5f));
     light_.direction = azer::Vector4(0.5f, 0.5f, 0.5f, 1.0f);
     light_.diffuse = azer::Vector4(0.1f, 1.0f, 1.0f, 1.0f);
   }
+
   virtual void OnUpdateScene(double time, float delta_time) {
     float rspeed = 3.14f * 2.0f / 4.0f;
     azer::Radians camera_speed(azer::kPI / 2.0f);
     UpdatedownCamera(&camera_, camera_speed, delta_time);
+    azer::Matrix4 scale_mat = azer::Scale(azer::Vector3(0.3f, 0.3f, 0.3f));
+    azer::Matrix4 rotate1 = azer::RotateY(azer::Degree(270.0f));
+    azer::Matrix4 rotate2 = azer::RotateY(azer::Radians(rspeed));
+    azer::Matrix4 pos = azer::Translate(azer::Vector3(0.0f, 0.0f, 0.0f));
+    teaport_world_ = pos * rotate2 * rotate1 * scale_mat;
   }
 
   virtual void OnRenderScene(double time, float delta_time) {
