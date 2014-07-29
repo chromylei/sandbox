@@ -58,15 +58,10 @@ class MainDelegate : public azer::WindowHost::Delegate {
         PerspectiveRHD3D(azer::Degree(45.0f), 4.0f / 3.0f, 0.10f, 100.0f));
 
     camera_.SetPosition(azer::Vector3(0.0f, 0.0f, 5.0f));
-    LoadMesh(::base::FilePath(::base::UTF8ToWide(kSphereMeshPath)), &sphere_, rs);
-    LoadMesh(::base::FilePath(::base::UTF8ToWide(kTorusMeshPath)), &torus_, rs);
     LoadMesh(::base::FilePath(::base::UTF8ToWide(kTeaportMeshPath)), &teaport_, rs);
-    LoadMesh(::base::FilePath(::base::UTF8ToWide(kXYZMeshPath)), &xyz_, rs);
 
-    sphere_world_ = azer::Translate(azer::Vector3(-3.0f, 0.0f, 0.0f));
-    teaport_world_ = azer::Translate(azer::Vector3(3.0f, 0.0f, 0.0f));
-    torus_world_ = azer::Translate(azer::Vector3(0.0f, 0.0f, -3.0f));
-
+    teaport_world_ = azer::Translate(azer::Vector3(0.0f, 0.0f, 0.0f))
+        * azer::Scale(azer::Vector3(0.5f, 0.5f, 0.5f));
     light_.direction = azer::Vector4(0.5f, 0.5f, 0.5f, 1.0f);
     light_.diffuse = azer::Vector4(0.1f, 1.0f, 1.0f, 1.0f);
   }
@@ -85,21 +80,10 @@ class MainDelegate : public azer::WindowHost::Delegate {
     renderer->ClearDepthAndStencil();
 
     azer::Matrix4 pvw;
-    pvw = camera_.GetProjViewMatrix() * sphere_world_;
-    effect_->SetPVW(pvw);
-    effect_->SetWorld(sphere_world_);
-    Render(effect_.get(), renderer, &sphere_);
-
     pvw = camera_.GetProjViewMatrix() * teaport_world_;
     effect_->SetPVW(pvw);
     effect_->SetWorld(teaport_world_);
     Render(effect_.get(), renderer, &teaport_);
-
-    pvw = camera_.GetProjViewMatrix() * torus_world_;
-    effect_->SetPVW(pvw);
-    effect_->SetWorld(torus_world_);
-    effect_->SetPointLight(light_);
-    Render(effect_.get(), renderer, &torus_);
   }
 
   virtual void OnQuit() {}
@@ -107,13 +91,8 @@ class MainDelegate : public azer::WindowHost::Delegate {
   azer::Camera camera_;
   azer::Matrix4 proj_;
   azer::Matrix4 view_;
-  azer::Matrix4 sphere_world_;
   azer::Matrix4 teaport_world_;
-  azer::Matrix4 torus_world_;
   Mesh teaport_;
-  Mesh torus_;
-  Mesh sphere_;
-  Mesh xyz_;
   std::unique_ptr<AmbientEffect> effect_;
   AmbientEffect::PointLight light_;
 };
