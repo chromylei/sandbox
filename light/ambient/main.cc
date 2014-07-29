@@ -15,6 +15,7 @@ using base::FilePath;
 
 #define kSphereMeshPath "sbox/res/sphere.3DS"
 #define kTeaportMeshPath "sbox/res/teaport.3DS"
+#define kCoordMeshPath "sbox/res/coord/coord.obj"
 #define kTorusMeshPath "sbox/res/torus.3DS"
 #define kPlaneMeshPath "sbox/res/plane.3DS"
 #define kXYZMeshPath "sbox/res/xyz.x3d"
@@ -53,7 +54,8 @@ class MainDelegate : public azer::WindowHost::Delegate {
         PerspectiveRHD3D(azer::Degree(45.0f), 4.0f / 3.0f, 0.10f, 100.0f));
 
     camera_.SetPosition(azer::Vector3(0.0f, 1.0f, 2.0f));
-    LoadMesh(::base::FilePath(::base::UTF8ToWide(kTeaportMeshPath)), &teaport_, rs);
+    // LoadMesh(::base::FilePath(::base::UTF8ToWide(kTeaportMeshPath)), &teaport_, rs);
+    LoadMesh(::base::FilePath(::base::UTF8ToWide(kCoordMeshPath)), &teaport_, rs);
     LoadMesh(::base::FilePath(::base::UTF8ToWide(kPlaneMeshPath)), &plane_, rs);
 
     light_.direction = azer::Vector4(0.5f, -0.5f, 0.0f, 1.0f);
