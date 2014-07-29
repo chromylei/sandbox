@@ -24,7 +24,6 @@ void Render(AmbientEffect* effect, azer::Renderer* renderer, Mesh* mesh) {
     Mesh::RenderGroup rg = mesh->rgroups()[i];
     azer::VertexBuffer* vb = rg.vb.get();
     azer::IndicesBuffer* ib = rg.ib.get();
-    effect->SetDiffuse(azer::Vector4(0.8f, 0.7f, 0.6f, 1.0f));
     effect->Use(renderer);
     renderer->Render(vb, ib, azer::kTriangleList);
   }
@@ -58,8 +57,8 @@ class MainDelegate : public azer::WindowHost::Delegate {
     LoadMesh(::base::FilePath(::base::UTF8ToWide(kPlaneMeshPath)), &plane_, rs);
 
     light_.direction = azer::Vector4(0.5f, -0.5f, 0.0f, 1.0f);
-    light_.diffuse = azer::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-    light_.ambient = azer::Vector4(0.1f, 0.0f, 0.0f, 1.0f);
+    light_.diffuse = azer::Vector4(0.8f, 0.8f, 0.8f, 1.0f);
+    light_.ambient = azer::Vector4(0.2f, 0.2f, 0.2f, 1.0f);
   }
 
   virtual void OnUpdateScene(double time, float delta_time) {
@@ -84,14 +83,14 @@ class MainDelegate : public azer::WindowHost::Delegate {
     azer::Matrix4 pvw;
     pvw = camera_.GetProjViewMatrix() * teaport_world_;
     effect_->SetPointLight(light_);
-    effect_->SetDiffuse(azer::Vector4(0.4f, 0.4f, 0.4f, 1.0f));
+    effect_->SetDiffuse(azer::Vector4(0.6f, 0.5f, 0.1f, 1.0f));
     effect_->SetPVW(pvw);
     effect_->SetWorld(teaport_world_);
     Render(effect_.get(), renderer, &teaport_);
 
     azer::Matrix4 world = azer::RotateX(azer::Degree(90.0f));
     pvw = camera_.GetProjViewMatrix() * world;
-    effect_->SetDiffuse(azer::Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+    effect_->SetDiffuse(azer::Vector4(0.0f, 0.7f, 0.7f, 1.0f));
     effect_->SetPVW(pvw);
     effect_->SetWorld(world);
     Render(effect_.get(), renderer, &plane_);
