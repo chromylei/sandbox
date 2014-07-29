@@ -78,7 +78,6 @@ void AnimationSet::Load(const aiScene* scene) {
   }
 }
 
-
 const Animation* AnimationSet::GetAnimation(const std::string& name) const {
   auto iter = animations_.find(name);
   if (iter != animations_.end()) {

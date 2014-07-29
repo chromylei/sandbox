@@ -16,6 +16,7 @@ using base::FilePath;
 #define kSphereMeshPath "sbox/res/sphere.3DS"
 #define kTeaportMeshPath "sbox/res/teaport.3DS"
 #define kTorusMeshPath "sbox/res/torus.3DS"
+#define kXYZMeshPath "sbox/res/xyz.x3d"
 
 void Render(AmbientEffect* effect, azer::Renderer* renderer, Mesh* mesh) {
   for (uint32 i = 0; i < mesh->rgroups().size(); ++i) {
@@ -60,6 +61,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     LoadMesh(::base::FilePath(::base::UTF8ToWide(kSphereMeshPath)), &sphere_, rs);
     LoadMesh(::base::FilePath(::base::UTF8ToWide(kTorusMeshPath)), &torus_, rs);
     LoadMesh(::base::FilePath(::base::UTF8ToWide(kTeaportMeshPath)), &teaport_, rs);
+    LoadMesh(::base::FilePath(::base::UTF8ToWide(kXYZMeshPath)), &xyz_, rs);
 
     sphere_world_ = azer::Translate(azer::Vector3(-3.0f, 0.0f, 0.0f));
     teaport_world_ = azer::Translate(azer::Vector3(3.0f, 0.0f, 0.0f));
@@ -111,6 +113,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
   Mesh teaport_;
   Mesh torus_;
   Mesh sphere_;
+  Mesh xyz_;
   std::unique_ptr<AmbientEffect> effect_;
   AmbientEffect::PointLight light_;
 };
