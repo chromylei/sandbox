@@ -2,5 +2,6 @@
 group("sbox_lights") {
   deps = [
     "ambient:sbox_lights_ambient",
+    "specular:sbox_lights_specular",
   ]
 }

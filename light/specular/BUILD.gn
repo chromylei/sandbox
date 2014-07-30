@@ -1,0 +1,16 @@
+import("//build/templates/afx.gni")
+
+afx("sbox_lights_specular_effect") {
+  source = "specular.afx"
+  filename = "specular"
+}
+
+executable("sbox_lights_specular") {
+  sources = ["main.cc"]
+  deps = [
+    "//base:appinit",
+    "//third_party/assimp:assimp",
+    "//sbox/base:sbox_base",
+    ":sbox_lights_specular_effect",
+  ]
+}
