@@ -58,7 +58,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     LoadMesh(::base::FilePath(::base::UTF8ToWide(kSphereMeshPath)), &sphere_, rs);
     LoadMesh(::base::FilePath(::base::UTF8ToWide(kPlaneMeshPath)), &plane_, rs);
 
-    light_.direction = azer::Vector4(0.5f, -0.5f, 0.0f, 1.0f);
+    light_.dir = azer::Vector4(0.5f, -0.5f, 0.0f, 1.0f);
     light_.diffuse = azer::Vector4(0.8f, 0.8f, 0.8f, 1.0f);
     light_.ambient = azer::Vector4(0.2f, 0.2f, 0.2f, 1.0f);
   }
