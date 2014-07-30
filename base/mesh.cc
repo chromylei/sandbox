@@ -56,7 +56,8 @@ void Mesh::Init(azer::RenderSystem* rs) {
            groups_[i].indices.size() * sizeof(uint32));
     rgroup.ib.reset(
         rs->CreateIndicesBuffer(azer::IndicesBuffer::Options(), idata_ptr));
-    rgroup.mtrl_idx = groups_[i].mtrl_idx;
+    rgroup.mtrl_idx = groups_[i].mtrl_idx < materials_.size() ?
+                                            groups_[i].mtrl_idx : -1;
     rgroups_.push_back(rgroup);
   }
 }

@@ -1,0 +1,50 @@
+
+technique [
+    name = "coord"
+    ps_main="ps_main"
+    vs_main="vs_main"
+    class_name="CoordEffect"
+           ];
+
+struct PointLight {
+  vec4 direction;
+  vec4 diffuse;
+  vec4 ambient;
+};
+
+[uniform_func="SetPVW"] uniform mat4 pvw;
+[uniform_func="SetWorld"] uniform mat4 world;
+[uniform_func="SetDiffuseTex"] uniform Texture2D diffuse_tex;
+[uniform_func="SetAmbientTex"] uniform Texture2D ambient_tex;
+[uniform_func="SetPointLight"] uniform PointLight light;
+
+exchange struct VsOutput {
+  [semantic="position" system="true"]
+  vec4 position;
+  vec2 coordtex;
+  vec4 normal;
+};
+
+exchange struct VSInput {
+  vec4 position;
+  vec2 coordtex;
+  vec4 normal;
+};
+
+VsOutput vs_main(VSInput input) {
+  VsOutput o;
+  o.position = pvw * input.position;
+  o.coordtex = input.coordtex;
+  o.normal = world * input.normal;
+  return o;
+}
+
+[system="true" semantic="target"]
+vec4 ps_main(VsOutput o) {
+  vec4 diffuse = sample2D(diffuse_tex, o.coordtex) * 0.5;
+  vec4 ambient = sample2D(ambient_tex, o.coordtex) * 0.5;
+  float diffuse_factor = dot(normalize(o.normal.xyz), -light.direction.xyz);
+  vec3 light_factor = light.ambient.xyz + light.diffuse.xyz * diffuse_factor;
+  return vec4(light_factor * diffuse.xyz + ambient.xyz, 1.0);
+}
+

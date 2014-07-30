@@ -1,7 +1,7 @@
 # 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
 # File Created: 30.07.2014 00:45:51
 
-mtllib a.mtl
+mtllib coord.mtl
 
 #
 # object Cone001

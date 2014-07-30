@@ -70,3 +70,20 @@ static_library("sbox_software_meshlib") {
     "//third_party/assimp:assimp",
   ]       
 }
+
+afx("sbox_coord_effect") {
+  source = "coord.afx"
+  filename = "coord"
+}
+
+static_library("sbox_coordlib") {
+  sources = [
+    "coord.cc",
+    "coord.h",
+  ]
+  deps = [
+    ":sbox_base",
+    ":sbox_coord_effect"
+    "//third_party/assimp:assimp",
+  ]       
+}

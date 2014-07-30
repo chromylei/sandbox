@@ -1,0 +1,9 @@
+executable("sbox_coord") {
+  sources = ["main.cc"]
+  deps = [
+    "//base:appinit",
+    "//third_party/assimp:assimp",
+    "../base:sbox_base",
+    "../base:sbox_coordlib",
+  ]
+}
