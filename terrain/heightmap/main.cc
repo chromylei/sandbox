@@ -35,8 +35,8 @@ class MainDelegate : public azer::WindowHost::Delegate {
     grid_.Init(::base::FilePath(::base::UTF8ToWide(kHeightmapPath)));
     InitPhysicsBuffer(rs);
 
-    camera_.SetPosition(azer::Vector3(30.0f, 8.0f, 10.0f));
-    camera_.SetLookAt(azer::Vector3(0.0f, 0.0f, 0.0f));
+    camera_.SetPosition(azer::Vector3(0.0f, 8.0f, 10.0f));
+    camera_.SetLookAt(azer::Vector3(0.0f, 8.0f, 0.0f));
     coord_.Init(rs);
   }
   virtual void OnUpdateScene(double time, float delta_time) {
@@ -44,8 +44,9 @@ class MainDelegate : public azer::WindowHost::Delegate {
     azer::Radians camera_speed(azer::kPI / 2.0f);
     UpdatedownCamera(&camera_, camera_speed, delta_time);
 
-    // azer::Vector3 pos = camera_.position() + camera_.direction().NormalizeCopy();
-    // coord_world_ = azer::Translate(pos);
+    azer::Vector3 pos = camera_.position() +
+        camera_.direction().NormalizeCopy() * 3.0f;
+    coord_world_ = azer::Translate(pos);
   }
 
   virtual void OnRenderScene(double time, float delta_time) {
@@ -56,15 +57,15 @@ class MainDelegate : public azer::WindowHost::Delegate {
     renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
     renderer->ClearDepthAndStencil();
 
-    effect_->SetWorld(azer::Matrix4::kIdentity);
-    effect_->SetPVW(camera_.GetProjViewMatrix());
+    azer::Matrix4 world = azer::Translate(-50.0f, 0.0f, -50.0f);
+    effect_->SetWorld(world);
+    effect_->SetPVW(std::move(camera_.GetProjViewMatrix() * world));
     effect_->SetDiffuse(azer::Vector4(0.8f, 0.7f, 0.6f, 1.0f));
     effect_->Use(renderer);
     renderer->Render(vb_.get(), ib_.get(), azer::kTriangleList);
 
     azer::Matrix4 pvw = camera_.GetProjViewMatrix() * coord_world_;
-    // coord_.Render(renderer, coord_world_, pvw);
-    coord_.Render(renderer, azer::Matrix4::kIdentity, camera_.GetProjViewMatrix());
+    coord_.Render(renderer, coord_world_, camera_.GetProjViewMatrix());
   }
 
   virtual void OnQuit() {}
