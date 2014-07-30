@@ -1,0 +1,12 @@
+
+
+executable("sbox_terrain_heightmap") {
+  sources = [
+    "main.cc",
+  ]
+  deps = [
+    "//sbox/terrain/base:sbox_terrain_base",
+    "//sbox/base:sbox_base",
+    "//base:appinit",
+  ]
+}
