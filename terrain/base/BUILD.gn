@@ -1,0 +1,13 @@
+
+static_library("sbox_terrain_base") {
+  sources = [
+    "heightmap.cc",
+    "heightmap.h",
+    "grid.cc",
+    "grid.h",
+  ]
+  deps = [
+    "//sbox/base:sbox_base",
+    "//azer:azer",
+  ]
+}
