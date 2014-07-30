@@ -1,7 +1,7 @@
 
 group("sbox_terrain") {
   deps = [
-    # "heightmap:sbox_terrain_heightmap",
+    "heightmap:sbox_terrain_heightmap",
     "base:sbox_terrain_base",
     "grid:sbox_terrain_grid",
   ]

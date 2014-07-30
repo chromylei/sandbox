@@ -16,10 +16,6 @@ static_library("sbox_base") {
     "animation.h"
     "mesh.cc",
     "mesh.h",
-    "grid.cc",
-    "grid.h",
-    "heightmap.cc",
-    "heightmap.h",
     "skinned_mesh.cc",
     "skinned_mesh.h",
     "camera_control.cc",

@@ -12,7 +12,7 @@ group("sbox") {
     "morphing1:sbox_morphing1",
     "animation:sbox_animation",
     "blending_animation:sbox_blending_animation",
-    "heightmap:sbox_heightmap",
     "light:sbox_lights",
+    "terrain:sbox_terrain",
   ]
 }

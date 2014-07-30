@@ -1,4 +1,9 @@
+import("//build/templates/afx.gni")
 
+afx("sbox_terrain_heightmap_effect") {
+  source = "diffuse.afx"
+  filename = "diffuse"
+}
 
 executable("sbox_terrain_heightmap") {
   sources = [
@@ -8,5 +13,7 @@ executable("sbox_terrain_heightmap") {
     "//sbox/terrain/base:sbox_terrain_base",
     "//sbox/base:sbox_base",
     "//base:appinit",
+    ":sbox_terrain_heightmap_effect",
+    "//sbox/base:sbox_coordlib",
   ]
 }
