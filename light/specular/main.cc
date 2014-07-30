@@ -92,6 +92,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
 
     SpecularEffect::Material mtrl;
     azer::Matrix4 pvw;
+    effect_->SetCameraPos(azer::Vector4(camera_.position(), 1.0f));
     mtrl.diffuse = azer::Vector4(0.8f, 0.4f, 0.4f, 1.0f);
     pvw = camera_.GetProjViewMatrix() * teaport_world_;
     effect_->SetPointLight(light_);
