@@ -1,0 +1,19 @@
+import("//build/templates/afx.gni")
+
+afx("sbox_terrain_light_effect") {
+  source = "diffuse.afx"
+  filename = "diffuse"
+}
+
+executable("sbox_terrain_light") {
+  sources = [
+    "main.cc",
+  ]
+  deps = [
+    "//sbox/terrain/base:sbox_terrain_base",
+    "//sbox/base:sbox_base",
+    "//base:appinit",
+    ":sbox_terrain_light_effect",
+    "//sbox/base:sbox_coordlib",
+  ]
+}
