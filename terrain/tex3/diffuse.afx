@@ -14,14 +14,17 @@ struct DirLight {
 
 [uniform_func="SetPVW"] uniform mat4 pvw;
 [uniform_func="SetWorld"] uniform mat4 world;
-[uniform_func="SetDiffuseTex"] uniform Texture2D tex;
+[uniform_func="SetDiffuseTexHigh"] uniform Texture2D high_tex;
+[uniform_func="SetDiffuseTexLow"] uniform Texture2D low_tex;
 [uniform_func="SetDirLight"] uniform DirLight light;
+[uniform_func="SetYRange"] uniform vec2 yrange;
 
 exchange struct VsOutput {
   [semantic="position" system="true"]
   vec4 position;
   vec2 coordtex;
   vec4 normal;
+  float weight;
 };
 
 exchange struct VSInput {
@@ -35,12 +38,14 @@ VsOutput vs_main(VSInput input) {
   o.position = pvw * input.position;
   o.coordtex = input.coordtex;
   o.normal = world * input.normal;
+  o.weight = (input.position.y - yrange.x) / (yrange.y - yrange.x);
   return o;
 }
 
 [system="true" semantic="target"]
 vec4 ps_main(VsOutput o) {
-  vec4 diffuse = sample2D(tex, o.coordtex);
+  vec4 diffuse = sample2D(low_tex, o.coordtex) * (1 - o.weight)
+      + sample2D(high_tex, o.coordtex) * o.weight;
   float diffuse_factor = dot(normalize(o.normal.xyz), -light.dir.xyz);
   vec3 light_factor = light.ambient.xyz + light.diffuse.xyz * diffuse_factor;
   return vec4(light_factor.xyz * diffuse.xyz, 1.0);
