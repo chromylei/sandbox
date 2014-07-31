@@ -10,7 +10,7 @@
 
 #include <tchar.h>
 #include "diffuse.afx.h"
-#define EFFECT_GEN_DIR "out/dbg/gen/sbox/terrain/heightmap/"
+#define EFFECT_GEN_DIR "out/dbg/gen/sbox/terrain/light/"
 #define SHADER_NAME "diffuse.afx"
 
 const char* kHeightmapPath = "sbox/terrain/res/heightmap01.bmp";
@@ -33,6 +33,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
   std::unique_ptr<DiffuseEffect> effect_;
   CoordMesh coord_;
   azer::Matrix4 coord_world_;
+  DiffuseEffect::DirLight light_;
 };
 
 int main(int argc, char* argv[]) {
@@ -70,7 +71,8 @@ void MainDelegate::OnRenderScene(double time, float delta_time) {
   azer::Matrix4 world = azer::Translate(-50.0f, 0.0f, -50.0f);
   effect_->SetWorld(world);
   effect_->SetPVW(std::move(camera_.GetProjViewMatrix() * world));
-  effect_->SetDiffuse(azer::Vector4(0.8f, 0.7f, 0.6f, 1.0f));
+  // effect_->SetDiffuse(azer::Vector4(0.5f, 0.5f, 0.6f, 1.0f));
+  effect_->SetDirLight(light_);
   effect_->Use(renderer);
   renderer->Render(vb_.get(), ib_.get(), azer::kTriangleList);
 
@@ -82,24 +84,28 @@ void MainDelegate::OnQuit() {
 }
 
 void MainDelegate::Init() {
-    azer::RenderSystem* rs = azer::RenderSystem::Current();
-    azer::Renderer* renderer = rs->GetDefaultRenderer();
-    renderer->SetViewport(azer::Renderer::Viewport(0, 0, 800, 600));
-    CHECK(renderer->GetFrontFace() == azer::kCounterClockwise);
-    CHECK(renderer->GetCullingMode() == azer::kCullBack);
-    renderer->EnableDepthTest(true);
-    // renderer->SetFillMode(azer::kWireFrame);
-    azer::ShaderArray shaders;
-    CHECK(azer::LoadVertexShader(EFFECT_GEN_DIR SHADER_NAME ".vs", &shaders));
-    CHECK(azer::LoadPixelShader(EFFECT_GEN_DIR SHADER_NAME ".ps", &shaders));
-    effect_.reset(new DiffuseEffect(shaders.GetShaderVec(), rs));
-    grid_.Init(::base::FilePath(::base::UTF8ToWide(kHeightmapPath)));
-    InitPhysicsBuffer(rs);
+  azer::RenderSystem* rs = azer::RenderSystem::Current();
+  azer::Renderer* renderer = rs->GetDefaultRenderer();
+  renderer->SetViewport(azer::Renderer::Viewport(0, 0, 800, 600));
+  CHECK(renderer->GetFrontFace() == azer::kCounterClockwise);
+  CHECK(renderer->GetCullingMode() == azer::kCullBack);
+  renderer->EnableDepthTest(true);
+  // renderer->SetFillMode(azer::kWireFrame);
+  azer::ShaderArray shaders;
+  CHECK(azer::LoadVertexShader(EFFECT_GEN_DIR SHADER_NAME ".vs", &shaders));
+  CHECK(azer::LoadPixelShader(EFFECT_GEN_DIR SHADER_NAME ".ps", &shaders));
+  effect_.reset(new DiffuseEffect(shaders.GetShaderVec(), rs));
+  grid_.Init(::base::FilePath(::base::UTF8ToWide(kHeightmapPath)));
+  InitPhysicsBuffer(rs);
 
-    camera_.SetPosition(azer::Vector3(0.0f, 8.0f, 10.0f));
-    camera_.SetLookAt(azer::Vector3(0.0f, 8.0f, 0.0f));
-    coord_.Init(rs);
-  }
+  camera_.SetPosition(azer::Vector3(0.0f, 8.0f, 10.0f));
+  camera_.SetLookAt(azer::Vector3(0.0f, 8.0f, 0.0f));
+  coord_.Init(rs);
+
+  light_.dir = azer::Vector4(0.0f, 0.0f, 0.75f, 1.0f);
+  light_.diffuse = azer::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+  light_.ambient = azer::Vector4(0.05f, 0.05f, 0.05f, 1.0f);
+}
 
 void MainDelegate::InitPhysicsBuffer(azer::RenderSystem* rs) {
   azer::VertexDataPtr vdata(

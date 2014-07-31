@@ -40,8 +40,8 @@ VsOutput vs_main(VSInput input) {
 
 [system="true" semantic="target"]
 vec4 ps_main(VsOutput o) {
-  float diffuse_factor = dot(normalize(o.normal.xyz), -light.direction.xyz);
+  float diffuse_factor = dot(normalize(o.normal.xyz), -light.dir.xyz);
   vec3 light_factor = light.ambient.xyz + light.diffuse.xyz * diffuse_factor;
-  return vec4(light_factor.xyz * diffuse.xyz, 1.0);
+  return vec4(light_factor.xyz, 1.0);
 }
 
