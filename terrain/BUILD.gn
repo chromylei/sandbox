@@ -3,6 +3,7 @@ group("sbox_terrain") {
   deps = [
     "heightmap:sbox_terrain_heightmap",
     "tex1:sbox_terrain_tex1",
+    "tex2:sbox_terrain_tex2",
     "light:sbox_terrain_light",
     "base:sbox_terrain_base",
     "grid:sbox_terrain_grid",
