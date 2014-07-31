@@ -1,11 +1,11 @@
 import("//build/templates/afx.gni")
 
-afx("sbox_terrain_tex2_effect") {
+afx("sbox_terrain_tex3_effect") {
   source = "diffuse.afx"
   filename = "diffuse"
 }
 
-executable("sbox_terrain_tex2") {
+executable("sbox_terrain_tex3") {
   sources = [
     "main.cc",
   ]
@@ -13,7 +13,7 @@ executable("sbox_terrain_tex2") {
     "//sbox/terrain/base:sbox_terrain_base",
     "//sbox/base:sbox_base",
     "//base:appinit",
-    ":sbox_terrain_tex2_effect",
+    ":sbox_terrain_tex3_effect",
     "//sbox/base:sbox_coordlib",
   ]
 }

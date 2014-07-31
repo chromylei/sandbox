@@ -12,10 +12,11 @@
 
 #include <tchar.h>
 #include "diffuse.afx.h"
-#define EFFECT_GEN_DIR "out/dbg/gen/sbox/terrain/tex2/"
+#define EFFECT_GEN_DIR "out/dbg/gen/sbox/terrain/tex3/"
 #define SHADER_NAME "diffuse.afx"
+const float kRepeatNum = 10.0f;
 
-const char* kHeightmapPath = "sbox/terrain/res/heightmap01.bmp";
+const char* kHeightmapPath = "sbox/terrain/res/height02.bmp";
 const char* kTexPath1 = "sbox/terrain/res/tex/highestTile.dds";
 const char* kTexPath2 = "sbox/terrain/res/tex/HighTile.dds";
 const char* kTexPath3 = "sbox/terrain/res/tex/lowTile.dds";
@@ -111,8 +112,8 @@ void MainDelegate::Init() {
   grid_.Init(::base::FilePath(::base::UTF8ToWide(kHeightmapPath)));
   InitPhysicsBuffer(rs);
 
-  camera_.SetPosition(azer::Vector3(0.0f, 8.0f, 10.0f));
-  camera_.SetLookAt(azer::Vector3(0.0f, 8.0f, 0.0f));
+  camera_.SetPosition(azer::Vector3(0.0f, 18.0f, 10.0f));
+  camera_.SetLookAt(azer::Vector3(0.0f, 18.0f, 0.0f));
   coord_.Init(rs);
 
   light_.dir = azer::Vector4(0.0f, -0.3f, 0.75f, 1.0f);
@@ -131,19 +132,19 @@ void MainDelegate::InitPhysicsBuffer(azer::RenderSystem* rs) {
   azer::VertexDataPtr vdata(
       new azer::VertexData(effect_->GetVertexDesc(), grid_.vertices().size()));
   DiffuseEffect::Vertex* v = (DiffuseEffect::Vertex*)vdata->pointer();
-  float cell_width = 1.0f / (float)grid_.width();
-  float cell_height = 1.0f / (float)grid_.height();
+  float cell_width = kRepeatNum * 1.0f / (float)grid_.width();
+  float cell_height = kRepeatNum * 1.0f / (float)grid_.height();
   for (int i = 0; i < grid_.height(); ++i) {
     for (int j = 0; j < grid_.width(); ++j) {
       int index = i * grid_.width() + j;
       const Grid::Vertex& vertex = grid_.vertices()[index];
-      v->position = azer::Vector4(vertex.position, 1.0f);
+      v->position = azer::Vector4(vertex.position, 1.0f) * 0.05f;
       v->coordtex = azer::Vector2(cell_width * j, cell_height * i);
       v->normal = azer::Vector4(vertex.normal, 0.0f);
       v++;
 
-      if (vertex.position.y > top_y_) { top_y_ = vertex.position.y;}
-      if (vertex.position.y < bottom_y_) { bottom_y_ = vertex.position.y;}
+      if (v->position.y > top_y_) { top_y_ = v->position.y;}
+      if (v->position.y < bottom_y_) { bottom_y_ = v->position.y;}
     }
   }
 
