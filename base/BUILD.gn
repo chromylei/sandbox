@@ -27,6 +27,7 @@ static_library("sbox_base") {
   ]
   deps = [
     "//third_party/assimp:assimp",
+    "//third_party/devil:devil",
     "//azer:azer",
     ":sbox_base_effect",
     ":sbox_base_line_effect",
