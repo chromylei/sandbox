@@ -20,6 +20,9 @@ class Grid {
   void Init(const base::FilePath& filepath);
   const std::vector<Vertex>& vertices() { return vertices_;}
   const std::vector<int32>& indices() { return indices_;}
+
+  int width() const { return height_map_.width;}
+  int height() const { return height_map_.height;}
  private:
   void InitVertex();
   azer::VertexBufferPtr vb_;
