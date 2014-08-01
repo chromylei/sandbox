@@ -24,6 +24,10 @@ static_library("sbox_base") {
     "skeleton.h",
     "util.cc",
     "util.h",
+    "image.cc",
+    "image.h",
+    "ilimage_wrapper.cc",
+    "ilimage_wrapper.h",
   ]
   deps = [
     "//third_party/assimp:assimp",

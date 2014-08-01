@@ -1,20 +1,23 @@
-#pragam once
+#pragma once
 
 #include <memory>
 #include "base/basictypes.h"
 #include "base/files/file_path.h"
 
 namespace sbox {
+class ilImageWrapper;
 class Image {
  public:
   Image();
-  int height() const { return height_;}
-  int width() const { return width_;}
+  ~Image();
+
+  int height() const;
+  int width() const;
 
   uint32 GetData(int x, int y);
   bool Load(const ::base::FilePath& path);
  private:
-  std::unique_ptr<uint8[]> data_;
+  ilImageWrapper* image_;
   DISALLOW_COPY_AND_ASSIGN(Image);
 };
 }
