@@ -1,8 +1,9 @@
-#include "sbox/base/image.h"
-#include "base/base.h"
+#include "IL/ilu.h"
 
+const char* kColorMapPath = "sbox/terrain/res/tex/colorm01.bmp";
 int main(int argc, char* argv[]) {
-  ::base::InitApp(&argc, &argv, "");
-
+  ILuint id;
+  ilGenImages(1, &id);
+  ilBindImage(id);
   return 0;
 }

@@ -3,7 +3,30 @@
 executable("sbox_devil_test") {
   sources = ["main.cc"]
   deps = [
-    "//sbox/base:sbox_image",
-    "//base:appinit",
+    "//third_party/devil:devil",
+  ]
+}
+
+executable("sbox_lcms_test") {
+  sources = ["lcms_main.cc"]
+  deps = [
+    "//third_party/lcms:lcms2",
+    "//base:base",
+  ]
+}
+
+executable("sbox_mng_test") {
+  sources = ["mng_main.cc"]
+  deps = [
+    "//third_party/libmng:libmng",
+    "//base:base",
+  ]
+}
+
+executable("sbox_libjpeg_test") {
+  sources = ["libjpeg_main.cc"]
+  deps = [
+    "//third_party/libmng:libmng",
+    "//base:base",
   ]
 }
