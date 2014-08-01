@@ -1,0 +1,7 @@
+
+
+group("sbox_image") {
+  deps = [
+    "devil:sbox_devil_test",
+  ]
+}

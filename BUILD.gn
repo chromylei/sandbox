@@ -14,5 +14,6 @@ group("sbox") {
     "blending_animation:sbox_blending_animation",
     "light:sbox_lights",
     "terrain:sbox_terrain",
+    "imagetest:sbox_image",
   ]
 }

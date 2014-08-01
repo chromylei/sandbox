@@ -24,17 +24,25 @@ static_library("sbox_base") {
     "skeleton.h",
     "util.cc",
     "util.h",
+  ]
+  deps = [
+    "//third_party/assimp:assimp",
+    "//azer:azer",
+    ":sbox_base_effect",
+    ":sbox_base_line_effect",
+  ]
+}
+
+static_library("sbox_image") {
+  sources = [
     "image.cc",
     "image.h",
     "ilimage_wrapper.cc",
     "ilimage_wrapper.h",
   ]
   deps = [
-    "//third_party/assimp:assimp",
     "//third_party/devil:devil",
-    "//azer:azer",
-    ":sbox_base_effect",
-    ":sbox_base_line_effect",
+    "//third_party/devil:devilu",
   ]
 }
 

@@ -1,0 +1,9 @@
+
+
+executable("sbox_devil_test") {
+  sources = ["main.cc"]
+  deps = [
+    "//sbox/base:sbox_image",
+    "//base:appinit",
+  ]
+}
