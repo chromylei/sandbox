@@ -6,6 +6,7 @@ group("sbox_terrain") {
     "tex2:sbox_terrain_tex2",
     "tex3:sbox_terrain_tex3",
     "colormap:sbox_terrain_colormap",
+    "slopetex:sbox_terrain_slopetex",
     "light:sbox_terrain_light",
     "base:sbox_terrain_base",
     "grid:sbox_terrain_grid",

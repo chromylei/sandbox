@@ -14,7 +14,8 @@ struct DirLight {
 
 [uniform_func="SetPVW"] uniform mat4 pvw;
 [uniform_func="SetWorld"] uniform mat4 world;
-[uniform_func="SetDiffuseTex"] uniform Texture2D tex;
+[uniform_func="SetPlatTex"] uniform Texture2D plat_tex;
+[uniform_func="SetSlopeTex"] uniform Texture2D slope_tex;
 [uniform_func="SetDirLight"] uniform DirLight light;
 
 exchange struct VsOutput {
@@ -22,14 +23,12 @@ exchange struct VsOutput {
   vec4 position;
   vec2 coordtex;
   vec4 normal;
-  vec4 color;
 };
 
 exchange struct VSInput {
   vec4 position;
   vec2 coordtex;
   vec4 normal;
-  vec4 color;
 };
 
 VsOutput vs_main(VSInput input) {
@@ -37,17 +36,24 @@ VsOutput vs_main(VSInput input) {
   o.position = pvw * input.position;
   o.coordtex = input.coordtex;
   o.normal = world * input.normal;
-  o.color = input.color;
   return o;
 }
 
 [system="true" semantic="target"]
 vec4 ps_main(VsOutput o) {
-  vec4 tex_diff = sample2D(tex, o.coordtex);
-  vec4 diffuse = tex_diff * o.color * 2.0;
+  
   float diffuse_factor = dot(normalize(o.normal.xyz), -light.dir.xyz);
   vec3 light_factor = light.ambient.xyz + light.diffuse.xyz * diffuse_factor;
-  vec3 reflight_color = light_factor.xyz * tex_diff.xyz;
-  return vec4(reflight_color * o.color.xyz * 2.0, 1.0);
+  float dist = length(vec3(0.0, 1.0, 0.0) - o.normal.xyz);
+  vec4 tex_diffuse;
+  if (dist > 0.7) {
+    tex_diffuse = sample2D(slope_tex, o.coordtex);
+  } else if (dist < 0.2) {
+    tex_diffuse = sample2D(plat_tex, o.coordtex);
+  } else {
+    tex_diffuse = sample2D(plat_tex, o.coordtex) * (1.0 - dist)
+        + sample2D(slope_tex, o.coordtex) * dist;
+  }
+  return vec4(light_factor.xyz * tex_diffuse.xyz, 1.0);
 }
 
