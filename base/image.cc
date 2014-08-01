@@ -17,12 +17,32 @@ Image::~Image() {
 }
 
 uint32 Image::GetData(int x, int y) {
-  return 0;
+  DCHECK(image_ != NULL);
+  return image_->GetData(x, y);
 }
 
 bool Image::Load(const ::base::FilePath& path) {
   DCHECK(image_ == NULL);
   image_ = new ilImageWrapper;
   return image_->Load(path);
+}
+
+int Image::height() const {
+  DCHECK(image_ != NULL);
+  return image_->height();
+}
+int Image::width() const {
+  DCHECK(image_ != NULL);
+  return image_->width();
+}
+
+azer::Vector4 SampleImage(float u, float v, Image* image) {
+  int x = u * image->width();
+  int y = v * image->height();
+  int32 rgba = image->GetData(x, y);
+  return azer::Vector4((float)((rgba & 0xFF000000) >> 24) / 255.0f,
+                       (float)((rgba & 0x00FF0000) >> 16) / 255.0f,
+                       (float)((rgba & 0x0000FF00) >> 8) / 255.0f,
+                       (float)(rgba & 0x000000FF) / 255.0f);
 }
 }  // namespace sbox

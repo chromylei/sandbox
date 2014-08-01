@@ -3,6 +3,7 @@
 #include <memory>
 #include "base/basictypes.h"
 #include "base/files/file_path.h"
+#include "azer/render/render.h"
 
 namespace sbox {
 class ilImageWrapper;
@@ -20,4 +21,6 @@ class Image {
   ilImageWrapper* image_;
   DISALLOW_COPY_AND_ASSIGN(Image);
 };
+
+azer::Vector4 SampleImage(float u, float v, Image* image);
 }

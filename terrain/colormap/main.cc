@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "sbox/terrain/base/grid.h"
 #include "sbox/base/coord.h"
+#include "sbox/base/image.h"
 #include "sbox/base/base.h"
 
 #include <tchar.h>
@@ -16,11 +17,9 @@
 #define SHADER_NAME "diffuse.afx"
 const float kRepeatNum = 10.0f;
 
-const char* kHeightmapPath = "sbox/terrain/res/height02.bmp";
-const char* kTexPath1 = "sbox/terrain/res/tex/highestTile.dds";
-const char* kTexPath2 = "sbox/terrain/res/tex/HighTile.dds";
-const char* kTexPath3 = "sbox/terrain/res/tex/lowTile.dds";
-const char* kTexPath4 = "sbox/terrain/res/tex/lowestTile.dds";
+const char* kHeightmapPath = "sbox/terrain/res/heightmap01.bmp";
+const char* kColorMapPath = "sbox/terrain/res/tex/colorm01.bmp";
+const char* kTexPath = "sbox/terrain/res/tex/dirt01.dds";
 using base::FilePath;
 
 class MainDelegate : public azer::WindowHost::Delegate {
@@ -41,8 +40,8 @@ class MainDelegate : public azer::WindowHost::Delegate {
   CoordMesh coord_;
   azer::Matrix4 coord_world_;
   DiffuseEffect::DirLight light_;
-  azer::TexturePtr high_texptr_;
-  azer::TexturePtr low_texptr_;
+  azer::TexturePtr texptr_;
+  sbox::Image image_;
   float top_y_;
   float bottom_y_;
 };
@@ -83,10 +82,8 @@ void MainDelegate::OnRenderScene(double time, float delta_time) {
   effect_->SetWorld(world);
   effect_->SetPVW(std::move(camera_.GetProjViewMatrix() * world));
   // effect_->SetDiffuse(azer::Vector4(0.5f, 0.5f, 0.6f, 1.0f));
-  effect_->SetDiffuseTexHigh(high_texptr_);
-  effect_->SetDiffuseTexLow(low_texptr_);
+  effect_->SetDiffuseTex(texptr_);
   effect_->SetDirLight(light_);
-  effect_->SetYRange(azer::Vector2(bottom_y_, top_y_));
   effect_->Use(renderer);
   renderer->Render(vb_.get(), ib_.get(), azer::kTriangleList);
 
@@ -120,10 +117,9 @@ void MainDelegate::Init() {
   light_.diffuse = azer::Vector4(1.0f, 1.0f, 1.0f, 1.0f);
   light_.ambient = azer::Vector4(0.15f, 0.15f, 0.15f, 1.0f);
 
-  ::base::FilePath texpath2(::base::UTF8ToWide(kTexPath2));
-  ::base::FilePath texpath3(::base::UTF8ToWide(kTexPath3));
-  high_texptr_.reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath2));
-  low_texptr_.reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath3));
+  ::base::FilePath texpath(::base::UTF8ToWide(kTexPath));
+  texptr_.reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath));
+  CHECK(image_.Load(::base::FilePath(::base::UTF8ToWide(kColorMapPath))));
 }
 
 void MainDelegate::InitPhysicsBuffer(azer::RenderSystem* rs) {
@@ -132,15 +128,18 @@ void MainDelegate::InitPhysicsBuffer(azer::RenderSystem* rs) {
   azer::VertexDataPtr vdata(
       new azer::VertexData(effect_->GetVertexDesc(), grid_.vertices().size()));
   DiffuseEffect::Vertex* v = (DiffuseEffect::Vertex*)vdata->pointer();
-  float cell_width = kRepeatNum * 1.0f / (float)grid_.width();
-  float cell_height = kRepeatNum * 1.0f / (float)grid_.height();
+  float cell_width = 1.0f / (float)grid_.width();
+  float cell_height = 1.0f / (float)grid_.height();
   for (int i = 0; i < grid_.height(); ++i) {
     for (int j = 0; j < grid_.width(); ++j) {
       int index = i * grid_.width() + j;
       const Grid::Vertex& vertex = grid_.vertices()[index];
       v->position = azer::Vector4(vertex.position, 1.0f) * 0.05f;
-      v->coordtex = azer::Vector2(cell_width * j, cell_height * i);
+      float tu = cell_width * j;
+      float tv = cell_height * i;
+      // v->coordtex = azer::Vector2(u * kRepeatNum, v * kRepeatNum);
       v->normal = azer::Vector4(vertex.normal, 0.0f);
+      v->color = sbox::SampleImage(tu, tv, &image_);
       v++;
 
       if (v->position.y > top_y_) { top_y_ = v->position.y;}

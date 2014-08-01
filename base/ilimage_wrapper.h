@@ -23,6 +23,9 @@ class ilImageWrapper {
   bool Load(const ::base::FilePath& path);
   bool Load(uint8* data, int size);
   int GetData(int x, int y);
+
+  int height() const { return height_;}
+  int width() const { return width_;}
  private:
   ILuint image_id_;
   int width_, height_;
