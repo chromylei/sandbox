@@ -59,24 +59,36 @@ bool ilImageWrapper::Load(uint8* data, int size) {
   return true;
 }
 
-int ilImageWrapper::GetData(int x, int y) {
+uint32 ilImageWrapper::GetData(int x, int y) {
   DCHECK(image_id_ != (ILuint)-1);
   ilBindImage(image_id_);
 
   ILubyte* data = ilGetData();
   
   switch (bytes_per_pixel_) {
-    case 1: {
-      uint8* ptr = (uint8*)(data) + (y * width_ + x);
+    case 8: {
+      uint8* ptr = data + y * width_ + x;
       return *ptr;
     }
-    case 2: {
-      uint16* ptr = (uint16*)(data) + (y * width_ + x);
-      return *ptr;
+    case 16: {
+      uint8* ptr = data + (y * width_ + x) * 2;
+      // 5, 6, 5
+      return ptr[1] << 8 | ptr[0];
     }
-    case 4: {
-      uint32* ptr = (uint32*)(data) + (y * width_ + x);
-      return *ptr;
+    case 24: {
+      uint8* ptr = data + (y * width_ + x) * 3;
+      uint32 value = ptr[2] << 24;
+      value |= ptr[1] << 16;
+      value |= ptr[0] << 8;
+      return  value;
+    }
+    case 32: {
+      uint8* ptr = data + (y * width_ + x) * 3;
+      uint32 value = ptr[0] << 24;
+      value |= ptr[1] << 16;
+      value |= ptr[2] << 8;
+      value |= ptr[3];
+      return  value;
     }
     default:
       NOTREACHED();

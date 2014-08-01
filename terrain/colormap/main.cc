@@ -13,13 +13,13 @@
 
 #include <tchar.h>
 #include "diffuse.afx.h"
-#define EFFECT_GEN_DIR "out/dbg/gen/sbox/terrain/tex3/"
+#define EFFECT_GEN_DIR "out/dbg/gen/sbox/terrain/colormap/"
 #define SHADER_NAME "diffuse.afx"
 const float kRepeatNum = 10.0f;
 
 const char* kHeightmapPath = "sbox/terrain/res/heightmap01.bmp";
-const char* kColorMapPath = "sbox/terrain/res/tex/colorm01.bmp";
-const char* kTexPath = "sbox/terrain/res/tex/dirt01.dds";
+const char* kColorMapPath  = "sbox/terrain/res/colorm01.bmp";
+const char* kTexPath       = "sbox/terrain/res/dirt01.dds";
 using base::FilePath;
 
 class MainDelegate : public azer::WindowHost::Delegate {
@@ -61,8 +61,8 @@ int main(int argc, char* argv[]) {
 }
 
 void MainDelegate::OnUpdateScene(double time, float delta_time) {
-  float rspeed = 3.14f * 2.0f / 4.0f;
-  azer::Radians camera_speed(azer::kPI / 2.0f);
+  float rspeed = 3.14f * 2.0f;
+  azer::Radians camera_speed(4.0 * azer::kPI / 2.0f);
   UpdatedownCamera(&camera_, camera_speed, delta_time);
 
   azer::Vector3 pos = camera_.position() +
@@ -107,10 +107,9 @@ void MainDelegate::Init() {
   CHECK(azer::LoadPixelShader(EFFECT_GEN_DIR SHADER_NAME ".ps", &shaders));
   effect_.reset(new DiffuseEffect(shaders.GetShaderVec(), rs));
   grid_.Init(::base::FilePath(::base::UTF8ToWide(kHeightmapPath)));
-  InitPhysicsBuffer(rs);
 
-  camera_.SetPosition(azer::Vector3(0.0f, 18.0f, 10.0f));
-  camera_.SetLookAt(azer::Vector3(0.0f, 18.0f, 0.0f));
+  camera_.SetPosition(azer::Vector3(0.0f, 8.0f, 10.0f));
+  camera_.SetLookAt(azer::Vector3(0.0f, 8.0f, 0.0f));
   coord_.Init(rs);
 
   light_.dir = azer::Vector4(0.0f, -0.3f, 0.75f, 1.0f);
@@ -120,6 +119,8 @@ void MainDelegate::Init() {
   ::base::FilePath texpath(::base::UTF8ToWide(kTexPath));
   texptr_.reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath));
   CHECK(image_.Load(::base::FilePath(::base::UTF8ToWide(kColorMapPath))));
+
+  InitPhysicsBuffer(rs);
 }
 
 void MainDelegate::InitPhysicsBuffer(azer::RenderSystem* rs) {

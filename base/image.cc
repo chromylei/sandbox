@@ -40,9 +40,10 @@ azer::Vector4 SampleImage(float u, float v, Image* image) {
   int x = u * image->width();
   int y = v * image->height();
   int32 rgba = image->GetData(x, y);
-  return azer::Vector4((float)((rgba & 0xFF000000) >> 24) / 255.0f,
-                       (float)((rgba & 0x00FF0000) >> 16) / 255.0f,
-                       (float)((rgba & 0x0000FF00) >> 8) / 255.0f,
-                       (float)(rgba & 0x000000FF) / 255.0f);
+  float r = (float)((rgba & 0xFF000000) >> 24) / 255.0f;
+  float g = (float)((rgba & 0x00FF0000) >> 16) / 255.0f;
+  float b = (float)((rgba & 0x0000FF00) >> 8) / 255.0f;
+  float a = (float)(rgba & 0x000000FF) / 255.0f;
+  return azer::Vector4(r, g, b, 1.0f);
 }
 }  // namespace sbox

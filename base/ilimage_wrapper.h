@@ -22,7 +22,7 @@ class ilImageWrapper {
   bool Create(int width, int height);
   bool Load(const ::base::FilePath& path);
   bool Load(uint8* data, int size);
-  int GetData(int x, int y);
+  uint32 GetData(int x, int y);
 
   int height() const { return height_;}
   int width() const { return width_;}
