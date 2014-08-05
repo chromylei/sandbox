@@ -1,0 +1,21 @@
+import("//build/templates/afx.gni")
+
+afx("sbox_clipmap_mergetex_effect") {
+  source = "tex_merge.afx"
+  filename = "tex_merge"
+}
+
+executable("sbox_clipmap_mergetex") {
+  sources = [
+    "main.cc",
+    "terrain_tile.cc",
+    "terrain_tile.h",
+  ]
+  deps = [
+    "//sbox/terrain/base:sbox_terrain_base",
+    "//sbox/base:sbox_base",
+    "//sbox/base:sbox_image",
+    "//base:appinit",
+    ":sbox_clipmap_mergetex_effect",
+  ]
+}
