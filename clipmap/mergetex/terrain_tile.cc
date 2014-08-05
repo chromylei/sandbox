@@ -51,7 +51,13 @@ bool TerrainTile::Init(azer::RenderSystem* rs) {
 
 void TerrainTile::SetTexture(int index, azer::TexturePtr ptr) {
   TexMergeEffect* effect = (TexMergeEffect*)effect_.get();
-  effect->SetHeightTex(index, ptr);
+  switch (index) {
+    case 0: effect->SetHeightTex1(ptr); break;
+    case 1: effect->SetHeightTex2(ptr); break;
+    case 2: effect->SetHeightTex3(ptr); break;
+    case 3: effect->SetHeightTex4(ptr); break;
+    default: NOTREACHED();
+  }
 }
 
 void TerrainTile::OnUpdate(float x, float z, azer::Renderer* renderer) {

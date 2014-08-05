@@ -12,7 +12,10 @@ struct DirLight {
 };
 
 
-[uniform_func="SetHeightTex"] uniform Texture2D heighttex[4];
+[uniform_func="SetHeightTex1"] uniform Texture2D heighttex1;
+[uniform_func="SetHeightTex2"] uniform Texture2D heighttex2;
+[uniform_func="SetHeightTex3"] uniform Texture2D heighttex3;
+[uniform_func="SetHeightTex4"] uniform Texture2D heighttex4;
 [uniform_func="SetViewpos"] uniform vec4 view_pos;
 
 exchange struct VsOutput {
@@ -37,15 +40,15 @@ VsOutput vs_main(VSInput input) {
 vec4 ps_main(VsOutput o) {
   if (o.position.x <= view_pos.x) {
     if (o.position.z <= view_pos.z) {
-      return sample2D(heighttex[0], o.texcoord);
+      return sample2D(heighttex1, o.texcoord);
     } else {
-      return sample2D(heighttex[3], o.texcoord);
+      return sample2D(heighttex4, o.texcoord);
     }
   } else {
     if (o.position.z <= view_pos.z) {
-      return sample2D(heighttex[1], o.texcoord);
+      return sample2D(heighttex2, o.texcoord);
     } else {
-      return sample2D(heighttex[2], o.texcoord);
+      return sample2D(heighttex3, o.texcoord);
     }
   }
 }
