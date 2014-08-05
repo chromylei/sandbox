@@ -64,7 +64,7 @@ void MainDelegate::OnRenderScene(double time, float delta_time) {
   DCHECK(NULL != rs);
   renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
   renderer->ClearDepthAndStencil();
-  tile_.OnUpdate(0.3f, 0.3f, renderer);
+  tile_.OnUpdate(0.5f, 0.5f, renderer);
 }
 
 void MainDelegate::OnQuit() {
@@ -76,7 +76,7 @@ void MainDelegate::Init() {
   renderer->SetViewport(azer::Renderer::Viewport(0, 0, 800, 600));
   CHECK(renderer->GetFrontFace() == azer::kCounterClockwise);
   CHECK(renderer->GetCullingMode() == azer::kCullBack);
-  renderer->EnableDepthTest(true);
+  renderer->EnableDepthTest(false);
 
   ::base::FilePath texpath1(::base::UTF8ToWide(kTerrainTex1));
   tex1_.reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath1));

@@ -27,17 +27,22 @@ bool TerrainTile::Init(azer::RenderSystem* rs) {
   texopt.sampler.compare_func = azer::CompareFunc::kLessEqual;
   texopt.target = (azer::Texture::BindTarget)
       (azer::Texture::kRenderTarget | azer::Texture::kShaderResource);
-  heightmap_renderer_.reset(rs->CreateRenderer(texopt));
+  // heightmap_renderer_.reset(rs->CreateRenderer(texopt));
   texvec_.resize(4u);
 
   TexMergeEffect::Vertex vertex[] = {
-    TexMergeEffect::Vertex(azer::Vector4(-1.0f, 1.0f, 0.0f, 1.0f),
+    TexMergeEffect::Vertex(azer::Vector4(-1.0f, 1.0f, 0.5f, 1.0f),
                            azer::Vector2(0.0f, 0.0f)),
-    TexMergeEffect::Vertex(azer::Vector4(1.0f, 1.0f, 0.0f, 1.0f),
-                           azer::Vector2(0.0f, 1.0f)),
-    TexMergeEffect::Vertex(azer::Vector4(-1.0f, -1.0f, 0.0f, 1.0f),
+    TexMergeEffect::Vertex(azer::Vector4(-1.0f, -1.0f, 0.5f, 1.0f),
                            azer::Vector2(1.0f, 0.0f)),
-    TexMergeEffect::Vertex(azer::Vector4(1.0f, -1.0f, 0.0f, 1.0f),
+    TexMergeEffect::Vertex(azer::Vector4(1.0f, 1.0f, 0.5f, 1.0f),
+                           azer::Vector2(0.0f, 1.0f)),
+
+    TexMergeEffect::Vertex(azer::Vector4(1.0f, 1.0f, 0.5f, 1.0f),
+                           azer::Vector2(0.0f, 1.0f)),
+    TexMergeEffect::Vertex(azer::Vector4(-1.0f, -1.0f, 0.5f, 1.0f),
+                           azer::Vector2(1.0f, 0.0f)),
+    TexMergeEffect::Vertex(azer::Vector4(1.0f, -1.0f, 0.5f, 1.0f),
                            azer::Vector2(1.0f, 1.0f)),
   };
   azer::VertexBuffer::Options vbopt;
@@ -70,5 +75,5 @@ void TerrainTile::OnUpdate(float x, float z, azer::Renderer* renderer) {
   TexMergeEffect* effect = (TexMergeEffect*)effect_.get();
   effect->SetViewpos(azer::Vector4(x, 0.0f, z, 1.0));
   effect->Use(renderer);
-  renderer->Render(vb_.get(), azer::kTriangleStrip);
+  renderer->Render(vb_.get(), azer::kTriangleList);
 }

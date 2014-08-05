@@ -38,6 +38,8 @@ VsOutput vs_main(VSInput input) {
 
 [system="true" semantic="target"]
 vec4 ps_main(VsOutput o) {
+  o.texcoord.x -= view_pos.x;
+  o.texcoord.y -= view_pos.z;
   if (o.position.x <= view_pos.x) {
     if (o.position.z <= view_pos.z) {
       return sample2D(heighttex1, o.texcoord);
