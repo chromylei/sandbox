@@ -6,6 +6,21 @@
 #include "base/basictypes.h"
 #include "azer/render/render.h"
 
+class TerrainTexMap {
+ public:
+  TerrainTexMap() : kCellWidth(100.0f) {}
+  bool GetTexture(float x, float z, azer::TexturePtr* ptrarr);
+  void SetCell(int x, int z, azer::TexturePtr ptr) {
+    map_[x][z] = ptr;
+  }
+
+  azer::Vector2 CalcTexViewpos(float x, float z);
+ private:
+  azer::TexturePtr map_[11][11];
+  const float kCellWidth;
+  DISALLOW_COPY_AND_ASSIGN(TerrainTexMap);
+};
+
 /**
  *
  */

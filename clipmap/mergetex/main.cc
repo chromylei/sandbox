@@ -20,7 +20,11 @@ using base::FilePath;
 
 class MainDelegate : public azer::WindowHost::Delegate {
  public:
-  MainDelegate() : tile_(256, 256) {}
+  MainDelegate()
+      : tile_(256, 256)
+      , x_(0.0f)
+      , z_(0.0f) {
+  }
   virtual void OnCreate() {}
 
   void Init();
@@ -30,11 +34,10 @@ class MainDelegate : public azer::WindowHost::Delegate {
  private:
   void InitPhysicsBuffer(azer::RenderSystem* rs);
   azer::Camera camera_;
-  azer::TexturePtr tex1_;
-  azer::TexturePtr tex2_;
-  azer::TexturePtr tex3_;
-  azer::TexturePtr tex4_;
+  azer::TexturePtr tex_[4];
   TerrainTile tile_;
+  TerrainTexMap texmap_;
+  float x_, z_;
 };
 
 int main(int argc, char* argv[]) {
@@ -52,9 +55,26 @@ int main(int argc, char* argv[]) {
 }
 
 void MainDelegate::OnUpdateScene(double time, float delta_time) {
-  float rspeed = 3.14f * 2.0f;
-  azer::Radians camera_speed(4.0 * azer::kPI / 2.0f);
-  UpdatedownCamera(&camera_, camera_speed, delta_time);
+  float speed = 100.0 * delta_time;
+  if( ::GetAsyncKeyState('A') & 0x8000f ) {
+    x_ -= speed;
+  }
+  if( ::GetAsyncKeyState('D') & 0x8000f ) {
+    x_ += speed;
+  }
+  if( ::GetAsyncKeyState('W') & 0x8000f ) {
+    z_ += speed;
+  }
+  if( ::GetAsyncKeyState('S') & 0x8000f ) {
+    z_ -= speed;
+  }
+
+  
+  azer::TexturePtr tmp[4];
+  texmap_.GetTexture(x_, z_, tmp);
+  for (int i = 0; i < 4; ++i) {
+    tile_.SetTexture(i, tmp[i]);
+  }
 }
 
 void MainDelegate::OnRenderScene(double time, float delta_time) {
@@ -64,7 +84,9 @@ void MainDelegate::OnRenderScene(double time, float delta_time) {
   DCHECK(NULL != rs);
   renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
   renderer->ClearDepthAndStencil();
-  tile_.OnUpdate(0.3f, 0.3f, renderer);
+
+  azer::Vector2 pos = std::move(texmap_.CalcTexViewpos(x_, z_));
+  tile_.OnUpdate(pos.x, pos.y, renderer);
 }
 
 void MainDelegate::OnQuit() {
@@ -79,18 +101,20 @@ void MainDelegate::Init() {
   renderer->EnableDepthTest(false);
 
   ::base::FilePath texpath1(::base::UTF8ToWide(kTerrainTex1));
-  tex1_.reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath1));
+  tex_[0].reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath1));
   ::base::FilePath texpath2(::base::UTF8ToWide(kTerrainTex2));
-  tex2_.reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath2));
+  tex_[1].reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath2));
   ::base::FilePath texpath3(::base::UTF8ToWide(kTerrainTex3));
-  tex3_.reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath3));
+  tex_[2].reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath3));
   ::base::FilePath texpath4(::base::UTF8ToWide(kTerrainTex4));
-  tex4_.reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath4));
+  tex_[3].reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath4));
 
   tile_.Init(rs);
-  tile_.SetTexture(0, tex1_);
-  tile_.SetTexture(1, tex2_);
-  tile_.SetTexture(2, tex3_);
-  tile_.SetTexture(3, tex4_);
+  int index = 0;
+  for (int i = 0; i < 11; ++i) {
+    for (int j = 0; j < 11; ++j) {
+      texmap_.SetCell(i, j, tex_[index++ % arraysize(tex_)]);
+    }
+  }
 }
 

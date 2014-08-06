@@ -70,3 +70,35 @@ void TerrainTile::OnUpdate(float x, float y, azer::Renderer* renderer) {
   effect->Use(renderer);
   renderer->Render(vb_.get(), azer::kTriangleList);
 }
+
+bool TerrainTexMap::GetTexture(float x, float z, azer::TexturePtr* ptrarr) {
+  int xcell = floor(x / kCellWidth) + 5;
+  int zcell = floor(z / kCellWidth) + 5;
+  if (xcell >= 1 && xcell < 10 && zcell > 0 && zcell < 10) {
+    ptrarr[0] = map_[xcell - 1][zcell - 1];
+    ptrarr[1] = map_[xcell][zcell - 1];
+    ptrarr[2] = map_[xcell][zcell];
+    ptrarr[3] = map_[xcell - 1][zcell];
+    return true;
+  } else {
+    return false;
+  }
+}
+
+azer::Vector2 TerrainTexMap::CalcTexViewpos(float x, float z) {
+  float orgx = (x - floor(x / kCellWidth) * kCellWidth) / kCellWidth;
+  float orgy = (z - floor(z / kCellWidth) * kCellWidth) / kCellWidth;
+  if (orgx <= 0.5) {
+    orgx = 0.5 - orgx;
+  } else if (orgx > 0.5f && orgx <= 1.0f) {
+    orgx = 1.5 - orgx;
+  }
+
+  if (orgy <= 0.5) {
+    orgy = 0.5 - orgy;
+  } else if (orgy > 0.5f && orgy <= 1.0f) {
+    orgy = 1.5 - orgx;
+  }
+
+  return azer::Vector2(orgx, orgy);
+}
