@@ -121,13 +121,15 @@ bool TerrainTexMap::GetTexture(float x, float z, int* index) {
 
 
 float TerrainTexMap::MapCoordX(float x) {
-  float orgx = (x - floor(x / kCellWidth) * kCellWidth) / kCellWidth;
-  if (orgx <= 0.5) {
-    orgx = 0.5 - orgx;
-  } else if (orgx > 0.5f && orgx <= 1.0f) {
-    orgx = 1.5 - orgx;
+  int xcell = floor(x / kCellWidth);
+  float incell_x = x - floor(x / kCellWidth) * kCellWidth;
+  // first othro
+  float ratio = incell_x / kCellWidth;
+  if (ratio <= 0.5) {
+    return 0.5 - ratio; 
+  } else {
+    return 1.5 - ratio;
   }
-  return orgx;
 }
 
 float TerrainTexMap::MapCoordZ(float z) {
