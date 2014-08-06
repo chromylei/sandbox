@@ -2,5 +2,6 @@
 group("sbox_clipmap") {
   deps = [
     "mergetex:sbox_clipmap_mergetex",
+    "vertexbuffer:sbox_clipmap_vertexbuffer",
   ]
 }

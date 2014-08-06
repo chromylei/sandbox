@@ -1,0 +1,31 @@
+
+technique [
+    name = "diffuse"
+    ps_main="ps_main"
+    vs_main="vs_main"
+    class_name="DiffuseEffect"
+           ];
+
+exchange struct VsOutput {
+  [semantic="position" system="true"]
+  vec4 position;
+  vec4 diffuse;
+};
+
+exchange struct VSInput {
+  vec4 position;
+  vec4 diffuse;
+};
+
+VsOutput vs_main(VSInput input) {
+  VsOutput o;
+  o.position = input.position;
+  o.diffuse = input.diffuse;
+  return o;
+}
+
+[system="true" semantic="target"]
+vec4 ps_main(VsOutput o) {
+  return o.diffuse;
+}
+

@@ -1,0 +1,19 @@
+import("//build/templates/afx.gni")
+
+afx("sbox_clipmap_vertexbuffer_effect") {
+  source = "diffuse.afx"
+  filename = "diffuse"
+}
+
+executable("sbox_clipmap_vertexbuffer") {
+  sources = [
+    "main.cc",
+  ]
+  deps = [
+    "//sbox/terrain/base:sbox_terrain_base",
+    "//sbox/base:sbox_base",
+    "//sbox/base:sbox_image",
+    "//base:appinit",
+    ":sbox_clipmap_vertexbuffer_effect",
+  ]
+}
