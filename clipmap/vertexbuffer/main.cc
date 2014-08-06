@@ -4,59 +4,53 @@
 #include "base/base.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-
-#include "diffuse.afx.h"
+#include "sbox/base/base.h"
+#include "sbox/clipmap/vertexbuffer/terrain_grid.h"
 #include <tchar.h>
-
-#define EFFECT_GEN_DIR "out/dbg/gen/sbox/clipmap/vertexbuffer/"
-#define SHADER_NAME "diffuse.afx"
 using base::FilePath;
 
 class MainDelegate : public azer::WindowHost::Delegate {
  public:
+  MainDelegate()
+      : tile_(2, 10) {
+  }
+
   virtual void OnCreate() {}
 
   void Init() {
     azer::RenderSystem* rs = azer::RenderSystem::Current();
     azer::Renderer* renderer = rs->GetDefaultRenderer();
-    azer::ShaderArray shaders;
-    CHECK(azer::LoadVertexShader(EFFECT_GEN_DIR SHADER_NAME ".vs", &shaders));
-    CHECK(azer::LoadPixelShader(EFFECT_GEN_DIR SHADER_NAME ".ps", &shaders));
-
-    effect_.reset(new DiffuseEffect(shaders.GetShaderVec(),
-                                    azer::RenderSystem::Current()));
-
-    DiffuseEffect::Vertex v[] = {
-      DiffuseEffect::Vertex(azer::Vector4( 0.0f, 1.0f, 0.5f, 1.0f ),
-                            azer::Vector4( 1.0f, 0.0f, 0.0f, 1.0f )),
-      DiffuseEffect::Vertex(azer::Vector4( -1.0f, -1.0f, 0.5f, 1.0f ),
-                            azer::Vector4( 0.0f, 1.0f,  0.0f, 1.0f )),
-      DiffuseEffect::Vertex(azer::Vector4( 1.0f, -1.0f, 0.5f, 1.0f ),
-                            azer::Vector4( 0.0f, 0.0f, 1.0f, 1.0f )),
-    };
-    data_.reset(new azer::VertexData(effect_->GetVertexDesc(), ARRAYSIZE(v)));
-    memcpy(data_->pointer(), (uint8*)v, sizeof(v));
-    vb_.reset(rs->CreateVertexBuffer(azer::VertexBuffer::Options(), data_));
     renderer->SetViewport(azer::Renderer::Viewport(0, 0, 800, 600));
     CHECK(renderer->GetFrontFace() == azer::kCounterClockwise);
     CHECK(renderer->GetCullingMode() == azer::kCullBack);
+    renderer->EnableDepthTest(true);
+    renderer->SetFillMode(azer::kWireFrame);
+    renderer->SetCullingMode(azer::kCullNone);
+    tile_.Init(rs);
+
+    camera_.SetPosition(azer::Vector3(0.0f, 8.0f, 10.0f));
+    camera_.SetLookAt(azer::Vector3(0.0f, 0.0f, 0.0f));
   }
-  virtual void OnUpdateScene(double time, float delta_time) {}
+  virtual void OnUpdateScene(double time, float delta_time) {
+    float rspeed = 3.14f * 2.0f;
+    azer::Radians camera_speed(4.0 * azer::kPI / 2.0f);
+    UpdatedownCamera(&camera_, camera_speed, delta_time);
+  }
 
   virtual void OnRenderScene(double time, float delta_time) {
     azer::RenderSystem* rs = azer::RenderSystem::Current();
     azer::Renderer* renderer = rs->GetDefaultRenderer();
     DCHECK(NULL != rs);
     renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-    effect_->Use(renderer);
-    renderer->Render(vb_.get(), azer::kTriangleList, 3, 0);
+    renderer->ClearDepthAndStencil();
+
+    tile_.Render(renderer, camera_);
   }
 
   virtual void OnQuit() {}
  private:
-  azer::VertexDataPtr  data_;
-  azer::VertexBufferPtr vb_;
-  std::unique_ptr<DiffuseEffect> effect_;
+  GridTile tile_;
+  azer::Camera camera_;
 };
 
 int main(int argc, char* argv[]) {

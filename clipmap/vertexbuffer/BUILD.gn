@@ -5,9 +5,16 @@ afx("sbox_clipmap_vertexbuffer_effect") {
   filename = "diffuse"
 }
 
+afx("sbox_clipmap_vertexbuffer_gridtile_effect") {
+  source = "grid_tile.afx"
+  filename = "grid_tile"
+}
+
 executable("sbox_clipmap_vertexbuffer") {
   sources = [
     "main.cc",
+    "terrain_grid.cc",
+    "terrain_grid.h",
   ]
   deps = [
     "//sbox/terrain/base:sbox_terrain_base",
@@ -15,5 +22,6 @@ executable("sbox_clipmap_vertexbuffer") {
     "//sbox/base:sbox_image",
     "//base:appinit",
     ":sbox_clipmap_vertexbuffer_effect",
+    ":sbox_clipmap_vertexbuffer_gridtile_effect",
   ]
 }

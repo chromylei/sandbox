@@ -1,6 +1,5 @@
 #include "sbox/terrain/base/grid.h"
 
-
 using azer::GpuConstantsTable;
 
 void ComputeNormal(Grid::Vertex* v, int vertex_num, DWORD* indices,
