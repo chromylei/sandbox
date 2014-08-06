@@ -63,10 +63,10 @@ void MainDelegate::OnUpdateScene(double time, float delta_time) {
     x_ += speed;
   }
   if( ::GetAsyncKeyState('W') & 0x8000f ) {
-    z_ += speed;
+    z_ -= speed;
   }
   if( ::GetAsyncKeyState('S') & 0x8000f ) {
-    z_ -= speed;
+    z_ += speed;
   }
 
   
@@ -74,6 +74,22 @@ void MainDelegate::OnUpdateScene(double time, float delta_time) {
   texmap_.GetTexture(x_, z_, tmp);
   for (int i = 0; i < 4; ++i) {
     tile_.SetTexture(i, tmp[i]);
+  }
+
+  static double prev_print = time;
+  if (time - prev_print > 0.4f) {
+    azer::Vector2 pos = std::move(texmap_.CalcTexViewpos(x_, z_));
+    std::stringstream ss;
+    ss << "position: (" << x_ << ", " << z_ << ")"
+       << " splitpos : (" << pos.x << ", " << pos.y << ")"
+       << " tex index: [";
+    int index[8];
+    texmap_.GetTexture(x_, z_, index);
+    for (int i = 0; i < 8; i+=2) {
+      ss << "(" << index[i] << ", " << index[i+1] << ") ";
+    }
+    LOG(ERROR) << ss.str() << "]";
+    prev_print = time;
   }
 }
 

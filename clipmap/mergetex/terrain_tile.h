@@ -10,12 +10,15 @@ class TerrainTexMap {
  public:
   TerrainTexMap() : kCellWidth(100.0f) {}
   bool GetTexture(float x, float z, azer::TexturePtr* ptrarr);
+  bool GetTexture(float x, float z, int* index);
   void SetCell(int x, int z, azer::TexturePtr ptr) {
     map_[x][z] = ptr;
   }
 
   azer::Vector2 CalcTexViewpos(float x, float z);
  private:
+  float MapCoordX(float x);
+  float MapCoordZ(float z);
   azer::TexturePtr map_[11][11];
   const float kCellWidth;
   DISALLOW_COPY_AND_ASSIGN(TerrainTexMap);

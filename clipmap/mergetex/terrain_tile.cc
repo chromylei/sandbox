@@ -72,33 +72,67 @@ void TerrainTile::OnUpdate(float x, float y, azer::Renderer* renderer) {
 }
 
 bool TerrainTexMap::GetTexture(float x, float z, azer::TexturePtr* ptrarr) {
-  int xcell = floor(x / kCellWidth) + 5;
-  int zcell = floor(z / kCellWidth) + 5;
-  if (xcell >= 1 && xcell < 10 && zcell > 0 && zcell < 10) {
-    ptrarr[0] = map_[xcell - 1][zcell - 1];
-    ptrarr[1] = map_[xcell][zcell - 1];
-    ptrarr[2] = map_[xcell][zcell];
-    ptrarr[3] = map_[xcell - 1][zcell];
+  int index[8];
+  if (GetTexture(x, z, index)) {
+    ptrarr[0] = map_[index[0]][index[1]];
+    ptrarr[1] = map_[index[2]][index[3]];
+    ptrarr[2] = map_[index[4]][index[5]];
+    ptrarr[3] = map_[index[6]][index[7]];
     return true;
   } else {
     return false;
   }
 }
 
-azer::Vector2 TerrainTexMap::CalcTexViewpos(float x, float z) {
+bool TerrainTexMap::GetTexture(float x, float z, int* index) {
+  int xcell = floor(x / kCellWidth) + 5;
+  int zcell = floor(z / kCellWidth) + 5;
+  float incell_x = xcell - floor(x / kCellWidth) * kCellWidth;
+  float incell_z = xcell - floor(z / kCellWidth) * kCellWidth;
+  if (xcell > 0 && xcell < 10 && zcell > 0 && zcell < 10) {
+    int x_org_cell = 0;
+    int z_org_cell = 0;
+    if (incell_x > kCellWidth / 2.0) {
+      x_org_cell = xcell;
+    } else {
+      x_org_cell = xcell - 1;
+    }
+
+    if (incell_z > kCellWidth / 2.0) {
+      z_org_cell = zcell;
+    } else {
+      z_org_cell = zcell - 1;
+    }
+    
+    index[0] = x_org_cell;
+    index[1] = z_org_cell;
+    index[2] = x_org_cell + 1;
+    index[3] = z_org_cell;
+    index[4] = x_org_cell + 1;
+    index[5] = z_org_cell + 1;
+    index[6] = x_org_cell;
+    index[7] = z_org_cell + 1;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+
+float TerrainTexMap::MapCoordX(float x) {
   float orgx = (x - floor(x / kCellWidth) * kCellWidth) / kCellWidth;
-  float orgy = (z - floor(z / kCellWidth) * kCellWidth) / kCellWidth;
   if (orgx <= 0.5) {
     orgx = 0.5 - orgx;
   } else if (orgx > 0.5f && orgx <= 1.0f) {
     orgx = 1.5 - orgx;
   }
+  return orgx;
+}
 
-  if (orgy <= 0.5) {
-    orgy = 0.5 - orgy;
-  } else if (orgy > 0.5f && orgy <= 1.0f) {
-    orgy = 1.5 - orgx;
-  }
+float TerrainTexMap::MapCoordZ(float z) {
+  return MapCoordX(z);
+}
 
-  return azer::Vector2(orgx, orgy);
+azer::Vector2 TerrainTexMap::CalcTexViewpos(float x, float z) {
+  return azer::Vector2(MapCoordX(x), MapCoordZ(z));
 }
