@@ -9,11 +9,11 @@
 #include "hardware_skinned.afx.h"
 #include <tchar.h>
 
-#define EFFECT_GEN_DIR "out/dbg/gen/sbox/skinned_mesh3/"
+#define EFFECT_GEN_DIR "out/dbg/gen/sbox/anim/skinned_mesh3/"
 #define SHADER_NAME "haredware_skinned.afx"
 using base::FilePath;
 
-#define kMeshPath "sbox/skinned_mesh3/res/soldier.X"
+#define kMeshPath "sbox/anim/skinned_mesh3/res/soldier.X"
 
 class MainDelegate : public azer::WindowHost::Delegate {
  public:

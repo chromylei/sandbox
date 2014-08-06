@@ -5,13 +5,13 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "sbox/base/base.h"
-#include "sbox/morphing1/morphing.h"
+#include "sbox/anim/morphing1/morphing.h"
 
 #include <tchar.h>
 
 using base::FilePath;
 
-#define kMeshPath "sbox/morphing1/res/face01.X"
+#define kMeshPath "sbox/anim/morphing1/res/face01.X"
 
 class MainDelegate : public azer::WindowHost::Delegate {
  public:

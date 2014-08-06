@@ -5,7 +5,7 @@ executable("sbox_soft_skinned_mesh") {
   deps = [
     "//base:appinit",
     "//third_party/assimp:assimp",
-    "../base:sbox_base",
-    "../base:sbox_software_meshlib",
+    "//sbox/base:sbox_base",
+    "//sbox/base:sbox_software_meshlib",
   ]
 }

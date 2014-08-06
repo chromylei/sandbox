@@ -9,7 +9,7 @@
 #include <tchar.h>
 using base::FilePath;
 
-#define kMeshPath "sbox/skinned_mesh2/res/soldier.X"
+#define kMeshPath "sbox/anim/skinned_mesh2/res/soldier.X"
 
 class MainDelegate : public azer::WindowHost::Delegate {
  public:

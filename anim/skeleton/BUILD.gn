@@ -1,6 +1,6 @@
 import("//build/templates/afx.gni")
 
-afx("sbox_skeleton_effect") {
+afx("sbox_anim_skeleton_effect") {
   source = "texture.afx"
   filename = "texture"
 }
@@ -10,7 +10,7 @@ executable("sbox_skeleton") {
   deps = [
     "//base:appinit",
     "//third_party/assimp:assimp",
-    "../base:sbox_base",
-    ":sbox_skeleton_effect",
+    "//sbox/base:sbox_base",
+    ":sbox_anim_skeleton_effect",
   ]
 }

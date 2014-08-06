@@ -1,0 +1,14 @@
+
+group("sbox_anim") {
+  deps = [
+    "objects:sbox_objects",
+    "mesh:sbox_mesh",
+    "skeleton:sbox_skeleton",
+    "skinned_mesh1:sbox_soft_skinned_mesh",
+    "skinned_mesh2:sbox_hard_skinned_mesh",
+    "skinned_mesh3:sbox_skinned_mesh",
+    "morphing1:sbox_morphing1",
+    "animation:sbox_animation",
+    "blending_animation:sbox_blending_animation",
+  ]
+}

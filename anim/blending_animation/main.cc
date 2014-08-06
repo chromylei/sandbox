@@ -8,7 +8,7 @@
 
 #include <tchar.h>
 
-#define kMeshPath "sbox/blending_animation/res/soldier.X"
+#define kMeshPath "sbox/anim/blending_animation/res/soldier.X"
 using base::FilePath;
 
 class MainDelegate : public azer::WindowHost::Delegate {

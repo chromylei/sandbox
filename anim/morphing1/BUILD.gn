@@ -14,7 +14,7 @@ executable("sbox_morphing1") {
   deps = [
     "//base:appinit",
     "//third_party/assimp:assimp",
-    "../base:sbox_base",
+    "//sbox/base:sbox_base",
     ":sbox_morphing1_effect",
   ]
 }

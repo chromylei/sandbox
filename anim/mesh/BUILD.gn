@@ -10,7 +10,7 @@ executable("sbox_mesh") {
   deps = [
     "//base:appinit",
     "//third_party/assimp:assimp",
-    "../base:sbox_base",
+    "//sbox/base:sbox_base",
     ":sbox_mesh_effect",
   ]
 }

@@ -13,7 +13,7 @@
 #define SHADER_NAME "texture.afx"
 using base::FilePath;
 
-#define kMeshPath "sbox/mesh/res/soldier.X"
+#define kMeshPath "sbox/anim/mesh/res/soldier.X"
 
 void Render(TextureEffect* effect, azer::Renderer* renderer, Mesh* mesh) {
   for (uint32 i = 0; i < mesh->rgroups().size(); ++i) {

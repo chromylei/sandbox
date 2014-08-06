@@ -11,7 +11,7 @@
 
 using base::FilePath;
 
-#define kMeshPath "sbox/skinned_mesh1/res/soldier.X"
+#define kMeshPath "sbox/anim/skinned_mesh1/res/soldier.X"
 // #define kMeshPath "sbox/res/d3d/tiny.X"
 
 class MainDelegate : public azer::WindowHost::Delegate {

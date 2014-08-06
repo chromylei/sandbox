@@ -1,6 +1,6 @@
 import("//build/templates/afx.gni")
 
-afx("sbox_objects_effect") {
+afx("sbox_anim_objects_effect") {
   source = "diffuse.afx"
   filename = "diffuse"
 }
@@ -10,7 +10,7 @@ executable("sbox_objects") {
   deps = [
     "//base:appinit",
     "//third_party/assimp:assimp",
-    "../base:sbox_base",
-    ":sbox_objects_effect",
+    "//sbox/base:sbox_base",
+    ":sbox_anim_objects_effect",
   ]
 }
