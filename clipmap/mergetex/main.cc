@@ -77,7 +77,7 @@ void MainDelegate::OnUpdateScene(double time, float delta_time) {
   }
 
   static double prev_print = time;
-  if (time - prev_print > 0.4f) {
+  if (time - prev_print > 0.5f) {
     azer::Vector2 pos = std::move(texmap_.CalcTexViewpos(x_, z_));
     std::stringstream ss;
     ss << "position: (" << x_ << ", " << z_ << ")"
