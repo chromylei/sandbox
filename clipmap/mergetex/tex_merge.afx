@@ -32,18 +32,25 @@ VsOutput vs_main(VSInput input) {
 
 [system="true" semantic="target"]
 vec4 ps_main(VsOutput o) {
-  vec2 texcoord = vec2(fmod(o.texcoord.x - view_pos.x, 1.0),
-                       fmod(o.texcoord.y - view_pos.y, 1.0));
+  vec2 texcoord = vec2(o.texcoord.x - view_pos.x, o.texcoord.y - view_pos.y);
+  texcoord.x = texcoord.x - floor(texcoord.x);
+  texcoord.y = texcoord.y - floor(texcoord.y);
   if (o.texcoord.x <= view_pos.x) {
+    texcoord.x = 1 - view_pos.x + o.texcoord.x;
     if (o.texcoord.y <= view_pos.y) {
+      texcoord.y = 1 - view_pos.y + o.texcoord.y;
       return sample2D(heighttex1, texcoord);
     } else {
+      texcoord.y = o.texcoord.y - view_pos.y;
       return sample2D(heighttex4, texcoord);
     }
   } else {
+    texcoord.x = o.texcoord.x - view_pos.x;
     if (o.texcoord.y <= view_pos.y) {
+      texcoord.y = 1 - view_pos.y + o.texcoord.y;
       return sample2D(heighttex2, texcoord);
     } else {
+      texcoord.y = o.texcoord.y - view_pos.y;
       return sample2D(heighttex3, texcoord);
     }
   }

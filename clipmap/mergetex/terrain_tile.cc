@@ -114,6 +114,7 @@ bool TerrainTexMap::GetTexture(float x, float z, int* index) {
     index[7] = z_org_cell + 1;
     return true;
   } else {
+    CHECK(false);
     return false;
   }
 }
