@@ -87,8 +87,8 @@ bool TerrainTexMap::GetTexture(float x, float z, azer::TexturePtr* ptrarr) {
 bool TerrainTexMap::GetTexture(float x, float z, int* index) {
   int xcell = floor(x / kCellWidth) + 5;
   int zcell = floor(z / kCellWidth) + 5;
-  float incell_x = xcell - floor(x / kCellWidth) * kCellWidth;
-  float incell_z = xcell - floor(z / kCellWidth) * kCellWidth;
+  float incell_x = x - floor(x / kCellWidth) * kCellWidth;
+  float incell_z = z - floor(z / kCellWidth) * kCellWidth;
   if (xcell > 0 && xcell < 10 && zcell > 0 && zcell < 10) {
     int x_org_cell = 0;
     int z_org_cell = 0;
