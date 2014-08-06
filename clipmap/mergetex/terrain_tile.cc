@@ -31,19 +31,12 @@ bool TerrainTile::Init(azer::RenderSystem* rs) {
   texvec_.resize(4u);
 
   TexMergeEffect::Vertex vertex[] = {
-    TexMergeEffect::Vertex(azer::Vector4(-1.0f, 1.0f, 0.5f, 1.0f),
-                           azer::Vector2(0.0f, 0.0f)),
-    TexMergeEffect::Vertex(azer::Vector4(-1.0f, -1.0f, 0.5f, 1.0f),
-                           azer::Vector2(1.0f, 0.0f)),
-    TexMergeEffect::Vertex(azer::Vector4(1.0f, 1.0f, 0.5f, 1.0f),
-                           azer::Vector2(0.0f, 1.0f)),
-
-    TexMergeEffect::Vertex(azer::Vector4(1.0f, 1.0f, 0.5f, 1.0f),
-                           azer::Vector2(0.0f, 1.0f)),
-    TexMergeEffect::Vertex(azer::Vector4(-1.0f, -1.0f, 0.5f, 1.0f),
-                           azer::Vector2(1.0f, 0.0f)),
-    TexMergeEffect::Vertex(azer::Vector4(1.0f, -1.0f, 0.5f, 1.0f),
-                           azer::Vector2(1.0f, 1.0f)),
+    TexMergeEffect::Vertex(azer::Vector4(-1.0f, 1.0f, 0.5f, 1.0f)),
+    TexMergeEffect::Vertex(azer::Vector4(-1.0f, -1.0f, 0.5f, 1.0f)),
+    TexMergeEffect::Vertex(azer::Vector4(1.0f, 1.0f, 0.5f, 1.0f)),
+    TexMergeEffect::Vertex(azer::Vector4(1.0f, 1.0f, 0.5f, 1.0f)),
+    TexMergeEffect::Vertex(azer::Vector4(-1.0f, -1.0f, 0.5f, 1.0f)),
+    TexMergeEffect::Vertex(azer::Vector4(1.0f, -1.0f, 0.5f, 1.0f)),
   };
   azer::VertexBuffer::Options vbopt;
   azer::VertexDescPtr vdesc_ptr(effect->GetVertexDesc());
@@ -65,7 +58,7 @@ void TerrainTile::SetTexture(int index, azer::TexturePtr ptr) {
   }
 }
 
-void TerrainTile::OnUpdate(float x, float z, azer::Renderer* renderer) {
+void TerrainTile::OnUpdate(float x, float y, azer::Renderer* renderer) {
   /*
   sm_renderer_->Use();
   sm_renderer_->SetViewport(azer::Renderer::Viewport(0, 0, kWidth, kHeight));
@@ -73,7 +66,7 @@ void TerrainTile::OnUpdate(float x, float z, azer::Renderer* renderer) {
   sm_renderer_->EnableDepthTest(false);
   */
   TexMergeEffect* effect = (TexMergeEffect*)effect_.get();
-  effect->SetViewpos(azer::Vector4(x, 0.0f, z, 1.0));
+  effect->SetViewpos(azer::Vector4(x, y, 0.0f, 1.0f));
   effect->Use(renderer);
   renderer->Render(vb_.get(), azer::kTriangleList);
 }

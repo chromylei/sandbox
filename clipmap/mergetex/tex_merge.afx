@@ -6,12 +6,6 @@ technique [
     class_name="TexMergeEffect"
            ];
 
-struct DirLight {
-  vec4 dir;
-  vec2 texcoord;
-};
-
-
 [uniform_func="SetHeightTex1"] uniform Texture2D heighttex1;
 [uniform_func="SetHeightTex2"] uniform Texture2D heighttex2;
 [uniform_func="SetHeightTex3"] uniform Texture2D heighttex3;
@@ -26,20 +20,20 @@ exchange struct VsOutput {
 
 exchange struct VSInput {
   vec4 position;
-  vec2 texcoord;
 };
 
 VsOutput vs_main(VSInput input) {
   VsOutput o;
   o.position = input.position;
-  o.texcoord = input.texcoord;
+  o.texcoord.x = input.position.x / 2.0 + 0.5;
+  o.texcoord.y = input.position.y / 2.0 + 0.5;
   return o;
 }
 
 [system="true" semantic="target"]
 vec4 ps_main(VsOutput o) {
-  o.texcoord.x -= view_pos.x;
-  o.texcoord.y -= view_pos.z;
+  o.texcoord.x = o.texcoord.x - view_pos.x + 1.0;
+  o.texcoord.y = o.texcoord.y - view_pos.y + 1.0;
   if (o.position.x <= view_pos.x) {
     if (o.position.z <= view_pos.z) {
       return sample2D(heighttex1, o.texcoord);

@@ -64,7 +64,7 @@ void MainDelegate::OnRenderScene(double time, float delta_time) {
   DCHECK(NULL != rs);
   renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
   renderer->ClearDepthAndStencil();
-  tile_.OnUpdate(0.5f, 0.5f, renderer);
+  tile_.OnUpdate(0.3f, 0.3f, renderer);
 }
 
 void MainDelegate::OnQuit() {
