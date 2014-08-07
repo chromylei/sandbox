@@ -28,8 +28,8 @@ class MainDelegate : public azer::WindowHost::Delegate {
     renderer->SetCullingMode(azer::kCullNone);
     tile_.Init(rs);
 
-    camera_.SetPosition(azer::Vector3(0.0f, 8.0f, 10.0f));
-    camera_.SetLookAt(azer::Vector3(0.0f, 0.0f, 0.0f));
+    camera_.SetPosition(azer::Vector3(0.0f, 2.0f, 10.0f));
+    camera_.SetLookAt(azer::Vector3(0.0f, 2.0f, 0.0f));
   }
   virtual void OnUpdateScene(double time, float delta_time) {
     float rspeed = 3.14f * 2.0f;

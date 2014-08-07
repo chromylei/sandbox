@@ -34,8 +34,7 @@ void GridTile::CreateVertex(azer::RenderSystem* rs, GridTileEffect* effect) {
   int index = 0;
   for (int i = 0; i < kCellNum + 1; ++i) {
     for (int j = 0; j < kCellNum + 1; ++j) {
-      vertices[index++] = GridTileEffect::Vertex(
-          azer::Vector4(x, 0.0f, z, 0.0));
+      vertices[index++] = GridTileEffect::Vertex(azer::Vector4(x, 0.0f, z, 1.0));
       x += kCellWidth;
     }
     z += kCellWidth;
@@ -44,18 +43,19 @@ void GridTile::CreateVertex(azer::RenderSystem* rs, GridTileEffect* effect) {
 
   vb_.reset(rs->CreateVertexBuffer(vbopt, vdata));
 
-  const int kTriangleNum = (kCellNum - 1) * (kCellNum - 1) * 2;
+  const int kTriangleNum = kCellNum * kCellNum * 2;
   azer::IndicesDataPtr idata_ptr(new azer::IndicesData(
       kTriangleNum * 3, azer::IndicesData::kUint32, azer::IndicesData::kMainMemory));
   uint32* indices = (uint32*)idata_ptr->pointer();
-  for (int i = 0; i < kCellNum - 1; ++i) {
-    for (int j = 0; j < kCellNum - 1; ++j) {
-      *indices++ = i * kCellNum + j;
-      *indices++ = (i + 1) * kCellNum + j + 1;
-      *indices++ = (i + 1) * kCellNum + j;
-      *indices++ = i * kCellNum + j;
-      *indices++ = i * kCellNum + j + 1;
-      *indices++ = (i + 1) * kCellNum + j + 1;
+  const int strip = kCellNum + 1;
+  for (int i = 0; i < kCellNum; ++i) {
+    for (int j = 0; j < kCellNum; ++j) {
+      *indices++ = i * strip + j;
+      *indices++ = i * strip + j + 1;
+      *indices++ = (i + 1) * strip + j;
+      *indices++ = i * strip + j + 1;
+      *indices++ = (i + 1) * strip + j + 1;
+      *indices++ = (i + 1) * strip + j;
     }
   }
   ib_.reset(rs->CreateIndicesBuffer(azer::IndicesBuffer::Options(), idata_ptr));
