@@ -21,9 +21,9 @@ exchange struct VSInput {
 
 VsOutput vs_main(VSInput input) {
   VsOutput o;
-  vec2 texcoord = vec2((input.position.x - range.x)  / range.z,
-                       (input.position.z - range.y)  / range.w);
-  vec4 n = sample2D(heighttex, texcoord);
+  ivec3 texcoord = ivec3((input.position.x - range.x)  / range.z * 256,
+                         (input.position.z - range.y)  / range.w * 256, 1);
+  vec4 n = load(heighttex, texcoord);
   input.position.y = n.x;
   o.position = pvw * input.position;
 
