@@ -21,10 +21,10 @@ exchange struct VSInput {
 
 VsOutput vs_main(VSInput input) {
   VsOutput o;
-  ivec3 texcoord = ivec3((input.position.x - range.x)  / range.z * 256,
-                         (input.position.z - range.y)  / range.w * 256, 1);
+  ivec3 texcoord = ivec3(256 * (input.position.x - range.x)  / range.z,
+                         256 * (input.position.z - range.y)  / range.w, 0);
   vec4 n = load(heighttex, texcoord);
-  input.position.y = n.x;
+  input.position.y = n.x * 3.0;
   o.position = pvw * input.position;
 
   return o;

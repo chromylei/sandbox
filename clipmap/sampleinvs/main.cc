@@ -45,7 +45,6 @@ class MainDelegate : public azer::WindowHost::Delegate {
     DCHECK(NULL != rs);
     renderer->Clear(azer::Vector4(0.0f, 0.0f, 0.0f, 1.0f));
     renderer->ClearDepthAndStencil();
-
     tile_.Render(renderer, camera_);
   }
 
