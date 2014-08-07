@@ -36,6 +36,16 @@ int Image::width() const {
   return image_->width();
 }
 
+uint8* Image::GetDataPtr() {
+  DCHECK(image_ != NULL);
+  return image_->GetDataPtr();
+}
+
+uint32 Image::GetDataSize() {
+  DCHECK(image_ != NULL);
+  return image_->GetDataSize();
+}
+
 azer::Vector4 SampleImage(float u, float v, Image* image) {
   int x = u * image->width();
   int y = v * image->height();

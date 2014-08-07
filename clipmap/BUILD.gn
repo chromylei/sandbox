@@ -4,5 +4,6 @@ group("sbox_clipmap") {
     "mergetex:sbox_clipmap_mergetex",
     "vertexbuffer:sbox_clipmap_vertexbuffer",
     "sampleinvs:sbox_clipmap_sampleinvs",
+    "progtex:sbox_clipmap_progtex",
   ]
 }
