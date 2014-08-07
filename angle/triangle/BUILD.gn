@@ -1,0 +1,8 @@
+
+executable("sbox_angle_triangle") {
+  sources = ["main.cc"]
+  deps = ["//third_party/angle:libEGL",
+          "//third_party/angle:libGLESv2",
+          "//sbox/angle/common:sbox_angle_common",
+  ]
+}

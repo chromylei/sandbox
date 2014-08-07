@@ -1,0 +1,6 @@
+
+
+group("sbox_angle") {
+  deps = ["triangle:sbox_angle_triangle",
+  ]
+}

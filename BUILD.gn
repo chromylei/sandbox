@@ -8,5 +8,6 @@ group("sbox") {
     "terrain:sbox_terrain",
     "clipmap:sbox_clipmap",
     "imagetest:sbox_image",
+    "angle:sbox_angle",
   ]
 }

@@ -1,0 +1,12 @@
+
+static_library("sbox_angle_common") {
+  sources = [
+    "esUtil.c",
+    "esUtil.h",
+    "win32/esUtil_win32.c",
+    "win32/esUtil_TGA.c",
+  ]
+  deps = ["//third_party/angle:libEGL",
+          "//third_party/angle:libGLESv2",
+         ]
+}
