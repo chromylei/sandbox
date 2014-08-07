@@ -5,7 +5,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "sbox/base/base.h"
-#include "sbox/clipmap/vertexbuffer/terrain_grid.h"
+#include "sbox/clipmap/sampleinvs/terrain_grid.h"
 #include <tchar.h>
 using base::FilePath;
 
