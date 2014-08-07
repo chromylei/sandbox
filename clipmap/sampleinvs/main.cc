@@ -12,7 +12,7 @@ using base::FilePath;
 class MainDelegate : public azer::WindowHost::Delegate {
  public:
   MainDelegate()
-      : tile_(2, 10) {
+      : tile_(0.5, 50) {
   }
 
   virtual void OnCreate() {}

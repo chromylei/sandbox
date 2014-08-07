@@ -1,7 +1,10 @@
-#include "sbox/clipmap/vertexbuffer/terrain_grid.h"
+#include "sbox/clipmap/sampleinvs/terrain_grid.h"
 
+#include "base/files/file_path.h"
+
+const char* kTerrainTex1 = "sbox/clipmap/res/height1.bmp";
 #include "grid_tile.afx.h"
-#define EFFECT_GEN_DIR "out/dbg/gen/sbox/clipmap/vertexbuffer/"
+#define EFFECT_GEN_DIR "out/dbg/gen/sbox/clipmap/sampleinvs/"
 #define SHADER_NAME "grid_tile.afx"
 
 
@@ -20,6 +23,9 @@ bool GridTile::Init(azer::RenderSystem* rs) {
   effect_.reset(effect);
 
   CreateVertex(rs, effect);
+
+  ::base::FilePath texpath1(::base::UTF8ToWide(kTerrainTex1));
+  texptr_.reset(rs->CreateTextureFromFile(azer::Texture::k2D, texpath1));
   return true;
 }
 
@@ -64,6 +70,11 @@ void GridTile::CreateVertex(azer::RenderSystem* rs, GridTileEffect* effect) {
 void GridTile::Render(azer::Renderer* renderer, const azer::Camera& camera) {
   const azer::Matrix4& pvw = camera.GetProjViewMatrix();
   GridTileEffect* effect = (GridTileEffect*)effect_.get();
+  effect->SetRange(azer::Vector4(-kCellWidth * kCellNum * 0.5f,
+                                 -kCellWidth * kCellNum * 0.5f,
+                                 kCellWidth * kCellNum,
+                                 kCellWidth * kCellNum));
+  effect->SetHeightTex(texptr_);
   effect->SetPVW(pvw);
   effect_->Use(renderer);
   renderer->Render(vb_.get(), ib_.get(), azer::kTriangleList);

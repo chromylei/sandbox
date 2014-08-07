@@ -16,10 +16,17 @@ exchange struct VSInput {
 };
 
 [uniform_func="SetPVW"] uniform mat4 pvw;
+[uniform_func="SetHeightTex"] uniform Texture2D heighttex;
+[uniform_func="SetRange"] uniform vec4 range;
 
 VsOutput vs_main(VSInput input) {
   VsOutput o;
+  vec2 texcoord = vec2((input.position.x - range.x)  / range.z,
+                       (input.position.z - range.y)  / range.w);
+  vec4 n = sample2D(heighttex, texcoord);
+  input.position.y = n.x;
   o.position = pvw * input.position;
+
   return o;
 }
 

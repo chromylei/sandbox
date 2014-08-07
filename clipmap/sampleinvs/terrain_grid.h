@@ -17,6 +17,7 @@ class GridTile {
   std::unique_ptr<azer::Effect> effect_;
   azer::VertexBufferPtr vb_;
   azer::IndicesBufferPtr ib_;
+  azer::TexturePtr texptr_;
   const float kCellWidth;
   const float orgx_, orgz_;
   const int kCellNum;
