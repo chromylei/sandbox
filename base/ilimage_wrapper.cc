@@ -1,5 +1,6 @@
 #include "sbox/base/ilimage_wrapper.h"
 #include "base/file_util.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 
 #include "IL/ilu.h"
@@ -16,7 +17,17 @@ bool ilImageWrapper::Load(const ::base::FilePath& path) {
     return false;
   }
 
-  return Load(data.get(), filesize);
+  const ::base::FilePath::StringType ext = path.Extension();
+  int type;
+  if (ext == FILE_PATH_LITERAL(".bmp")) {
+    type = IL_BMP;
+  } else if (ext == FILE_PATH_LITERAL(".dds")) {
+    type = IL_DDS;
+  } else {
+    NOTREACHED();
+  }
+
+  return Load(data.get(), filesize, type);
 }
 
 bool ilImageWrapper::Create(int width, int height) {
@@ -42,11 +53,11 @@ bool ilImageWrapper::Create(int width, int height) {
   return true;
 }
 
-bool ilImageWrapper::Load(uint8* data, int size) {
+bool ilImageWrapper::Load(uint8* data, int size, int type) {
   ilGenImages(1, &image_id_);
   ilBindImage(image_id_);
 
-  ilLoadL(IL_BMP, data, size);
+  ilLoadL(type, data, size);
   ILenum ilerr = ilGetError();
   if (ilerr != IL_NO_ERROR) {
     LOG(ERROR) << (const char*)iluErrorString(ilerr);
@@ -57,6 +68,12 @@ bool ilImageWrapper::Load(uint8* data, int size) {
   height_ = (int)ilGetInteger(IL_IMAGE_HEIGHT);
   bytes_per_pixel_ = (int)ilGetInteger(IL_IMAGE_BITS_PER_PIXEL);
   return true;
+}
+
+uint8* ilImageWrapper::GetDataPtr() {
+  DCHECK(image_id_ != (ILuint)-1);
+  ilBindImage(image_id_);
+  return (uint8*)ilGetData();
 }
 
 uint32 ilImageWrapper::GetData(int x, int y) {

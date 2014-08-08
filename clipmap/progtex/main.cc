@@ -59,6 +59,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     azer::Texture::Options texopt;
     texopt.width = image.width();
     texopt.height = image.height();
+    texopt.target = azer::Texture::kShaderResource;
     tex_.reset(rs->CreateTexture(texopt));
     CHECK(tex_->InitFromData(image.GetDataPtr(), image.GetDataSize()));
           
