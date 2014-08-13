@@ -19,7 +19,6 @@ executable("sbox_clipmap_sampleinvs") {
   deps = [
     "//sbox/terrain/base:sbox_terrain_base",
     "//sbox/base:sbox_base",
-    "//sbox/base:sbox_image",
     "//base:appinit",
     ":sbox_clipmap_sampleinvs_effect",
     ":sbox_clipmap_sampleinvs_gridtile_effect",

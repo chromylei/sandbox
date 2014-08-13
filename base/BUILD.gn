@@ -28,21 +28,9 @@ static_library("sbox_base") {
   deps = [
     "//third_party/assimp:assimp",
     "//azer:azer",
+    "//azer/util:azer_util",
     ":sbox_base_effect",
     ":sbox_base_line_effect",
-  ]
-}
-
-static_library("sbox_image") {
-  sources = [
-    "image.cc",
-    "image.h",
-    "ilimage_wrapper.cc",
-    "ilimage_wrapper.h",
-  ]
-  deps = [
-    "//third_party/devil:devil",
-    "//third_party/devil:devilu",
   ]
 }
 

@@ -11,6 +11,5 @@ executable("sbox_clipmap_progtex") {
     "//base:appinit",
     ":sbox_clipmap_progtex_effect",
     "//sbox/base:sbox_base",
-    "//sbox/base:sbox_image",
   ]
 }

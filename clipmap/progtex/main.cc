@@ -7,7 +7,7 @@
 
 #include "samples/common/common.h"
 #include "sbox/base/camera_control.h"
-#include "sbox/base/image.h"
+#include "azer/util/image.h"
 
 #include "progtex.afx.h"
 #include <tchar.h>
@@ -56,13 +56,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
 
     sbox::Image image;
     CHECK(image.Load(FilePath(TEXT("samples/resources/texture/seafloor.dds"))));
-    azer::Texture::Options texopt;
-    texopt.width = image.width();
-    texopt.height = image.height();
-    texopt.target = azer::Texture::kShaderResource;
-    tex_.reset(rs->CreateTexture(texopt));
-    CHECK(tex_->InitFromData(image.GetDataPtr(), image.GetDataSize()));
-          
+    tex_.reset(azer::util::CreateTextureForShader(&image, rs));
     DCHECK(tex_.get() != NULL);
   }
   virtual void OnUpdateScene(double time, float delta_time) {

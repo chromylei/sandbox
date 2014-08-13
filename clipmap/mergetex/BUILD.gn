@@ -14,7 +14,6 @@ executable("sbox_clipmap_mergetex") {
   deps = [
     "//sbox/terrain/base:sbox_terrain_base",
     "//sbox/base:sbox_base",
-    "//sbox/base:sbox_image",
     "//base:appinit",
     ":sbox_clipmap_mergetex_effect",
   ]
