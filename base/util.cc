@@ -40,5 +40,5 @@ void LineRenderer::Render(azer::Renderer* renderer, const azer::Matrix4& pv) {
   effect->SetPoint2(pos2_);
   effect->SetDiffuse(azer::Vector4(0.9f, 0.9f, 0.9f, 1.0f));
   effect->Use(renderer);
-  renderer->Render(vb_.get(), azer::kLineList, 2, 0);
+  renderer->Draw(vb_.get(), azer::kLineList, 2, 0);
 }

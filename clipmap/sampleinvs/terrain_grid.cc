@@ -77,6 +77,6 @@ void GridTile::Render(azer::Renderer* renderer, const azer::Camera& camera) {
   effect->SetHeightTex(texptr_);
   effect->SetPVW(pvw);
   effect_->Use(renderer);
-  renderer->Render(vb_.get(), ib_.get(), azer::kTriangleList);
+  renderer->DrawIndex(vb_.get(), ib_.get(), azer::kTriangleList);
 }
 

@@ -182,7 +182,7 @@ void RenderSphere(SkeletonEffect* effect, azer::Renderer* renderer, Mesh* mesh) 
     azer::VertexBuffer* vb = rg.vb.get();
     azer::IndicesBuffer* ib = rg.ib.get();
     effect->Use(renderer);
-    renderer->Render(vb, azer::kTriangleList);
+    renderer->Draw(vb, azer::kTriangleList);
   }
 }
 }  // namespace

@@ -54,9 +54,9 @@ class MainDelegate : public azer::WindowHost::Delegate {
     proj_ = std::move(
         PerspectiveRHD3D(azer::Degree(45.0f), 4.0f / 3.0f, 0.10f, 100.0f));
 
-    sbox::Image image;
+    azer::util::Image image;
     CHECK(image.Load(FilePath(TEXT("samples/resources/texture/seafloor.dds"))));
-    tex_.reset(azer::util::CreateTextureForShader(&image, rs));
+    tex_ = azer::util::CreateTextureForShader(&image, rs);
     DCHECK(tex_.get() != NULL);
   }
   virtual void OnUpdateScene(double time, float delta_time) {
@@ -75,7 +75,7 @@ class MainDelegate : public azer::WindowHost::Delegate {
     effect_->SetPVW(pvw);
     effect_->SetDiffuseTex(tex_);
     effect_->Use(renderer);
-    renderer->Render(vb_.get(), azer::kTriangleList, 3, 0);
+    renderer->Draw(vb_.get(), azer::kTriangleList, 3, 0);
   }
 
   virtual void OnQuit() {}

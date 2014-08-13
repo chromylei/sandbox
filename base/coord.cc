@@ -38,6 +38,6 @@ void CoordMesh::Render(azer::Renderer* renderer, const azer::Matrix4& world,
       effect->SetAmbientTex(mtrl.tex);
     }
     effect->Use(renderer);
-    renderer->Render(vb, ib, azer::kTriangleList);
+    renderer->DrawIndex(vb, ib, azer::kTriangleList);
   }
 }

@@ -83,7 +83,7 @@ void MainDelegate::OnRenderScene(double time, float delta_time) {
   effect_->SetSlopeTex(slope_texptr_);
   effect_->SetDirLight(light_);
   effect_->Use(renderer);
-  renderer->Render(vb_.get(), ib_.get(), azer::kTriangleList);
+  renderer->DrawIndex(vb_.get(), ib_.get(), azer::kTriangleList);
 
   // azer::Matrix4 pvw = camera_.GetProjViewMatrix() * coord_world_;
   // coord_.Render(renderer, coord_world_, camera_.GetProjViewMatrix());
